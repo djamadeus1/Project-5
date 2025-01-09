@@ -4,3 +4,70 @@ from sqlalchemy.ext.associationproxy import association_proxy
 from config import db
 
 # Models go here!
+class User(db.Model, SerializerMixin):
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String, nullable=False, unique=True)
+    email = db.Column(db.String, nullable=False, unique=True)
+    password = db.Column(db.String, nullable=False)
+    picture_icon = db.Column(db.String)
+    logo = db.Column(db.String)
+    discipline = db.Column(db.String)
+    bio = db.Column(db.Text)
+
+    contacts = db.relationship('Contact', back_populates='user')
+    media_files = db.relationship('MediaFile', back_populates='user', cascade='all, delete-orphan')
+
+    # Avoid exposing the password and prevent circular references
+    serialize_rules = ('-password', '-media_files.user')
+
+class Contact(db.Model, SerializerMixin):
+    __tablename__ = 'contacts'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    name = db.Column(db.String, nullable=False)
+    email = db.Column(db.String, nullable=False)
+    phone = db.Column(db.String, nullable=False)
+    company = db.Column(db.String, nullable=True)
+    discipline = db.Column(db.String, nullable=True)
+
+    user = db.relationship('User', back_populates='contacts')
+    media_associations = db.relationship('ContactMedia', back_populates='contact')
+
+    # Exclude media associations from being serialized to prevent circular references
+    serialize_rules = ('-media_associations',)
+
+class MediaFile(db.Model, SerializerMixin):
+    __tablename__ = 'media_files'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    file_url = db.Column(db.String, nullable=False)
+    file_type = db.Column(db.String, nullable=False)
+    title = db.Column(db.String, nullable=False)
+    description = db.Column(db.String, nullable=True)
+
+    user = db.relationship('User', back_populates='media_files')
+    contact_associations = db.relationship('ContactMedia', back_populates='media_file')
+
+    # Exclude contact associations from being serialized
+    serialize_rules = ('-contact_associations',)
+
+class ContactMedia(db.Model, SerializerMixin):
+    __tablename__ = 'contact_media'
+
+    id = db.Column(db.Integer, primary_key=True)
+    contact_id = db.Column(db.Integer, db.ForeignKey('contacts.id'), nullable=False)
+    media_file_id = db.Column(db.Integer, db.ForeignKey('media_files.id'), nullable=False)
+    role = db.Column(db.String, nullable=True)
+
+    contact = db.relationship('Contact', back_populates='media_associations')
+    media_file = db.relationship('MediaFile', back_populates='contact_associations')
+
+    serialize_rules = ('-contact.media_associations', '-media_file.contact_associations')
+
+# Add back_populates to Contact and MediaFile models
+Contact.media_associations = db.relationship('ContactMedia', back_populates='contact')
+MediaFile.contact_associations = db.relationship('ContactMedia', back_populates='media_file')
