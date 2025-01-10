@@ -4,12 +4,12 @@
 from sqlalchemy import or_
 # Remote library imports
 from flask import request, session, jsonify
-from flask_restful import Resource
+from flask_restful import Resource, reqparse
 from flask_bcrypt import check_password_hash
 
 # Local imports
 from config import app, db, api, bcrypt
-from models import User, db, Contact, MediaFile, ContactMedia
+from models import User, Contact, MediaFile, ContactMedia
 
 # Signup Resource
 class Signup(Resource):
@@ -175,6 +175,48 @@ class MediaFileResource(Resource):
         db.session.delete(media_file)
         db.session.commit()
         return {"message": "Media file deleted"}, 204
+    
+class ContactMediaResource(Resource):
+    def post(self):
+        data = request.get_json()
+        try:
+            new_contact_media = ContactMedia(
+                contact_id=data['contact_id'],
+                media_file_id=data['media_file_id'],
+                role=data.get('role')
+            )
+            db.session.add(new_contact_media)
+            db.session.commit()
+            return {"message": "ContactMedia created successfully"}, 201
+        except KeyError as e:
+            return {"error": f"Missing required field: {str(e)}"}, 400
+        except Exception as e:
+            return {"error": str(e)}, 500
+
+    def get(self):
+        contact_media = db.session.query(ContactMedia).all()
+        return [cm.to_dict() for cm in contact_media], 200
+
+    def delete(self, id):
+        contact_media = db.session.query(ContactMedia).get(id)
+        if not contact_media:
+            return {"error": "ContactMedia not found"}, 404
+
+        db.session.delete(contact_media)
+        db.session.commit()
+        return {"message": "ContactMedia deleted successfully"}, 200
+    
+    def patch(self, id):
+        data = request.get_json()
+        contact_media = db.session.query(ContactMedia).get(id)
+        if not contact_media:
+            return {"error": "ContactMedia not found"}, 404
+
+        if "role" in data:
+            contact_media.role = data["role"]
+
+        db.session.commit()
+        return {"message": "ContactMedia updated successfully"}
 
 
 
@@ -186,6 +228,7 @@ api.add_resource(Logout, '/logout')
 api.add_resource(ContactsResource, '/contacts', '/contacts/<int:id>')
 api.add_resource(MediaFilesResource, '/media_files')
 api.add_resource(MediaFileResource, '/media_files/<int:id>')
+api.add_resource(ContactMediaResource, '/contact_media', '/contact_media/<int:id>')
 
 
 @app.route('/')

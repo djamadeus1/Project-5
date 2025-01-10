@@ -22,6 +22,18 @@ class User(db.Model, SerializerMixin):
     # Avoid exposing the password and prevent circular references
     serialize_rules = ('-password', '-media_files.user')
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "email": self.email,
+            "picture_icon": self.picture_icon,
+            "logo": self.logo,
+            "discipline": self.discipline,
+            "bio": self.bio
+        }
+
+
 class Contact(db.Model, SerializerMixin):
     __tablename__ = 'contacts'
 
@@ -37,7 +49,19 @@ class Contact(db.Model, SerializerMixin):
     media_associations = db.relationship('ContactMedia', back_populates='contact')
 
     # Exclude media associations from being serialized to prevent circular references
-    serialize_rules = ('-media_associations',)
+    serialize_rules = ('-media_associations', '-user.contacts')
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "name": self.name,
+            "email": self.email,
+            "phone": self.phone,
+            "company": self.company,
+            "discipline": self.discipline
+        }
+
 
 class MediaFile(db.Model, SerializerMixin):
     __tablename__ = 'media_files'
@@ -53,7 +77,18 @@ class MediaFile(db.Model, SerializerMixin):
     contact_associations = db.relationship('ContactMedia', back_populates='media_file')
 
     # Exclude contact associations from being serialized
-    serialize_rules = ('-contact_associations',)
+    serialize_rules = ('-contact_associations', '-user.media_files')
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "file_url": self.file_url,
+            "file_type": self.file_type,
+            "title": self.title,
+            "description": self.description
+        }
+
 
 class ContactMedia(db.Model, SerializerMixin):
     __tablename__ = 'contact_media'
@@ -66,8 +101,13 @@ class ContactMedia(db.Model, SerializerMixin):
     contact = db.relationship('Contact', back_populates='media_associations')
     media_file = db.relationship('MediaFile', back_populates='contact_associations')
 
+    # Exclude both sides to prevent circular serialization
     serialize_rules = ('-contact.media_associations', '-media_file.contact_associations')
 
-# Add back_populates to Contact and MediaFile models
-Contact.media_associations = db.relationship('ContactMedia', back_populates='contact')
-MediaFile.contact_associations = db.relationship('ContactMedia', back_populates='media_file')
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "contact_id": self.contact_id,
+            "media_file_id": self.media_file_id,
+            "role": self.role
+        }
