@@ -1,35 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import SignupForm from './SignupForm';
 import LoginForm from './LoginForm';
 import ContactForm from './ContactForm';
-
-// Home component
-function Home() {
-  return <h2>Welcome to the Home Page</h2>;
-}
-
-// ContactsList component
-function ContactsList({ contacts }) {
-  return (
-    <div>
-      <h2>Contacts:</h2>
-      <ul>
-        {contacts.map((contact) => (
-          <li key={contact.id}>{contact.name}</li>
-        ))}
-      </ul>
-    </div>
-  );
-}
+import ContactsList from './ContactsList';
+import Home from './Home';
 
 function App() {
   const [contacts, setContacts] = useState([]);
   const [user, setUser] = useState(null);
+  const [logout, setLogout] = useState(false); // New state to track logout
   const navigate = useNavigate();
 
-  // Check localStorage on initial load and fetch contacts only if auto-login is successful
+  // Auto-login logic
   useEffect(() => {
+    if (logout) return; // Prevent auto-login if the user has logged out
+
     const autoLogin = async () => {
       try {
         const response = await fetch("/check_session", {
@@ -53,14 +39,15 @@ function App() {
         navigate("/login");
       }
     };
-  
+
     autoLogin();
-  }, [navigate]);
+  }, [logout, navigate]);
 
   // Fetch contacts from the backend
   const fetchContacts = () => {
     fetch("/contacts", {
-      
+      method: "GET",
+      credentials: "include",
     })
       .then((response) => {
         if (!response.ok) {
@@ -73,43 +60,69 @@ function App() {
   };
 
   function handleLogin(userData) {
+    console.log("User data before setting state:", userData);
     setUser(userData);
     localStorage.setItem('user_id', userData.id); // Store user ID in localStorage
     fetchContacts(); // Fetch contacts after successful login
     navigate("/"); // Redirect to Home page after successful login
   }
 
-  function handleLogout() {
-    setUser(null);
-    localStorage.removeItem('user_id'); // Clear the stored user ID
-    navigate("/login"); // Redirect to login after logout
+  async function handleLogout() {
+    try {
+      const response = await fetch("/logout", {
+        method: "DELETE",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (response.ok) {
+        setUser(null);
+        localStorage.removeItem('user_id'); // Clear the stored user ID
+        setLogout(true); // Set logout state to true to prevent auto-login
+        navigate("/login"); // Redirect to login page after logout
+      } else {
+        console.error("Logout failed");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  }
+
+  function ProtectedRoute({ children }) {
+    if (!user) {
+      return <Navigate to="/login" replace />;
+    }
+    return children;
   }
 
   return (
     <div>
       <h1>Project Client</h1>
       {user ? (
-  <>
-    <p>Welcome, {user.username}!</p>
-    <button onClick={handleLogout}>Logout</button>
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/contacts" element={<ContactsList contacts={contacts} />} />
-      <Route path="/create-contact" element={<ContactForm />} />
-      <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
-      <Route path="/signup" element={<SignupForm />} /> {/* Signup route */}
-      <Route path="*" element={<LoginForm onLogin={handleLogin} />} /> {/* Catch-all route */}
-    </Routes>
-  </>
-) : (
-  <>
-    <p>Please log in.</p>
-    <Routes>
-      <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
-      <Route path="*" element={<LoginForm onLogin={handleLogin} />} /> {/* Catch-all route */}
-    </Routes>
-  </>
-)}
+        <>
+          <p>{user.username}</p>
+          <button onClick={handleLogout}>Logout</button>
+          <Routes>
+            <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+            <Route path="/contacts" element={<ProtectedRoute><ContactsList contacts={contacts} /></ProtectedRoute>} />
+            <Route path="/create-contact" element={<ProtectedRoute><ContactForm /></ProtectedRoute>} />
+            <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
+            <Route path="/signup" element={<SignupForm />} />
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </Routes>
+        </>
+      ) : (
+        <>
+          <p>Please log in.</p>
+          <Routes>
+            <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
+            <Route path="/signup" element={<SignupForm />} />
+            <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+          </Routes>
+        </>
+      )}
     </div>
   );
 }

@@ -89,19 +89,28 @@ class Login(Resource):
         print(f"Session set: {session.get('user_id')}")  # Debug statement to verify session
 
         # Return success message
-        return {"message": f"Login successful {user.username}"}, 200
+        return {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "picture_icon": user.picture_icon,
+            "logo": user.logo,
+            "discipline": user.discipline,
+            "bio": user.bio
+        }, 200
     
 class CheckSession(Resource):
     def get(self):
-        print(f"Checking session for user_id: {session.get('user_id')}")  # Existing log
-        print(f"Session content: {dict(session)}")
-        print(f"Session content during check_session: {dict(session)}")
+        # print(f"Checking session for user_id: {session.get('user_id')}")  # Debug log
+        # print(f"Session content: {dict(session)}")
+
         user_id = session.get('user_id')
         
         if not user_id:
             return {"error": "User not logged in"}, 401
 
-        user = db.session.get(User, user_id)  # Modern replacement
+        # Fetch user from the database using db.session.get (modern SQLAlchemy approach)
+        user = db.session.get(User, user_id)
 
         if user:
             response = {
@@ -113,8 +122,10 @@ class CheckSession(Resource):
                 "discipline": user.discipline,
                 "bio": user.bio
             }
+            print(f"User found: {response}")  # Additional log for successful retrieval
             return response, 200
 
+        print("User not found in the database")  # Log for user not found case
         return {"error": "User not found"}, 404
     
 class Logout(Resource):

@@ -23,8 +23,9 @@ function LoginForm({ onLogin }) {
         throw new Error("Invalid username or password");
       })
       .then((userData) => {
+        console.log("User data:", userData); // Debug log
         onLogin(userData); // Call onLogin prop to update the app state
-        navigate("/home"); // Redirect to the home page
+        navigate("/"); // Redirect to the home page
       })
       .catch((error) => {
         setError(error.message); // Displays specific error messages
