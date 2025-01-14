@@ -1,15 +1,50 @@
 #!/usr/bin/env python3
 
-# Standard library imports
-from sqlalchemy import or_
-# Remote library imports
-from flask import request, session, jsonify
-from flask_restful import Resource, reqparse
-from flask_bcrypt import check_password_hash
-
-# Local imports
+from sqlalchemy import or_, func
+from datetime import timedelta
+from flask import Flask, request, session, jsonify
+from flask_restful import Resource
+from flask_cors import CORS
+from flask_session import Session
 from config import app, db, api, bcrypt
 from models import User, Contact, MediaFile, ContactMedia
+
+# Configure Flask app
+app.config.update(
+    SECRET_KEY='your-secret-key-here',  # Add a secure secret key
+    SESSION_TYPE='filesystem',
+    SESSION_PERMANENT=False,
+    PERMANENT_SESSION_LIFETIME=timedelta(minutes=60),
+    SESSION_COOKIE_SAMESITE='Lax',
+    SESSION_COOKIE_SECURE=False,  # True in production
+    SESSION_COOKIE_HTTPONLY=True
+)
+
+# Initialize sessions
+Session(app)
+
+# Configure CORS
+CORS(app, 
+     supports_credentials=True,
+     resources={r"/*": {
+         "origins": ["http://localhost:3000"],
+         "methods": ["GET", "POST", "PUT", "DELETE"],
+         "allow_headers": ["Content-Type", "Authorization"]
+     }})
+
+@app.route('/check_session')
+def check_session():
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            return {"error": "Unauthorized"}, 401
+            
+        user = User.query.filter_by(id=user_id).first()
+        if user:
+            return {"id": user.id, "username": user.username}, 200
+        return {"error": "User not found"}, 401
+    except Exception as e:
+        return {"error": str(e)}, 500
 
 # Signup Resource
 class Signup(Resource):
@@ -24,11 +59,9 @@ class Signup(Resource):
         if db.session.query(User).filter(or_(User.username == username, User.email == email)).first():
             return {"error": "User already exists"}, 409
 
-        # Hash the password
-        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-
-        # Create new user
-        new_user = User(username=username, email=email, password=hashed_password)
+        # Create new user and use the property setter for password
+        new_user = User(username=username, email=email)
+        new_user.password = password  # This automatically hashes the password
 
         # Add and commit the new user to the database
         db.session.add(new_user)
@@ -43,33 +76,35 @@ class Login(Resource):
         password = data.get('password')
 
         # Check if user exists
-        user = db.session.query(User).filter_by(username=username).first()
+        user = db.session.query(User).filter(func.lower(User.username) == username.lower()).first()
         if not user:
-            return {"error": "Invalid username or password"}, 401
+            return {"error": "Invalid username and/or password"}, 401
 
-        # Check if password matches
-        if not check_password_hash(user.password, password):
-            return {"error": "Invalid username or password"}, 401
-        
-         # Store user ID in session
+        # Check if password matches using check_password()
+        if not user.check_password(password):
+            return {"error": "Invalid username and/or password"}, 401
+
+        # Store user ID in session
         session['user_id'] = user.id
+        print(f"Session set: {session.get('user_id')}")  # Debug statement to verify session
 
-        # If login is successful
+        # Return success message
         return {"message": f"Login successful {user.username}"}, 200
     
 class CheckSession(Resource):
     def get(self):
-        # Check if 'user_id' exists in session
+        print(f"Checking session for user_id: {session.get('user_id')}")  # Existing log
+        print(f"Session content: {dict(session)}")
+        print(f"Session content during check_session: {dict(session)}")
         user_id = session.get('user_id')
         
         if not user_id:
             return {"error": "User not logged in"}, 401
 
-        # Query the user from the database using the user_id from session
-        user = db.session.query(User).get(user_id)
+        user = db.session.get(User, user_id)  # Modern replacement
 
         if user:
-            return {
+            response = {
                 "id": user.id,
                 "username": user.username,
                 "email": user.email,
@@ -77,8 +112,9 @@ class CheckSession(Resource):
                 "logo": user.logo,
                 "discipline": user.discipline,
                 "bio": user.bio
-            }, 200
-        
+            }
+            return response, 200
+
         return {"error": "User not found"}, 404
     
 class Logout(Resource):
@@ -217,7 +253,11 @@ class ContactMediaResource(Resource):
 
         db.session.commit()
         return {"message": "ContactMedia updated successfully"}
-
+    
+class Logout(Resource):
+    def delete(self):
+        session.clear()
+        return {"message": "Successfully logged out"}, 200
 
 
 # Add the route to your API
@@ -235,5 +275,15 @@ api.add_resource(ContactMediaResource, '/contact_media', '/contact_media/<int:id
 def index():
     return '<h1>Project Server</h1>'
 
-if __name__ == '__main__':
-    app.run(port=5555, debug=True)
+# @app.route('/test_session')
+# def test_session():
+#     session['test'] = 'session works'
+#     return {"message": "Session set"}
+
+@app.route('/test_session')
+def test_session():
+    session['test_key'] = 'test_value'
+    return {"message": "Session set"}
+
+if __name__ == "__main__":
+    app.run(host="127.0.0.1", port=5555, debug=True)
