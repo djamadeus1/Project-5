@@ -5,3 +5,170 @@
   --text: hsla(0, 0%, 100%, 0.88);
 }
 
+.signup-link, .login-link {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.signup-link a, .login-link a {
+  color: purple;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+/* Centers the header title */
+.header-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60px; /* Adjust height as needed */
+  background-color: #6200ea; /* Purple background */
+  color: white;
+  text-align: center;
+}
+
+/* Style for the title */
+.header-container h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+/* Purple background color for the header */
+header {
+  display: flex;
+  justify-content: center; /* Centers content horizontally */
+  align-items: center;     /* Centers content vertically */
+  height: 60px;            /* Adjust height as needed */
+  background-color: #5b2cac;
+  color: white;
+  position: fixed;
+  width: 100vw;            /* Ensures full width of the viewport */
+  top: 0;
+  left: 0;                 /* Ensures it starts from the left edge */
+  z-index: 1000;
+  font-size: 24px;
+  margin: 0;               /* Removes any margin that might cause the gap */
+  padding: 0;
+}
+
+/* Shared styles for both login and signup forms */
+/* Center the form on the page */
+.login-form-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers all elements horizontally */
+  justify-content: center;
+  height: 100vh; /* Makes the container fill the full height of the page */
+  padding: 20px;
+  gap: 20px; /* Adds spacing between the heading and form */
+}
+
+/* Style for the form */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 70px; /* Adds spacing between form elements */
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Style for input fields */
+form input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  width: 55%; /* Increase width to 125% of the default size */
+  max-width: 500px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers the label and input horizontally */
+  margin-bottom: -50px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center; /* Ensures the text inside the label is centered */
+}
+
+/* Style for the LogIn button */
+form button {
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  background-color: #6200ea;
+  color: white;
+  font-size: 90px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+Login title Home Page
+h2 {
+  position: absolute; /* Allows manual positioning */
+  top: 20%;           /* Adjusts vertical position */
+  left: 50%;          /* Adjusts horizontal position */
+  transform: translate(-50%, -50%); /* Centers the heading perfectly */
+  font-size: 32px;
+  text-align: center;
+}
+
+form label {
+  display: block;
+  margin-bottom: 5px; /* Adds space between label and input */
+  font-weight: bold; /* Optional: Makes the label text bold */
+}
+
+/* Specific styles for login form */
+
+/* Specific styles for signup form */
+.signup-form-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 20px;
+  gap: 20px;
+  text-align: center;
+}
+
+/* .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 300px;
+} */
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.login-link {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+
+
+/* Specific styles for Home form */
+.home-page-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 20px;
+  gap: 20px;
+  text-align: center;
+}

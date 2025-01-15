@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 function LoginForm({ onLogin }) {
   const [username, setUsername] = useState("");
@@ -33,30 +33,39 @@ function LoginForm({ onLogin }) {
   }
 
   return (
-    <div>
+    <div className="login-form-wrapper form-wrapper">
       <h2>Login</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>} {/* Display error if present */}
       <form onSubmit={handleSubmit}>
-        <label>
-          Username:
+        <div className="form-group">
+          <label htmlFor="username">Username</label>
           <input
             type="text"
+            id="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
-        </label>
-        <br />
-        <label>
-          Password:
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="password">Password</label>
           <input
             type="password"
+            id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-        </label>
-        <br />
+        </div>
+
         <button type="submit">Login</button>
       </form>
+
+      {/* Signup link */}
+      <div className="signup-link">
+        <p>
+          Don't have an account? <Link to="/signup">Sign up here</Link>
+        </p>
+      </div>
     </div>
   );
 }

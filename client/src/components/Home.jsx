@@ -46,7 +46,7 @@ function Home() {
       }
     };
 
-    fetchData();
+    fetchData( );
   }, []); // Empty dependency array to fetch contacts once when the component mounts
 
   if (!user) {
@@ -54,7 +54,7 @@ function Home() {
   }
 
   return (
-    <div>
+    <div className="home-page-wrapper">
       <p>This is your home page.</p>
     </div>
   );
