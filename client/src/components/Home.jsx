@@ -1,63 +1,75 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
+// import './Home.css';
 
-function Home() {
-  const [user, setUser] = useState(null);
-  const navigate = useNavigate();
+function Home({ user }) {
+    if (!user) {
+      return <p>Loading...</p>;
+    }
+  
+    return (
+        <div className="home-page-wrapper">
+        <h2 className="home-username">{user.username}!</h2>
 
-  useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const response = await fetch("/check_session", {
-          method: "GET",
-          credentials: "include", // Ensures the session cookie is sent
-        });
-        if (response.ok) {
-          const userData = await response.json();
-          setUser(userData);
-        } else {
-          navigate("/login"); // Redirect to login if session check fails
-        }
-      } catch (error) {
-        console.error("Error checking session:", error);
-        navigate("/login");
-      }
-    };
+            {/* Purple square frame with user picture */}
+            <div className="purple-pic-square">
+                <img
+                src={user.picture_icon || "https://via.placeholder.com/150.png"}
+                alt={`${user.username}'s profile`}
+                className="user-picture"
+                />
+            </div>
 
-    checkSession();
-  }, [navigate]);
+            {/* User Banner */}
+            <div className="user-banner-square"></div>
 
-  // New useEffect block for fetching contacts
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("/contacts", {
-          method: "GET",
-          credentials: "include",
-        });
-        if (response.ok) {
-          const data = await response.json();
-          console.log("Fetched contacts:", data); // Replace with setting state or rendering data
-        } else {
-          console.error("Failed to fetch contacts");
-        }
-      } catch (error) {
-        console.error("Error fetching contacts:", error);
-      }
-    };
+            {/* Purple Logo Circle */}
+            <div className="purple-logo-circle">
+                <span>Logo</span>
+            </div>
 
-    fetchData( );
-  }, []); // Empty dependency array to fetch contacts once when the component mounts
+            {/* Track List */}
+            <div className="track-list-square"></div>
 
-  if (!user) {
-    return <p>Loading...</p>; // Show a loading message while checking session
-  }
+            {/* Contact Picture Square */}
+            <div className="contact-pic-square"></div>
 
-  return (
-    <div className="home-page-wrapper">
-      <p>This is your home page.</p>
-    </div>
-  );
-}
+            {/* Track Contact Info Square */}
+            <div className="track-contact-info-square"></div>
 
-export default Home;
+            {/* Media Player Square */}
+            <div className="media-player-square"></div>
+
+             {/* Artwork Square */}
+            <div className="artwork-square"></div>
+
+            {/* Project List Square */}
+            <div className="project-list-square"></div>
+
+            {/* Track List Square */}
+            <div className="final-track-list-square"></div>
+
+            {/* Tracks Label */}
+            <div className="tracks-label">Tracks</div>
+
+            {/* Projects Label */}
+            <div className="projects-label">Projects</div>
+
+            {/* Transport Control Square */}
+            <div className="transport-control-square"></div>
+
+            {/* Transport Buttons */}
+            <div className="transport-buttons">
+                ⏪ ⏯️ ⏩ ⏹️ ⏮️ ⏭️
+            </div>
+
+
+
+        
+            <p></p>
+        </div>
+      );
+    }
+  
+
+  
+  export default Home;

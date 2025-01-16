@@ -27,6 +27,18 @@
   text-align: center;
 }
 
+.app-title {
+  font-family: 'Inter', sans-serif; /* Matches the font from Figma */
+  font-weight: 700; /* Matches the weight (bold) */
+  font-size: 32px; /* Matches the size from Figma */
+  line-height: 38.73px; /* Matches the line height */
+  color: #FFFFFF; /* Matches the white color */
+  text-align: center; /* Centers the text horizontally */
+  border: 0px solid #000000; /* Matches the border style */
+  padding: 5px 10px; /* Adds spacing inside the border */
+  background-color: transparent; /* Removes the background color */
+}
+
 /* Style for the title */
 .header-container h1 {
   margin: 0;
@@ -164,11 +176,265 @@ button {
 /* Specific styles for Home form */
 .home-page-wrapper {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
+  flex-wrap: wrap;
+  justify-content: space-around;
   padding: 20px;
   gap: 20px;
-  text-align: center;
+}
+
+.home-username {
+  position: absolute; /* Allows precise positioning like other elements */
+  top: 11vh; /* Adjust vertical position */
+  left: 23.5vw; /* Adjust horizontal position */
+  font-size: clamp(1.5rem, 3vw, 2.5rem); /* Scales font size with the screen */
+  line-height: 1.5; /* Adjusts spacing between lines */
+  color: #333; /* Optional: Adjust color */
+}
+
+.purple-pic-square {
+  width: 16vw; /* 15% of the viewport width */
+  height: 16vw; /* Maintain a square shape */
+  max-width: 368px; /* Prevents it from getting too large */
+  max-height: 368px;
+  background-color: #8007F9;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  position: absolute;
+  top: 10vh;
+  left: 4vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.purple-pic-square img {
+  width: 80%; /* Image takes 80% of the square */
+  height: 80%;
+  border-radius: 50%; /* Makes the image circular */
+  object-fit: cover; /* Ensures the image covers the available space */
+}
+
+/* User Banner Square */
+.user-banner-square {
+  width: 80vw; /* Dynamically scale width */
+  height: 15vh; /* Dynamically scale height */
+  max-width: 849px;
+  max-height: 242px;
+  background-color: #8007F9;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  position: absolute;
+  top: 10vh; /* Adjust vertical position dynamically */
+  left: 38vw; /* Adjust horizontal position dynamically */
+}
+
+/* Purple Logo Circle */
+.purple-logo-circle {
+  width: 8vw; /* Dynamically scale width */
+  height: 8vw; /* Dynamically scale height */
+  max-width: 150px;
+  max-height: 150px;
+  background-color: #8007F9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 50%;
+  position: absolute;
+  top: 10vh; /* Adjust vertical position dynamically */
+  left: 90vw; /* Adjust horizontal position dynamically */
+  color: black;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+/* Track List Square */
+.track-list-square {
+  width: 22vw; /* Dynamically scale width */
+  height: 65vh; /* Dynamically scale height */
+  max-width: 328px;
+  max-height: 550px;
+  background-color: #8007F9;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  position: absolute;
+  top: 40vh; /* Adjust vertical position dynamically */
+  left: 2vw; /* Adjust horizontal position dynamically */
+}
+
+/* Contact Picture Square */
+.contact-pic-square {
+  width: 15vw;
+  height: 25.5vh;
+  max-width: 280px;
+  max-height: 280px;
+  background-color: #D9D9D9;
+  border: 1px solid #000000;
+  box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  position: absolute;
+  top: 41vh; /* Adjust vertical position dynamically */
+  left: 4.3vw; /* Adjust horizontal position dynamically */
+}
+
+/* Track Contact Info Square */
+.track-contact-info-square {
+  width: 19vw;
+  height: 28vh;
+  max-width: 309px;
+  max-height: 300px;
+  background-color: #D9D9D9;
+  border: 1px solid #000000;
+  box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  position: absolute;
+  top: 68vh; /* Adjust vertical position dynamically */
+  left: 2.5vw; /* Adjust horizontal position dynamically */
+}
+
+/* Media Player Square */
+.media-player-square {
+  width: 90vw;
+  height: 40vw;
+  max-width: 1228px;
+  max-height: 912px;
+  background-color: #D9D9D9;
+  border: 1px solid #000000;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+  position: absolute;
+  top: 27vh;
+  left: 25vw;
+}
+
+/* Artwork Square */
+.artwork-square {
+  width: 40vw;
+  height: 40vw;
+  max-width: 525px;
+  max-height: 525px;
+  background-color: #8007F9;
+  border: 1px solid #000000;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  position: absolute;
+  top: 29vh;
+  left: 26.5vw;
+}
+
+
+/* Project List Square */
+.project-list-square {
+  width: 50vw;
+  height: 16vh;
+  max-width: 620px;
+  max-height: 154px;
+  background-color: #8007F9;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  position: absolute;
+  top: 33vh;
+  left: 60vw;
+}
+
+.final-track-list-square {
+  width: 610px;
+  height: 415px;
+  background-color: #8007F9; /* Purple color */
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); /* Drop shadow */
+  border-radius: 10px; /* Slightly rounded corners */
+  position: absolute;
+  top: 500px; /* Figma's top value */
+  left: 1014px; /* Figma's left value */
+}
+
+.tracks-label {
+  width: 146px;
+  height: 29px;
+  background-color: white; /* Purple color */
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); /* Drop shadow */
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white; /* Text color */
+  font-weight: bold;
+  font-size: 16px;
+  position: absolute;
+  top: 520px; /* Figma's top value */
+  left: 1250px; /* Figma's left value */
+}
+
+.projects-label {
+  width: 150px;
+  height: 29px;
+  background-color: #8007F9; /* Purple color */
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); /* Drop shadow */
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white; /* Text color */
+  font-weight: bold;
+  font-size: 16px;
+  position: absolute;
+  top: 275px; /* Figma's top value */
+  left: 1250px; /* Figma's left value */
+}
+
+.transport-control-square {
+  width: 450px;
+  height: 76px;
+  background-color: #D9D9D9;
+  border: 1px solid #000000; /* Black border */
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); /* Drop shadow */
+  border-radius: 10px; /* Slightly rounded corners */
+  position: absolute;
+  top: 835px; /* Figma's top value */
+  left: 465px; /* Figma's left value */
+}
+
+.transport-buttons {
+  width: 397px;
+  height: 58px;
+  display: flex;
+  justify-content: space-around; /* Evenly distributes buttons */
+  align-items: center;
+  font-size: 48px; /* Matches Figma font size */
+  font-weight: 700;
+  line-height: 58.09px;
+  color: #000000; /* Black text color */
+  position: absolute;
+  top: 848px; /* Figma's top value */
+  left: 494px; /* Figma's left value */
+}
+
+/* Center the home container on the page */
+
+/* Container for the header */
+
+
+/* Logout button container */
+.nav-links {
+  position: absolute; /* Position it independently */
+  right: 20px; /* Align to the right with padding */
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Spacing between elements */
+}
+
+
+/* Logout button */
+.logout-button {
+  padding: 8px 16px;
+  background-color: #ffffff5c;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Hover effect for logout button */
+.logout-button:hover {
+  background-color: #e64a19;
 }

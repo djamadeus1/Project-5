@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, useNavigate, Navigate, useLocation, } from 'react-router-dom';
 import Header from './Header';
 import LoginForm from './LoginForm';
 import SignupForm from './SignupForm';
@@ -10,71 +10,67 @@ import Home from './Home';
 function App() {
   const [user, setUser] = useState(null);
   const [contacts, setContacts] = useState([]);
-  // const [logout, setLogout] = useState(false); // New state to track logout
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoggedOut, setIsLoggedOut] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
-
-  // Auto-login logic
   useEffect(() => {
-    // if (logout) return; // Prevent auto-login if the user has logged out
-
-    const autoLogin = async () => {
-      const storedUserId = localStorage.getItem("user_id");
-      if (!storedUserId) {
-        console.log("No user ID found in local storage. Skipping auto-login.");
+    const checkSession = async () => {
+      if (isLoggedOut) {
+        setIsLoading(false);
         return;
       }
-  
+
       try {
         const response = await fetch("/check_session", {
-          method: "GET",
           credentials: "include",
           headers: {
             "Accept": "application/json",
             "Content-Type": "application/json",
-          },
+          }
         });
         if (response.ok) {
           const userData = await response.json();
           setUser(userData);
           fetchContacts();
-          navigate("/");
-        } else {
-          throw new Error("Failed to auto-login");
+        } else if (response.status === 401) {
+          setUser(null);
+          navigate("/login");
         }
       } catch (error) {
-        console.error("Auto-login failed:", error);
+        console.error("Session check failed:", error);
+        setUser(null);
         navigate("/login");
+      } finally {
+        setIsLoading(false);
       }
     };
-  
-    autoLogin();
-  }, [navigate]);
 
-  // Fetch contacts from the backend
-  const fetchContacts = () => {
-    fetch("/contacts", {
-      method: "GET",
-      credentials: "include",
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch contacts");
+    checkSession();
+  }, [navigate, isLoggedOut]);
+
+  const fetchContacts = async () => {
+    try {
+      const response = await fetch("/contacts", {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
         }
-        return response.json();
-      })
-      .then((data) => setContacts(data))
-      .catch((error) => console.error("Error:", error));
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setContacts(data);
+      } else {
+        console.error("Failed to fetch contacts");
+      }
+    } catch (error) {
+      console.error("Error fetching contacts:", error);
+    }
   };
-
-  // function handleLogin(userData) {
-  //   console.log("User data before setting state:", userData);
-  //   setUser(userData);
-  //   localStorage.setItem('user_id', userData.id); // Store user ID in localStorage
-  //   fetchContacts(); // Fetch contacts after successful login
-  //   navigate("/"); // Redirect to Home page after successful login
-  // }
 
   async function handleLogout() {
     try {
@@ -87,6 +83,7 @@ function App() {
       });
       if (response.ok) {
         setUser(null);
+        setIsLoggedOut(true);  // Add this line
         localStorage.removeItem("user_id");
         navigate("/login");
       }
@@ -96,21 +93,18 @@ function App() {
   }
 
   const ProtectedRoute = ({ children }) => {
-    if (!user) {
-      return <Navigate to="/login" replace />;
-    }
+    if (isLoading) return <p>Loading...</p>;
+    if (!user) return <Navigate to="/login" replace />;
     return children;
   };
 
   return (
     <div>
-      {/* Pass user and handleLogout to Header */}
       <Header user={user} handleLogout={handleLogout} currentPage={location.pathname} />
-
       <Routes>
-      <Route path="/login" element={<LoginForm onLogin={setUser} />} />
+        <Route path="/login" element={<LoginForm onLogin={setUser} />} />
         <Route path="/signup" element={<SignupForm />} />
-        <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+        <Route path="/" element={<ProtectedRoute><Home user={user} /></ProtectedRoute>} />
         <Route path="/contacts" element={<ProtectedRoute><ContactsList contacts={contacts} /></ProtectedRoute>} />
         <Route path="/create-contact" element={<ProtectedRoute><ContactForm /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/login" replace />} />

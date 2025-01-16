@@ -3,18 +3,19 @@ import { Link } from 'react-router-dom';
 
 function Header({ user, handleLogout, currentPage }) {
     return (
-      <header>
-        <h1>MUSIC - ONE</h1>
-        <nav>
-          {user ? (
+        <header className="header-container">
+          <h1 className="app-title">MUSIC - ONE</h1>
+          <nav className="nav-links">
+            {user ? (
             <>
-              <span>Welcome, {user.username}!</span>
-              <button onClick={handleLogout}>Logout</button>
-              <Link to="/">Home</Link>
+              {/* <span>Welcome, {user.username}!</span> */}
+              {/* <span className="welcome-text">Welcome, {user.username}!</span> */}
+              <button onClick={handleLogout} className="logout-button">Logout</button>
+              {/* <Link to="/">Home</Link>
               <Link to="/contacts">Contacts</Link>
-              <Link to="/create-contact">New Contact</Link>
-              {currentPage === "/" && <p>You are on the Home page</p>}
-              {currentPage === "/contacts" && <p>You are on the Contacts page</p>}
+              <Link to="/create-contact">New Contact</Link> */}
+              {/* {currentPage === "/" && <p>You are on the Home page</p>}
+              {currentPage === "/contacts" && <p>You are on the Contacts page</p>} */}
             </>
           ) : (
             <>
