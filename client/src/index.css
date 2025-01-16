@@ -541,3 +541,13 @@ Transport Buttons
 .transport-buttons button:hover {
   background-color: #4500a0;
 }
+
+
+/* Contact picture styling */
+
+.contact-picture {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 50%;
+}

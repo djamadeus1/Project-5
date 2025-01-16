@@ -103,10 +103,33 @@ function Home({ user }) {
             </div>
 
             {/* Contact Picture Square */}
-            <div className="contact-pic-square"></div>
+            <div className="contact-pic-square">
+                {currentMedia && currentMedia.contacts.length > 0 ? (
+                    <img
+                        src={currentMedia.contacts[0].picture || "https://via.placeholder.com/100"}
+                        alt={`${currentMedia.contacts[0].name}'s Profile`}
+                        className="contact-picture"
+                        width="100"
+                    />
+                ) : (
+                    <p>No Contact Picture</p>
+                )}
+            </div>
 
-            {/* Track Contact Info Square */}
-            <div className="track-contact-info-square"></div>
+            {/* Track Contact Info Square - Shows the first contact's details */}
+            <div className="track-contact-info-square">
+                {currentMedia && currentMedia.contacts.length > 0 ? (
+                    <>
+                        <p><strong>Name:</strong> {currentMedia.contacts[0].name}</p>
+                        <p><strong>Email:</strong> {currentMedia.contacts[0].email}</p>
+                        <p><strong>Phone:</strong> {currentMedia.contacts[0].phone}</p>
+                        <p><strong>Company:</strong> {currentMedia.contacts[0].company}</p>
+                        <p><strong>Discipline:</strong> {currentMedia.contacts[0].discipline}</p>
+                    </>
+                ) : (
+                    <p>No Contact Info Available</p>
+                )}
+            </div>
 
             {/* Media Player Square */}
             <div className="media-player-square">

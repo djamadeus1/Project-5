@@ -180,11 +180,52 @@ class ContactsResource(Resource):
         db.session.commit()
         return {"message": "Contact deleted successfully"}, 204
 
+from flask import jsonify  # Ensure this is imported
+
 class MediaFilesResource(Resource):
     def get(self):
-        media_files = db.session.query(MediaFile).all()
-        return [media_file.to_dict() for media_file in media_files], 200
+        try:
+            # Query all media files
+            media_files = db.session.query(MediaFile).all()
+            media_list = []
 
+            for media in media_files:
+                # Get all contacts associated with this media file
+                contacts = (
+                    db.session.query(Contact)
+                    .join(ContactMedia, Contact.id == ContactMedia.contact_id)
+                    .filter(ContactMedia.media_file_id == media.id)
+                    .all()
+                )
+
+                # Convert contacts to dictionary format
+                contact_data = [
+                    {
+                        "id": contact.id,
+                        "name": contact.name,
+                        "email": contact.email,
+                        "phone": contact.phone,
+                        "company": contact.company,
+                        "discipline": contact.discipline,
+                    }
+                    for contact in contacts
+                ]
+
+                # Append media file with associated contacts
+                media_list.append({
+                    "id": media.id,
+                    "user_id": media.user_id,
+                    "file_url": media.file_url,
+                    "file_type": media.file_type,
+                    "title": media.title,
+                    "description": media.description,
+                    "contacts": contact_data  # ✅ Adding associated contacts here
+                })
+
+            return media_list, 200  # ✅ Correct return format
+        except Exception as e:
+            return {"error": str(e)}, 500  # ✅ Catch errors and return JSON response
+    
     def post(self):
         data = request.get_json()
         try:
