@@ -343,9 +343,9 @@ button {
   background-color: #8007F9; /* Purple color */
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); /* Drop shadow */
   border-radius: 10px; /* Slightly rounded corners */
-  position: absolute;
-  top: 500px; /* Figma's top value */
-  left: 1014px; /* Figma's left value */
+  position: relative;
+  top: 467px; /* Figma's top value */
+  left: 740px; /* Figma's left value */
 }
 
 .tracks-label {
@@ -361,7 +361,7 @@ button {
   font-weight: bold;
   font-size: 16px;
   position: absolute;
-  top: 520px; /* Figma's top value */
+  top: 510px; /* Figma's top value */
   left: 1250px; /* Figma's left value */
 }
 
@@ -437,4 +437,45 @@ button {
 /* Hover effect for logout button */
 .logout-button:hover {
   background-color: #e64a19;
+}
+
+
+
+/* Container for the Media List */
+.media-list {
+  padding: 10px;
+  position: absolute; /* Ensure it's positioned relative to its parent */
+  z-index: 10; /* Increase this value if needed */
+  background-color: white; /* Optional: Add a background to improve visibility */
+  border-radius: 5px; /* Optional: Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: Add a shadow for clarity */
+  top: 56vh; /* Adjust this to move vertically */
+  left: 61.8vw; /* Adjust this to move horizontally */
+  width: 50vw; /* Set width to 25% of the viewport width */
+  max-width: 550px; /* Optional: Limit the maximum width */
+  height: 33vh; /* Adjust the height to 40% of the viewport height */
+  max-height: 400px; /* Optional: Limit the maximum height */
+  overflow-y: auto; /* Adds a scrollbar if content overflows */
+}
+
+.media-list h3 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.media-item {
+  list-style: none;
+  cursor: pointer;
+  padding: 8px;
+  border-bottom: 1px solid #ccc;
+  transition: background-color 0.3s; /* Updated transition time */
+}
+
+.media-item:hover {
+  background-color: #f0f0f0;
+}
+
+.media-item.selected {
+  background-color: #d1e7dd; /* Highlight color */
+  font-weight: bold;
 }

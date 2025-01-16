@@ -1,7 +1,32 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import MediaList from "./MediaList";
 // import './Home.css';
 
+
 function Home({ user }) {
+    const [mediaFiles, setMediaFiles] = useState([]);
+    const [currentMedia, setCurrentMedia] = useState(null);
+
+    useEffect(() => {
+        // Fetch media files when the component loads
+        const fetchMediaFiles = async () => {
+        try {
+            const response = await fetch("/media_files", { credentials: "include" });
+            if (response.ok) {
+            const data = await response.json();
+            console.log("Fetched media files:", data); // Debugging log
+            setMediaFiles(data);
+            } else {
+            console.error("Failed to fetch media files");
+            }
+        } catch (error) {
+            console.error("Error fetching media files:", error);
+        }
+        };
+
+        fetchMediaFiles();
+    }, []);
+    
     if (!user) {
       return <p>Loading...</p>;
     }
@@ -13,9 +38,13 @@ function Home({ user }) {
             {/* Purple square frame with user picture */}
             <div className="purple-pic-square">
                 <img
-                src={user.picture_icon || "https://via.placeholder.com/150.png"}
-                alt={`${user.username}'s profile`}
-                className="user-picture"
+                    src={user.picture_icon || "https://via.placeholder.com/150.png"} // Original line
+                    alt={`${user.username}'s profile`}
+                    className="user-picture"
+                    onError={(e) => {
+                    e.target.src = "https://placehold.co/150"; // Fallback if the image fails to load
+                    e.target.alt = "Default Profile Picture"; // Update alt text for clarity
+                    }}
                 />
             </div>
 
@@ -28,7 +57,9 @@ function Home({ user }) {
             </div>
 
             {/* Track List */}
-            <div className="track-list-square"></div>
+            <div className="track-list-square">
+                
+            </div>
 
             {/* Contact Picture Square */}
             <div className="contact-pic-square"></div>
@@ -47,6 +78,12 @@ function Home({ user }) {
 
             {/* Track List Square */}
             <div className="final-track-list-square"></div>
+                {/* Add MediaList here */}
+                <MediaList
+                    mediaFiles={mediaFiles}
+                    onMediaSelect={(media) => setCurrentMedia(media)}
+                    currentMedia={currentMedia}
+                />
 
             {/* Tracks Label */}
             <div className="tracks-label">Tracks</div>
