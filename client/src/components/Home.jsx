@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import MediaList from "./MediaList";
+import Banner from "./Banner"; // Import the Banner component
 // import './Home.css';
 
 
@@ -74,7 +75,7 @@ function Home({ user }) {
   
     return (
         <div className="home-page-wrapper">
-        <h2 className="home-username">{user.username}!</h2>
+            <h2 className="home-username">{user.username}!</h2>
 
             {/* Purple square frame with user picture */}
             <div className="purple-pic-square">
@@ -90,7 +91,9 @@ function Home({ user }) {
             </div>
 
             {/* User Banner */}
-            <div className="user-banner-square"></div>
+            <div className="user-banner-square">
+                <Banner bannerUrl={user.banner_url} />
+            </div>
 
             {/* Purple Logo Circle */}
             <div className="purple-logo-circle">
