@@ -1,0 +1,81 @@
+
+/* 
+.business-mode-wrapper {
+    padding: 20px;
+    min-height: 100vh;
+    background-color: #f5f5f5;
+  }
+  
+  .business-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .business-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .business-controls {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .media-section {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 20px;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: absolute;
+    width: 10px;
+    height: 10px;
+  }
+  
+  audio {
+    width: 100%;
+    margin-top: 20px;
+  }
+  
+  @media (max-width: 768px) {
+    .media-section {
+      grid-template-columns: 1fr;
+    }
+  } */
+
+  .tracks-label {
+    width: 146px;
+    height: 29px;
+    background-color: white; /* Purple color */
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); /* Drop shadow */
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white; /* Text color */
+    font-weight: bold;
+    font-size: 16px;
+    position: absolute;
+    top: 506px; /* Figma's top value */
+    left: 1250px; /* Figma's left value */
+  }
+  .final-track-list-square {
+    width: 610px;
+    height: 415px;
+    background-color: #8007F9; /* Purple color */
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); /* Drop shadow */
+    border-radius: 10px; /* Slightly rounded corners */
+    position: relative;
+    top: 467px; /* Figma's top value */
+    left: 100px; /* Figma's left value */
+  }

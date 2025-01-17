@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import '../index.css'; // Ensure global styles are imported
+import '../styles/index.css';  // Fix path to styles directory
+
 
 function SignupForm() {
   const [username, setUsername] = useState("");

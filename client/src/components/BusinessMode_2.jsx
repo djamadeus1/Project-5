@@ -2,33 +2,65 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import MediaList from "./MediaList";
 import Banner from "./Banner";
-import PasswordPopup from "./PasswordPopup";
+import '../styles/BusinessMode_2.css';
 import '../styles/index.css';
 
-function Home({ user }) {
-  const [showPopup, setShowPopup] = useState(false);
+function BusinessMode_2({ user }) {
   const [mediaFiles, setMediaFiles] = useState([]);
   const [currentMedia, setCurrentMedia] = useState(null);
   const audioRef = useRef(null);
   const navigate = useNavigate();
 
+  // Verify user is logged in
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    }
+  }, [user, navigate]);
+
+  // Verify business mode access is authorized
+  useEffect(() => {
+    const checkAuthorization = async () => {
+      try {
+        const response = await fetch("http://localhost:5555/check_business_auth", { 
+          credentials: "include" 
+        });
+        if (!response.ok) {
+          navigate('/');
+        }
+      } catch (error) {
+        console.error("Authorization check failed:", error);
+        navigate('/');
+      }
+    };
+    
+    checkAuthorization();
+  }, [navigate]);
+
+  // Fetch media files
   useEffect(() => {
     const fetchMediaFiles = async () => {
       try {
-        const response = await fetch("/media_files", { credentials: "include" });
+        const response = await fetch("/media_files", { 
+          credentials: "include" 
+        });
         if (response.ok) {
           const data = await response.json();
           setMediaFiles(data);
         } else {
           console.error("Failed to fetch media files");
+          navigate('/login');
         }
       } catch (error) {
         console.error("Error fetching media files:", error);
+        navigate('/login');
       }
     };
+
     fetchMediaFiles();
   }, [navigate]);
 
+  // Media control handlers
   const handleMediaSelect = (media) => {
     setCurrentMedia(media);
     if (audioRef.current) {
@@ -66,44 +98,14 @@ function Home({ user }) {
     }
   };
 
-  const handlePasswordVerified = async () => {
-    try {
-      const response = await fetch("http://localhost:5555/check_business_auth", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
-      
-      if (response.ok) {
-        setShowPopup(false);
-        localStorage.setItem('businessMode', 'true');
-        navigate('/business-mode-2');
-      } else {
-        console.error("Business mode access denied");
-      }
-    } catch (error) {
-      console.error("Error verifying business access:", error);
-    }
-  };
-
   if (!user) return <p>Loading...</p>;
 
   return (
-    <div className="home-page-wrapper">
+    <div className="business-mode-2-wrapper">
       {/* Banner Container */}
       <div className="banner-container">
         <div className="user-banner-square">
           <Banner bannerUrl={user.banner_url} />
-        </div>
-        
-        {/* Logo Button */}
-        <div 
-          className="purple-logo-circle"
-          onClick={() => setShowPopup(true)}
-        >
-          LOGO
         </div>
       </div>
 
@@ -129,13 +131,17 @@ function Home({ user }) {
       </div>
 
       {/* Track List */}
-      <div className="track-list-square">
+      <div className="final-track-list-square">
         <MediaList
           mediaFiles={mediaFiles}
           onMediaSelect={handleMediaSelect}
           currentMedia={currentMedia}
         />
       </div>
+
+      {/* Labels */}
+      <div className="tracks-label">Tracks</div>
+      <div className="projects-label">Projects</div>
 
       {/* Transport Controls */}
       <div className="transport-control-square">
@@ -146,17 +152,8 @@ function Home({ user }) {
           <button onClick={handleStop}>⏹️</button>
         </div>
       </div>
-
-      {/* Password Popup */}
-      {showPopup && (
-        <PasswordPopup 
-          user={user} 
-          onClose={() => setShowPopup(false)}
-          onVerified={handlePasswordVerified}
-        />
-      )}
     </div>
   );
 }
 
-export default Home;
+export default BusinessMode_2;

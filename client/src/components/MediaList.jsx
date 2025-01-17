@@ -1,4 +1,5 @@
 import React from "react";
+import '../styles/index.css';  // Fix path to styles directory
 
 function MediaList({ mediaFiles, onMediaSelect, currentMedia }) {
     console.log("Media Files in MediaList:", mediaFiles); // Debugging log

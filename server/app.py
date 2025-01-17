@@ -8,6 +8,7 @@ from flask_cors import CORS
 from flask_session import Session
 from config import app, db, api, bcrypt
 from models import User, Contact, MediaFile, ContactMedia
+from werkzeug.security import check_password_hash
 
 # Configure Flask app
 app.config.update(
@@ -29,7 +30,8 @@ CORS(app,
      resources={r"/*": {
          "origins": ["http://localhost:3000"],
          "methods": ["GET", "POST", "PUT", "DELETE"],
-         "allow_headers": ["Content-Type", "Authorization"]
+         "allow_headers": ["Content-Type"],
+         "allow_credentials": True
      }})
 
 @app.route('/check_session')
@@ -322,6 +324,32 @@ api.add_resource(MediaFilesResource, '/media_files')
 api.add_resource(MediaFileResource, '/media_files/<int:id>')
 api.add_resource(ContactMediaResource, '/contact_media', '/contact_media/<int:id>')
 
+@app.route('/verify_password', methods=['POST'])
+def verify_password():
+    data = request.get_json()
+    username = data.get("username")  # This is correctly retrieved from request data
+    password = data.get("password")
+
+    # Fix: Query the user by username, not user_id
+    user = db.session.query(User).filter_by(username=username).first()
+
+    if user and user.check_password(password):  
+        session["user_id"] = user.id  # Keep user logged in
+        return jsonify({"message": "Password verified"}), 200
+    else:
+        return jsonify({"error": "Invalid password"}), 401
+
+@app.route('/check_business_auth', methods=['GET', 'POST'])
+def check_business_auth():
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    user = db.session.get(User, user_id)
+    if user:
+        session['business_mode'] = True
+        return jsonify({"message": "Authorized"}), 200
+    return jsonify({"error": "User not found"}), 404
 
 @app.route('/')
 def index():

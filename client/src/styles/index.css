@@ -5,6 +5,11 @@
   --text: hsla(0, 0%, 100%, 0.88);
 }
 
+/* Prevent background scrolling when popup is active */
+body.no-scroll {
+  overflow: hidden; /* Disables scrolling */
+}
+
 .signup-link, .login-link {
   margin-top: 10px;
   text-align: center;
@@ -253,24 +258,30 @@ button {
   /* border: 3px solid #color; /* Uncomment and replace #color for a border effect */
 }
 
-/* Purple Logo Circle */
+/* Purple Logo Circle - Fixed Position */
 .purple-logo-circle {
-  width: 8vw; /* Dynamically scale width */
-  height: 8vw; /* Dynamically scale height */
-  max-width: 150px;
-  max-height: 150px;
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  top: 50px;          /* Distance from top */
+  right: 530px;         /* Distance from right */
   background-color: #8007F9;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 50%;
-  position: absolute;
-  top: 10vh; /* Adjust vertical position dynamically */
-  left: 90vw; /* Adjust horizontal position dynamically */
-  color: black;
+  color: white;
   font-weight: bold;
   font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 1000;       /* Keep on top */
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  transition: transform 0.3s ease;
+}
+
+.purple-logo-circle:hover {
+  transform: scale(1.05);
+  background-color: #6a06d3;
 }
 
 /* Track List Square */
@@ -577,3 +588,112 @@ Transport Buttons
   border-radius: 50%;
 }
 
+/* Business Mode Wrapper */
+.business-mode-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  background-color: #222; /* Darker background for business mode */
+  color: white;
+  font-size: 20px;
+  top: 80vh; /* Adjust vertical positioning */
+  
+}
+
+/* Business Mode Header */
+.business-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background-color: #6200ea;
+  padding: 10px 30px;
+}
+
+/* Business Mode Navigation */
+.business-header-container nav {
+  display: flex;
+  gap: 10px;
+}
+
+.business-header-container button {
+  padding: 10px 15px;
+  background-color: white;
+  color: #6200ea;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.business-header-container button:hover {
+  background-color: #ddd;
+}
+
+/* Password Popup Overlay */
+.password-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it stays on top */
+}
+
+/* Password Popup Container */
+.password-popup {
+  background-color: white;
+  width: 400px;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  z-index: 10001; /* Ensure it's above the overlay */
+}
+
+/* Popup Title */
+.password-popup h2 {
+  font-size: 20px;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+/* Input Field */
+.password-popup input {
+  width: 90%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+/* Button Styles */
+.password-popup button {
+  width: 100%;
+  padding: 10px;
+  background-color: #6200ea;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.password-popup button:hover {
+  background-color: #4500a0;
+}
+
+/* Close Button */
+.password-popup .close-button {
+  background-color: red;
+  margin-top: 10px;
+}
+
+.password-popup .close-button:hover {
+  background-color: darkred;
+}

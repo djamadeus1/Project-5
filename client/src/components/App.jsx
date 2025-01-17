@@ -1,19 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { Routes, Route, useNavigate, Navigate, useLocation, } from 'react-router-dom';
+import { Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import Header from './Header';
 import LoginForm from './LoginForm';
 import SignupForm from './SignupForm';
 import ContactsList from './ContactsList';
 import ContactForm from './ContactForm';
 import Home from './Home';
+import BusinessMode from "./BusinessMode";
+import BusinessMode_2 from "./BusinessMode_2";
+import '../styles/index.css';
 
 function App() {
   const [user, setUser] = useState(null);
   const [contacts, setContacts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggedOut, setIsLoggedOut] = useState(false);
+  const [isBusinessMode, setIsBusinessMode] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Add business mode detection
+  useEffect(() => {
+    setIsBusinessMode(location.pathname.includes('/business'));
+  }, [location.pathname]);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -83,7 +92,7 @@ function App() {
       });
       if (response.ok) {
         setUser(null);
-        setIsLoggedOut(true);  // Add this line
+        setIsLoggedOut(true);
         localStorage.removeItem("user_id");
         navigate("/login");
       }
@@ -100,13 +109,35 @@ function App() {
 
   return (
     <div>
-      <Header user={user} handleLogout={handleLogout} currentPage={location.pathname} />
+      <Header 
+        user={user} 
+        handleLogout={handleLogout} 
+        isBusinessMode={isBusinessMode}
+        currentPage={location.pathname} 
+      />
       <Routes>
         <Route path="/login" element={<LoginForm onLogin={setUser} />} />
         <Route path="/signup" element={<SignupForm />} />
-        <Route path="/" element={<ProtectedRoute><Home user={user} /></ProtectedRoute>} />
-        <Route path="/contacts" element={<ProtectedRoute><ContactsList contacts={contacts} /></ProtectedRoute>} />
-        <Route path="/create-contact" element={<ProtectedRoute><ContactForm /></ProtectedRoute>} />
+        <Route path="/" element={
+          <ProtectedRoute>
+            <Home user={user} />
+          </ProtectedRoute>
+        } />
+        <Route path="/business-mode-2" element={
+          <ProtectedRoute>
+            <BusinessMode_2 user={user} />
+          </ProtectedRoute>
+        } />
+        <Route path="/contacts" element={
+          <ProtectedRoute>
+            <ContactsList contacts={contacts} />
+          </ProtectedRoute>
+        } />
+        <Route path="/create-contact" element={
+          <ProtectedRoute>
+            <ContactForm />
+          </ProtectedRoute>
+        } />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </div>

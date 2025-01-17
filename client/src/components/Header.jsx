@@ -1,30 +1,32 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Link } from "react-router-dom";
+import '../styles/index.css';
 
-function Header({ user, handleLogout, currentPage }) {
-    return (
-        <header className="header-container">
-          <h1 className="app-title">MUSIC - ONE</h1>
-          <nav className="nav-links">
-            {user ? (
+function Header({ user, handleLogout, isBusinessMode }) {
+  return (
+    <header className="header-container">
+      <h1 className="app-title">MUSIC - ONE</h1>
+      
+      {user && (
+        <nav className="nav-links">
+          {/* Only show Home link in Business Mode */}
+          {isBusinessMode && <Link to="/">Home</Link>}
+
+          {/* Business Mode Navigation - only show when in business mode */}
+          {isBusinessMode && (
             <>
-              {/* <span>Welcome, {user.username}!</span> */}
-              {/* <span className="welcome-text">Welcome, {user.username}!</span> */}
-              <button onClick={handleLogout} className="logout-button">Logout</button>
-              {/* <Link to="/">Home</Link>
-              <Link to="/contacts">Contacts</Link>
-              <Link to="/create-contact">New Contact</Link> */}
-              {/* {currentPage === "/" && <p>You are on the Home page</p>}
-              {currentPage === "/contacts" && <p>You are on the Contacts page</p>} */}
-            </>
-          ) : (
-            <>
-              
+              <Link to="/business-mode-2/profile">Profile</Link>
+              <Link to="/business-mode-2/contacts">Contacts</Link>
+              <Link to="/business-mode-2/production">Production</Link>
+              <Link to="/business-mode-2/timers">Timers</Link>
             </>
           )}
-        </nav>
-      </header>
-    );
-  }
 
-  export default Header;
+          <button className="logout-button" onClick={handleLogout}>Logout</button>
+        </nav>
+      )}
+    </header>
+  );
+}
+
+export default Header;
