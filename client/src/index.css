@@ -370,7 +370,7 @@ button {
   border-radius: 10px; /* Slightly rounded corners */
   position: relative;
   top: 467px; /* Figma's top value */
-  left: 740px; /* Figma's left value */
+  left: 100px; /* Figma's left value */
 }
 
 .tracks-label {
@@ -420,18 +420,18 @@ button {
 }
 
 .transport-buttons {
-  width: 397px;
-  height: 58px;
+  width: 400px;
+  height: 76px;
   display: flex;
   justify-content: space-around; /* Evenly distributes buttons */
   align-items: center;
-  font-size: 48px; /* Matches Figma font size */
+  font-size: 60px; /* Matches Figma font size */
   font-weight: 700;
   line-height: 58.09px;
   color: #000000; /* Black text color */
   position: absolute;
-  top: 848px; /* Figma's top value */
-  left: 494px; /* Figma's left value */
+  top: 200; /* Figma's top value */
+  left: 30px; /* Figma's left value */
 }
 
 /* Center the home container on the page */
@@ -470,7 +470,7 @@ button {
 .media-list {
   position: absolute;  /* Change from relative */
   top: 35px;  /* Adjust vertical position */
-  left: 10px; /* Adjust horizontal position */
+  left: 5px; /* Adjust horizontal position */
   width: 94%;  /* Make it fit within parent */
   height: 80%; /* Keep space for scrolling */
   background-color: white;
@@ -548,14 +548,14 @@ Transport Buttons
   justify-content: space-around;
   align-items: center;
   position: absolute;
-  top: 85vh; /* Adjust this to move them back to the correct position */
+  top: 85vh; 
   left: 50%;
   transform: translateX(-50%);
 }
 
 .transport-buttons button {
   padding: 10px;
-  font-size: 24px;
+  font-size: 35px;
   background-color: #6200ea;
   color: white;
   border: none;
@@ -576,3 +576,4 @@ Transport Buttons
   object-fit: cover;
   border-radius: 50%;
 }
+
