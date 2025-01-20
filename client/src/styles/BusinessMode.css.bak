@@ -1,4 +1,15 @@
-
+/* Business Mode Wrapper */
+.business-mode-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  background-color: #222; /* Darker background for business mode */
+  color: white;
+  font-size: 20px;
+  top: 80vh; /* Adjust vertical positioning */
+  
+}
 /* 
 .business-mode-wrapper {
     padding: 20px;
@@ -55,7 +66,7 @@
 
   .tracks-label {
     width: 146px;
-    height: 29px;
+    height: px;
     background-color: white; /* Purple color */
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); /* Drop shadow */
     border-radius: 8px;
@@ -79,3 +90,32 @@
     top: 467px; /* Figma's top value */
     left: 100px; /* Figma's left value */
   }
+
+  /* Business Mode Header */
+.business-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background-color: #6200ea;
+  padding: 10px 30px;
+}
+
+/* Business Mode Navigation */
+.business-header-container nav {
+  display: flex;
+  gap: 10px;
+}
+
+.business-header-container button {
+  padding: 10px 15px;
+  background-color: white;
+  color: #6200ea;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.business-header-container button:hover {
+  background-color: #ddd;
+}

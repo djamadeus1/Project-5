@@ -1,0 +1,557 @@
+.page-wrapper {
+    position: relative;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+  }
+    
+  .home-username {
+    position: absolute; /* Allows precise positioning like other elements */
+    top: 8vh; /* Adjust vertical position */
+    left: 25vw; /* Adjust horizontal position */
+    font-size: clamp(1.5rem, 3vw, 2.5rem); /* Scales font size with the screen */
+    line-height: 1.5; /* Adjusts spacing between lines */
+    color: #333; /* Optional: Adjust color */
+  }
+  
+/* Prevent background scrolling when popup is active */
+    body.no-scroll {
+    overflow: hidden; /* Disables scrolling */
+  }
+
+  /* Banner */
+  .banner-container {
+    position: absolute;
+    width: 749px;
+    height: 242px;
+    top: -5px;
+    left: 10px;
+  }
+  
+  .user-banner-square {
+    width: 43vw; /* Dynamically scale width */
+    height: 15vh; /* Dynamically scale height */
+    max-width: 849px;
+    max-height: 242px;
+    background-color: #8007F9;
+    box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    position: absolute;
+    top: 8vh; /* Adjust vertical position dynamically */
+    left: 38vw; /* Adjust horizontal position dynamically */
+  }
+  
+  .user-banner {
+    width: 95%; /* Slightly smaller than the parent for the border effect */
+    height: 90%; /* Slightly smaller than the parent for the border effect */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* Ensures no overflow */
+    border-radius: 8px; /* Adjust as needed */
+  }
+  
+  .user-banner-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the image fully covers the container */
+    border-radius: 8px; /* Keep it consistent with the container */
+  }
+  
+  /* Purple Logo Circle - Fixed Position */
+  .purple-logo-circle {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    top: 75px;          /* Distance from top */
+    right: -805px;         /* Distance from right */
+    background-color: #8007F9;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 1000;       /* Keep on top */
+    box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
+    transition: transform 0.3s ease;
+  }
+  
+  .purple-logo-circle:hover {
+    transform: scale(1.05);
+    background-color: #6a06d3;
+  }
+  
+  Profile Pic */
+  .profile-pic-container {
+    position: absolute;
+    width: 368px;
+    height: 368px;
+    top: 108px;
+    left: 50px;
+  }
+  
+  .contact-picture {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  .purple-pic-square {
+    width: 16vw; 
+    height: 16vw; 
+    max-width: 368px; 
+    max-height: 368px;
+    background-color: #8007F9;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    position: absolute;
+    top: 180px;
+    left: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translate(-0%, -40%); 
+  }
+  
+  .purple-pic-square img {
+    width: 80%; /* Image takes 80% of the square */
+    height: 80%;
+    border-radius: 50%; /* Makes the image circular */
+    object-fit: cover; /* Ensures the image covers the available space */
+  }
+  
+  /* .final-track-list-square {
+    position: absolute;
+    width: 610px;
+    height: 415px;
+    top: 467px;
+    left: 861px;
+  } */
+  
+  /* Track List Square */
+  .track-list-square {
+    width: 40vw; /* Dynamically scale width */
+    height: 45vh; /* Dynamically scale height */
+    max-width: 550px;
+    max-height: 550px;
+    background-color: #8007F9;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    position: absolute;
+    top: 50vh; /* Adjust vertical position dynamically */
+    left: 60vw; /* Adjust horizontal position dynamically */
+  }
+
+  /* Container for the Media List */
+    .media-list {
+    position: absolute;  /* Change from relative */
+    top: 35px;  /* Adjust vertical position */
+    left: 5px; /* Adjust horizontal position */
+    width: 94%;  /* Make it fit within parent */
+    height: 80%; /* Keep space for scrolling */
+    background-color: white;
+    overflow-y: auto; /* Ensure scrolling if needed */
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .media-list h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
+  
+  .media-item {
+    list-style: none;
+    cursor: pointer;
+    padding: 8px;
+    border-bottom: 1px solid #ccc;
+    transition: background-color 0.3s; /* Updated transition time */
+  }
+  
+  .media-item:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .media-item.selected {
+    background-color: #d1e7dd; /* Highlight color */
+    font-weight: bold;
+  }
+    
+  Transport Buttons
+  .transport-buttons {
+    width: 400px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: absolute;
+    top: 85vh; 
+    left: 50%;
+    transform: translateX(-50%);
+    
+  }
+  
+  .transport-buttons {
+    width: 400px;
+    height: 76px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    font-size: 60px; 
+    font-weight: 700;
+    line-height: 58.09px;
+    color: #000000; 
+    position: absolute;
+    left: 30px;
+    
+    
+  }
+
+  .transport-buttons button {
+    padding: 10px;
+    font-size: 35px;
+    background-color: #6200ea;
+    color: white;
+    border: none;
+    border-radius:10px;
+    cursor: pointer;
+    box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
+    top: 50;
+  }
+  
+  .transport-buttons button:hover {
+    background-color: #4500a0;
+  }
+
+
+  .media-player-square {
+    position: absolute;
+    top: 265px;          /* Fixed pixels instead of vh */
+    left: 440px;         /* Fixed pixels instead of vw */
+    width: 550px;        /* Fixed width */
+    height: 550px;       /* Fixed height */
+    /* max-width: 900px;
+    max-height: 500px; */
+    background-color: #D9D9D9;
+    border: 1px solid #000000;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1; /* Bring it forward */
+    
+  }
+
+  .transport-control-square {
+    width: 450px;
+    height: 85px;
+    background-color: #D9D9D9;
+    border: 1px solid #000000; /* Black border */
+    box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 10px; /* Slightly rounded corners */
+    position: absolute;
+    top: 830px; /* Figma's top value */
+    left: 490px; /* Figma's left value */
+  }
+  
+
+  
+  
+  /* Track Contact Info Square */
+  /* .track-contact-info-square {
+    width: 19vw;
+    height: 28vh;
+    max-width: 309px;
+    max-height: 300px;
+    background-color: #D9D9D9;
+    border: 1px solid #000000;
+    box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    position: absolute;
+    top: 68vh;
+    left: 2.5vw; 
+  } */
+  
+  /* Media Player Square */
+  /* .media-player-square {
+    width: 90vw;
+    height: 40vw;
+    max-width: 1228px;
+    max-height: 912px;
+    background-color: #D9D9D9;
+    border: 1px solid #000000;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    position: absolute;
+    top: 27vh;
+    left: 25vw;
+  } */
+  
+  /* MP Backbround */
+  .mp-background {
+    width: 1159px;
+    height: 680px;
+    background-color: #8007F9;
+    border: 1px solid #000000;
+    box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    position: absolute;
+    top: 250px;
+    left: 420px;
+    z-index: -31;
+}
+  
+  
+  /* Project List Square */
+  .project-list-square {
+    width: 33vw;
+    height: 16vh;
+    max-width: 620px;
+    max-height: 154px;
+    background-color: #8007F9;
+    box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    position: absolute;
+    top: 31vh;
+    left: 60vw;
+  }
+  
+/* Track List Square */
+.track-list-square {
+    width: 40vw; 
+    height: 45vh; 
+    max-width: 550px;
+    max-height: 550px;
+    background-color: #8007F9;
+    box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    position: absolute;
+    top: 50vh; 
+    left: 60vw;
+    z-index: 2;
+  }
+
+  .final-track-list-square {
+    /* outline: 410px solid green; */
+    position: absolute;  /* Change from relative to absolute */
+    width: 610px;
+    height: 415px;
+    background-color: #8007F9;
+    box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    top: 467px;
+    left: 510px;
+    z-index: 2;  /* Add z-index */
+    
+  }
+  
+  .tracks-label {
+    position: absolute;
+    width: 146px;
+    height: 29px;
+    background-color: white;
+    box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: black;  
+    font-weight: bold;
+    font-size: 16px;
+    top: 496px;
+    left: 1220px;
+    /* transform: translate(-30%, 50%); */
+    z-index: 3;
+}
+
+  
+.projects-label {
+    width: 150px;
+    height: 29px;
+    background-color: #8007F9;
+    box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    position: absolute;
+    top: 240px;
+    left: 1250px;
+    transform: translate(-20%, 50%);
+    z-index: 3;   /* Added z-index */
+    /* outline: 2px solid blue; */
+}
+
+ /* Contact Picture Square */
+ .contact-pic-square {
+    width: 15vw;
+    height: 25.5vh;
+    max-width: 280px;
+    max-height: 280px;
+    background-color: #D9D9D9;
+    border: 1px solid #000000;
+    box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    position: absolute;
+    top: 41vh; /* Adjust vertical position dynamically */
+    left: 6vw; /* Adjust horizontal position dynamically */
+    z-index: 1000;
+  }
+
+  /* Track Contact Info Square */
+  .track-contact-info-square {
+    width: 19vw;
+    height: 58vh;
+    /* max-width: 309px;
+    max-height: 300px; */
+    background-color: #D9D9D9;
+    border: 1px solid #000000;
+    box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    position: absolute;
+    top: 39vh; /* Adjust vertical position dynamically */
+    left: 4vw; /* Adjust horizontal position dynamically */
+  }  
+  
+  /* Purple Logo Circle - Fixed Position */
+  /* .purple-logo-circle {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    top: 90px;         
+    right: -805px;       
+    background-color: #8007F9;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 1000;       
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    transition: transform 0.3s ease;
+  } */
+  
+  /* .final-track-list-square {
+    position: absolute;
+    width: 610px;
+    height: 415px;
+    top: 467px;
+    left: 861px;
+  } */
+   
+  /* Track Contact Info Square
+  .track-contact-info-square {
+    width: 19vw;
+    height: 28vh;
+    max-width: 309px;
+    max-height: 300px;
+    background-color: #D9D9D9;
+    border: 1px solid #000000;
+    box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    position: absolute;
+    top: 68vh; 
+    left: 2.5vw; 
+  } */
+  
+    /* Password Popup Overlay */
+    .password-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it stays on top */
+  }
+  
+  /* Password Popup Container */
+  .password-popup {
+    background-color: white;
+    width: 400px;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    z-index: 10001; /* Ensure it's above the overlay */
+  }
+
+  .password-popup {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* ...existing code... */
+}
+  
+  /* Popup Title */
+  .password-popup h2 {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 15px;
+  }
+  
+  /* Input Field */
+  .password-popup input {
+    width: 90%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 15px;
+  }
+  
+  /* Button Styles */
+  .password-popup button {
+    width: 100%;
+    padding: 10px;
+    background-color: #6200ea;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .password-popup button:hover {
+    background-color: #4500a0;
+  }
+  
+  /* Close Button */
+  .password-popup .close-button {
+    background-color: red;
+    margin-top: 10px;
+  }
+  
+  .password-popup .close-button:hover {
+    background-color: darkred;
+  }

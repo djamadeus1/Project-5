@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 import MediaList from "./MediaList";
 import Banner from "./Banner";
 import PasswordPopup from "./PasswordPopup";
-import '../styles/Business.css';
-import '../styles/index.css';
+import '../styles/BusinessMode.css';
 
 function BusinessMode({ user }) {
   const [mediaFiles, setMediaFiles] = useState([]);

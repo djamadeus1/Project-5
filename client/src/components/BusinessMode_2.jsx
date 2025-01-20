@@ -2,8 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import MediaList from "./MediaList";
 import Banner from "./Banner";
-import '../styles/BusinessMode_2.css';
-import '../styles/index.css';
+// import '../styles/BusinessMode_2.css';
+import '../styles/shared.css';
+
 
 function BusinessMode_2({ user }) {
   const [mediaFiles, setMediaFiles] = useState([]);
@@ -101,11 +102,16 @@ function BusinessMode_2({ user }) {
   if (!user) return <p>Loading...</p>;
 
   return (
-    <div className="business-mode-2-wrapper">
+    <div className="page-wrapper">
       {/* Banner Container */}
       <div className="banner-container">
         <div className="user-banner-square">
           <Banner bannerUrl={user.banner_url} />
+        </div>
+        
+        {/* Business Mode Logo - No click handler */}
+        <div className="purple-logo-circle">
+          Business Mode
         </div>
       </div>
 
@@ -121,6 +127,36 @@ function BusinessMode_2({ user }) {
         <h2 className="home-username">{user.username}</h2>
       </div>
 
+      {/* Contact Picture Section */}
+    <div className="contact-pic-square">
+      <img 
+        src={user.profilePic || "https://via.placeholder.com/150"}
+        alt="Contact"
+        className="contact-picture"
+      />
+    </div>
+
+    {/* Project List Square */}
+    <div className="project-list-square">
+      <div className="project-list">
+        <h3>Projects</h3>
+        {/* Project list items will go here */}
+      </div>
+    </div>
+
+    {/* Track Contact Info Square */}
+    <div className="track-contact-info-square">
+      <div className="contact-info">
+        <h3>Contact Info</h3>
+        {/* Contact info details will go here */}
+      </div>
+    </div>
+
+      {/* MP Background */}
+    <div className="mp-background">
+      {/* Purple background for media player */}
+    </div>
+
       {/* Media Player */}
       <div className="media-player-square">
         {currentMedia && (
@@ -130,8 +166,8 @@ function BusinessMode_2({ user }) {
         )}
       </div>
 
-      {/* Track List */}
-      <div className="final-track-list-square">
+      {/* Track List - Using same class as Home */}
+      <div className="track-list-square">
         <MediaList
           mediaFiles={mediaFiles}
           onMediaSelect={handleMediaSelect}

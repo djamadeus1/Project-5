@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 import MediaList from "./MediaList";
 import Banner from "./Banner";
 import PasswordPopup from "./PasswordPopup";
-import '../styles/index.css';
+// import '../styles/index.css';
+import '../styles/Home.css';
+import '../styles/shared.css';
 
 function Home({ user }) {
   const [showPopup, setShowPopup] = useState(false);
@@ -91,7 +93,7 @@ function Home({ user }) {
   if (!user) return <p>Loading...</p>;
 
   return (
-    <div className="home-page-wrapper">
+    <div className="page-wrapper">
       {/* Banner Container */}
       <div className="banner-container">
         <div className="user-banner-square">
@@ -119,6 +121,36 @@ function Home({ user }) {
         <h2 className="home-username">{user.username}</h2>
       </div>
 
+      {/* Contact Picture Section */}
+    <div className="contact-pic-square">
+      <img 
+        src={user.profilePic || "https://via.placeholder.com/150"}
+        alt="Contact"
+        className="contact-picture"
+      />
+    </div>
+
+    {/* Project List Square */}
+    <div className="project-list-square">
+      <div className="project-list">
+        <h3>Projects</h3>
+        {/* Project list items will go here */}
+      </div>
+    </div>
+
+    {/* Track Contact Info Square */}
+    <div className="track-contact-info-square">
+      <div className="contact-info">
+        <h3>Contact Info</h3>
+        {/* Contact info details will go here */}
+      </div>
+    </div>
+
+      {/* MP Background */}
+    <div className="mp-background">
+      {/* Purple background for media player */}
+    </div>
+
       {/* Media Player */}
       <div className="media-player-square">
         {currentMedia && (
@@ -136,6 +168,10 @@ function Home({ user }) {
           currentMedia={currentMedia}
         />
       </div>
+
+      {/* Labels */}
+      <div className="tracks-label">Tracks</div>
+      <div className="projects-label">Projects</div>
 
       {/* Transport Controls */}
       <div className="transport-control-square">

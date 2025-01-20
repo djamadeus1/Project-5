@@ -6,9 +6,8 @@ import SignupForm from './SignupForm';
 import ContactsList from './ContactsList';
 import ContactForm from './ContactForm';
 import Home from './Home';
-import BusinessMode from "./BusinessMode";
 import BusinessMode_2 from "./BusinessMode_2";
-import '../styles/index.css';
+// import '../styles/index.css';
 
 function App() {
   const [user, setUser] = useState(null);
