@@ -137,7 +137,7 @@ function App() {
     
     return children;
   };
-
+  console.log(user)
   return (
     <div>
       <Header user={user} handleLogout={handleLogout} isBusinessMode={isBusinessMode} />

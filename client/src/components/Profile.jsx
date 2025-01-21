@@ -135,12 +135,13 @@ function Profile({ user, setUser }) {
 
   if (!user) return <p>Loading...</p>;
 
+
   return (
     <div className="page-wrapper">
       {/* Banner Container with Edit Button */}
       <div className="banner-container">
         <div className="user-banner-square">
-          <Banner bannerUrl={user.banner_url} />
+          <Banner bannerUrl={user.banner_url ? `http://127.0.0.1:5555/${user.banner_url}` : "https://via.placeholder.com/150"} />
           <button className="edit-button" onClick={() => bannerInputRef.current.click()}>
             Edit
           </button>
@@ -162,7 +163,7 @@ function Profile({ user, setUser }) {
       <div className="profile-pic-container">
         <div className="purple-pic-square">
           <img
-            src={user.profilePic || "https://via.placeholder.com/150"}
+            src={user.profile_pic ? `http://127.0.0.1:5555/${user.profile_pic}` : "https://via.placeholder.com/150"}
             alt={`${user.username}'s profile`}
             className="profile-picture"
           />
@@ -181,13 +182,13 @@ function Profile({ user, setUser }) {
       </div>
 
       {/* Contact Picture Section */}
-      <div className="contact-pic-square">
+      {/* <div className="contact-pic-square">
         <img 
-          src={user.profilePic || "https://via.placeholder.com/150"}
-          alt="Contact"
+          src={contact.contact_pic ? `http://127.0.0.1:5555${contact.contact_pic}` : "https://via.placeholder.com/150"}
+          alt={contact.name}
           className="contact-picture"
         />
-      </div>
+      </div> */}
 
       {/* Project List Square */}
       <div className="project-list-square">

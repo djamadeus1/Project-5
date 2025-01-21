@@ -2,13 +2,26 @@
 
 from sqlalchemy import or_, func
 from datetime import timedelta
-from flask import Flask, request, session, jsonify
+from flask import Flask, request, session, jsonify, make_response
 from flask_restful import Resource
 from flask_cors import CORS
 from flask_session import Session
 from config import app, db, api, bcrypt
 from models import User, Contact, MediaFile, ContactMedia
 from werkzeug.security import check_password_hash
+from flask import send_from_directory
+
+from werkzeug.utils import secure_filename
+import os
+
+UPLOAD_FOLDER = 'uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp3', 'wav'}
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Configure Flask app
 app.config.update(
@@ -34,19 +47,19 @@ CORS(app,
          "allow_credentials": True
      }})
 
-@app.route('/check_session')
-def check_session():
-    try:
-        user_id = session.get('user_id')
-        if not user_id:
-            return {"error": "Unauthorized"}, 401
+# @app.route('/check_session')
+# def check_session():
+#     try:
+#         user_id = session.get('user_id')
+#         if not user_id:
+#             return {"error": "Unauthorized"}, 401
             
-        user = User.query.filter_by(id=user_id).first()
-        if user:
-            return {"id": user.id, "username": user.username}, 200
-        return {"error": "User not found"}, 401
-    except Exception as e:
-        return {"error": str(e)}, 500
+#         user = User.query.filter_by(id=user_id).first()
+#         if user:
+#             return {"id": user.id, "username": user.username}, 200
+#         return {"error": "User not found"}, 401
+#     except Exception as e:
+#         return {"error": str(e)}, 500
 
 # Signup Resource
 class Signup(Resource):
@@ -125,7 +138,7 @@ class CheckSession(Resource):
                 "bio": user.bio
             }
             print(f"User found: {response}")  # Additional log for successful retrieval
-            return response, 200
+            return make_response(response, 200)
 
         print("User not found in the database")  # Log for user not found case
         return {"error": "User not found"}, 404
@@ -355,30 +368,98 @@ def check_business_auth():
 
 @app.route('/update_profile_pic', methods=['PATCH'])
 def update_profile_pic():
+    if 'user_id' not in session:
+        return {"error": "Unauthorized"}, 401
+
     if 'profile_pic' not in request.files:
-        return {'error': 'No file provided'}, 400
+        return {"error": "No file provided"}, 400
     
     file = request.files['profile_pic']
-    # Add file upload logic here
-    return {'message': 'Profile picture updated'}, 200
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+        
+        user = db.session.get(User, session['user_id'])
+        user.picture_icon = f"/uploads/{filename}"
+        print(f"Saving profile pic for user {user.id}: /uploads/{filename}")
+        db.session.commit()
+        
+        return user.to_dict(), 200
+    return {"error": "Invalid file type"}, 400
 
 @app.route('/update_banner', methods=['PATCH'])
 def update_banner():
+    if 'user_id' not in session:
+        return {"error": "Unauthorized"}, 401
+
     if 'banner' not in request.files:
-        return {'error': 'No file provided'}, 400
+        return {"error": "No file provided"}, 400
     
     file = request.files['banner']
-    # Add file upload logic here
-    return {'message': 'Banner updated'}, 200
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+        
+        user = db.session.get(User, session['user_id'])
+        user.logo = f"/uploads/{filename}"
+        db.session.commit()
+        
+        return user.to_dict(), 200
+    return {"error": "Invalid file type"}, 400
+
+@app.route('/contacts/<int:id>', methods=['PATCH'])
+def update_contact(id):
+    contact = db.session.query(Contact).get(id)
+    if not contact:
+        return {"error": "Contact not found"}, 404
+
+    if 'contact_pic' not in request.files:
+        return {"error": "No file provided"}, 400
+
+    file = request.files['contact_pic']
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+
+        contact.contact_pic = f"/uploads/{filename}" 
+        db.session.commit()
+
+        return contact.to_dict(), 200
+
+    return {"error": "Invalid file type"}, 400
 
 @app.route('/upload_media', methods=['POST'])
 def upload_media():
+    if 'user_id' not in session:
+        return {"error": "Unauthorized"}, 401
+
     if 'media' not in request.files:
-        return {'error': 'No file provided'}, 400
+        return {"error": "No file provided"}, 400
     
     file = request.files['media']
-    # Add media upload logic here
-    return {'message': 'Media uploaded'}, 200
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+        
+        new_media = MediaFile(
+            user_id=session['user_id'],
+            file_url=f"/uploads/{filename}",
+            file_type=file.content_type,
+            title=filename
+        )
+        db.session.add(new_media)
+        db.session.commit()
+        
+        return new_media.to_dict(), 201
+    return {"error": "Invalid file type"}, 400
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 @app.route('/')
 def index():
