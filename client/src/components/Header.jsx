@@ -1,22 +1,24 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import '../styles/index.css';
 
-function Header({ user, handleLogout, isBusinessMode }) {
+function Header({ user, handleLogout }) {
+  const isAuthenticated = localStorage.getItem('businessMode') === 'true';
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
+
   return (
     <header className="header-container">
       <h1 className="app-title">MUSIC - ONE</h1>
       
       {user && (
         <nav className="nav-links">
-          {/* Only show Home link in Business Mode */}
-          {isBusinessMode && <Link to="/">Home</Link>}
-
-          {/* Business Mode Navigation - only show when in business mode */}
-          {isBusinessMode && (
+          {/* Show navigation only when authenticated AND not on home page */}
+          {isAuthenticated && !isHomePage && (
             <>
-              <Link to="/business-mode-2/profile">Profile</Link>
-              <Link to="/business-mode-2/contacts">Contacts</Link>
+              <Link to="/">Home</Link>
+              <Link to="/profile">Profile</Link>
+              <Link to="/contacts">Contacts</Link>
               <Link to="/business-mode-2/production">Production</Link>
               <Link to="/business-mode-2/timers">Timers</Link>
             </>

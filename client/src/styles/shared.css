@@ -9,6 +9,7 @@
     position: absolute; /* Allows precise positioning like other elements */
     top: 8vh; /* Adjust vertical position */
     left: 25vw; /* Adjust horizontal position */
+    font-family: Inter, sans-serif;
     font-size: clamp(1.5rem, 3vw, 2.5rem); /* Scales font size with the screen */
     line-height: 1.5; /* Adjusts spacing between lines */
     color: #333; /* Optional: Adjust color */
@@ -76,10 +77,11 @@
     align-items: center;
     justify-content: center;
     color: white;
+    font-family: Inter, sans-serif;
     font-weight: bold;
     font-size: 1.2rem;
     cursor: pointer;
-    z-index: 1000;       /* Keep on top */
+    z-index: 1;       /* Keep on top */
     box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
     transition: transform 0.3s ease;
@@ -120,7 +122,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transform: translate(-0%, -40%); 
+    transform: translate(-0%, -40%);
   }
   
   .purple-pic-square img {
@@ -139,18 +141,18 @@
   } */
   
   /* Track List Square */
-  .track-list-square {
-    width: 40vw; /* Dynamically scale width */
-    height: 45vh; /* Dynamically scale height */
+  /* .track-list-square {
+    width: 40vw; 
+    height: 45vh; 
     max-width: 550px;
     max-height: 550px;
     background-color: #8007F9;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 10px;
     position: absolute;
-    top: 50vh; /* Adjust vertical position dynamically */
-    left: 60vw; /* Adjust horizontal position dynamically */
-  }
+    top: 50vh;
+    left: 60vw; 
+  } */
 
   /* Container for the Media List */
     .media-list {
@@ -375,6 +377,7 @@
     align-items: center;
     justify-content: center;
     color: black;  
+    font-family: Inter, sans-serif;
     font-weight: bold;
     font-size: 16px;
     top: 496px;
@@ -395,6 +398,7 @@
     align-items: center;
     justify-content: center;
     color: white;
+    font-family: Inter, sans-serif;
     font-weight: bold;
     font-size: 16px;
     position: absolute;

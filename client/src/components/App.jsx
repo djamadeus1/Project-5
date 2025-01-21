@@ -7,6 +7,7 @@ import ContactsList from './ContactsList';
 import ContactForm from './ContactForm';
 import Home from './Home';
 import BusinessMode_2 from "./BusinessMode_2";
+import Profile from './Profile';
 // import '../styles/index.css';
 
 function App() {
@@ -106,37 +107,70 @@ function App() {
     return children;
   };
 
+  const BusinessProtectedRoute = ({ children }) => {
+    const isInBusinessMode = localStorage.getItem('businessMode') === 'true';
+    const navigate = useNavigate();
+  
+    useEffect(() => {
+      const verifyBusinessAccess = async () => {
+        try {
+          const response = await fetch("http://localhost:5555/check_business_auth", {
+            credentials: "include"
+          });
+          if (!response.ok) {
+            navigate('/');
+          }
+        } catch (error) {
+          console.error("Business mode verification failed:", error);
+          navigate('/');
+        }
+      };
+  
+      if (!isInBusinessMode) {
+        navigate('/');
+      }
+    }, [navigate, isInBusinessMode]);
+  
+    if (isLoading) return <p>Loading...</p>;
+    if (!user) return <Navigate to="/login" replace />;
+    if (!isInBusinessMode) return <Navigate to="/" replace />;
+    
+    return children;
+  };
+
   return (
     <div>
-      <Header 
-        user={user} 
-        handleLogout={handleLogout} 
-        isBusinessMode={isBusinessMode}
-        currentPage={location.pathname} 
-      />
+      <Header user={user} handleLogout={handleLogout} isBusinessMode={isBusinessMode} />
       <Routes>
+        {/* Public Routes */}
         <Route path="/login" element={<LoginForm onLogin={setUser} />} />
         <Route path="/signup" element={<SignupForm />} />
+
+        {/* Protected Home Route */}
         <Route path="/" element={
           <ProtectedRoute>
             <Home user={user} />
           </ProtectedRoute>
         } />
+
+        {/* Business Protected Routes */}
         <Route path="/business-mode-2" element={
-          <ProtectedRoute>
+          <BusinessProtectedRoute>
             <BusinessMode_2 user={user} />
-          </ProtectedRoute>
+          </BusinessProtectedRoute>
+        } />
+        <Route path="/profile" element={
+          <BusinessProtectedRoute>
+            <Profile user={user} setUser={setUser} />
+          </BusinessProtectedRoute>
         } />
         <Route path="/contacts" element={
-          <ProtectedRoute>
+          <BusinessProtectedRoute>
             <ContactsList contacts={contacts} />
-          </ProtectedRoute>
+          </BusinessProtectedRoute>
         } />
-        <Route path="/create-contact" element={
-          <ProtectedRoute>
-            <ContactForm />
-          </ProtectedRoute>
-        } />
+
+        {/* Catch all redirect */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </div>

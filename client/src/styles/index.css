@@ -196,6 +196,14 @@ button {
   display: flex;
   align-items: center;
   gap: 10px; /* Spacing between elements */
+  font-family: Inter, sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #000000;
+  text-decoration: none;
+  margin: 0 15px;
+  padding: 5px 10px;
+  
 }
 
 /* Logout button */

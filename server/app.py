@@ -351,6 +351,35 @@ def check_business_auth():
         return jsonify({"message": "Authorized"}), 200
     return jsonify({"error": "User not found"}), 404
 
+# Add new routes for CRUD operations
+
+@app.route('/update_profile_pic', methods=['PATCH'])
+def update_profile_pic():
+    if 'profile_pic' not in request.files:
+        return {'error': 'No file provided'}, 400
+    
+    file = request.files['profile_pic']
+    # Add file upload logic here
+    return {'message': 'Profile picture updated'}, 200
+
+@app.route('/update_banner', methods=['PATCH'])
+def update_banner():
+    if 'banner' not in request.files:
+        return {'error': 'No file provided'}, 400
+    
+    file = request.files['banner']
+    # Add file upload logic here
+    return {'message': 'Banner updated'}, 200
+
+@app.route('/upload_media', methods=['POST'])
+def upload_media():
+    if 'media' not in request.files:
+        return {'error': 'No file provided'}, 400
+    
+    file = request.files['media']
+    # Add media upload logic here
+    return {'message': 'Media uploaded'}, 200
+
 @app.route('/')
 def index():
     return '<h1>Project Server</h1>'
