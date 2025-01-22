@@ -13,6 +13,15 @@ function Home({ user }) {
   const [currentMedia, setCurrentMedia] = useState(null);
   const audioRef = useRef(null);
   const navigate = useNavigate();
+  const [currentContacts, setCurrentContacts] = useState([]);
+  const getMediaUrl = (media) => {
+    if (!media || !media.file_url) return '';
+    return `http://127.0.0.1:5555${media.file_url}`;
+  };
+  const getImageUrl = (path) => {
+    if (!path) return "https://via.placeholder.com/150";
+    return `http://127.0.0.1:5555${path}`;
+  }
 
   useEffect(() => {
     const fetchMediaFiles = async () => {
@@ -31,11 +40,24 @@ function Home({ user }) {
     fetchMediaFiles();
   }, [navigate]);
 
-  const handleMediaSelect = (media) => {
+  const handleMediaSelect = async (media) => {
     setCurrentMedia(media);
     if (audioRef.current) {
       audioRef.current.load();
       audioRef.current.play();
+    }
+    
+    // Fetch contacts for selected media
+    try {
+      const response = await fetch(`/media_files/${media.id}`, { 
+        credentials: "include" 
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setCurrentContacts(data.contacts || []);
+      }
+    } catch (error) {
+      console.error("Error fetching contacts:", error);
     }
   };
 
@@ -97,7 +119,7 @@ function Home({ user }) {
       {/* Banner Container */}
       <div className="banner-container">
         <div className="user-banner-square">
-          <Banner bannerUrl={user.banner_url} />
+          <Banner bannerUrl={getImageUrl(user.logo)} />
         </div>
         
         {/* Logo Button */}
@@ -113,7 +135,7 @@ function Home({ user }) {
       <div className="profile-pic-container">
         <div className="purple-pic-square">
           <img
-            src={user.profilePic || "https://via.placeholder.com/150"}
+            src={getImageUrl(user.picture_icon || user.profile_pic)}
             alt={`${user.username}'s profile`}
             className="profile-picture"
           />
@@ -122,12 +144,17 @@ function Home({ user }) {
       </div>
 
       {/* Contact Picture Section */}
-    <div className="contact-pic-square">
-      <img 
-        src={user.profilePic || "https://via.placeholder.com/150"}
-        alt="Contact"
-        className="contact-picture"
-      />
+      <div className="contact-pic-square">
+      {currentContacts && currentContacts[0] && (
+        <img 
+          src={currentContacts[0].contact_pic ? 
+            getImageUrl(currentContacts[0].contact_pic) : 
+            "https://via.placeholder.com/150"
+          }
+          alt={currentContacts[0].name}
+          className="contact-picture"
+        />
+      )}
     </div>
 
     {/* Project List Square */}
@@ -140,11 +167,26 @@ function Home({ user }) {
 
     {/* Track Contact Info Square */}
     <div className="track-contact-info-square">
-      <div className="contact-info">
-        <h3>Contact Info</h3>
-        {/* Contact info details will go here */}
-      </div>
+        <div className="contact-info">
+          <h3>Contact Info</h3>
+          {currentContacts.length > 0 ? (
+            currentContacts.map(contact => (
+              <div key={contact.id} className="contact-item">
+                <p><strong>{contact.name}</strong></p>
+                <p>{contact.email}</p>
+                <p>{contact.phone}</p>
+                <p>{contact.company}</p>
+                <p>{contact.discipline}</p>
+              </div>
+            ))
+          ) : (
+            <p>No contacts associated with this track</p>
+          )}
+        </div>
     </div>
+
+    {/* Contact Background */}
+    <div className="contact-background"></div>      
 
       {/* MP Background */}
     <div className="mp-background">
@@ -154,8 +196,16 @@ function Home({ user }) {
       {/* Media Player */}
       <div className="media-player-square">
         {currentMedia && (
-          <audio ref={audioRef} controls>
-            <source src={currentMedia.url} type="audio/mpeg" />
+          <audio 
+            ref={audioRef} 
+            controls
+            key={currentMedia.id}  // Force reload when media changes
+          >
+            <source 
+              src={getMediaUrl(currentMedia)} 
+              type={currentMedia.file_type || 'audio/mpeg'} 
+            />
+            Your browser does not support the audio element.
           </audio>
         )}
       </div>
