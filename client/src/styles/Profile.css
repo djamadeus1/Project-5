@@ -41,6 +41,17 @@
     line-height: 1px;
     z-index: 3;
   }
+
+  .page-wrapper > .purple-logo-circle {
+    right: 350px;
+    z-index: 2;
+  }
+
+  /* Add Profile-specific override */
+/* .page-wrapper .purple-logo-circle {
+  right: 50px;  Override the -805px from shared.css
+  z-index: 5;   Ensure visibility
+} */
   
   /* Add New Tarck Button */
   .upload-button {

@@ -69,8 +69,8 @@
     position: absolute;
     width: 150px;
     height: 150px;
-    top: 75px;          /* Distance from top */
-    right: -805px;         /* Distance from right */
+    top: 75px;          
+    right: -805px;         
     background-color: #8007F9;
     border-radius: 50%;
     display: flex;
@@ -81,7 +81,7 @@
     font-weight: bold;
     font-size: 1.2rem;
     cursor: pointer;
-    z-index: 1;       /* Keep on top */
+    z-index: 1;      
     box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
     transition: transform 0.3s ease;

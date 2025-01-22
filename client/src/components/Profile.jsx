@@ -7,6 +7,10 @@ import '../styles/Profile.css';
 
 function Profile({ user, setUser }) {
   console.log("User data:", user);
+  const getImageUrl = (path) => {
+    if (!path) return "https://via.placeholder.com/150";
+    return `http://127.0.0.1:5555${path}`;
+  }
   const [mediaFiles, setMediaFiles] = useState([]);
   const [currentMedia, setCurrentMedia] = useState(null);
   // const [editMode, setEditMode] = useState(false);
@@ -101,10 +105,12 @@ function Profile({ user, setUser }) {
   };
 
   const handleMediaSelect = async (media) => {
+    console.log("Selected media:", media);
+    console.log("Audio URL:", getMediaUrl(media));
     setCurrentMedia(media);
     if (audioRef.current) {
       audioRef.current.load();
-      audioRef.current.play();
+      audioRef.current.play().catch(e => console.error("Playback error:", e));
     }
     
   // Fetch contacts for selected media
@@ -150,9 +156,9 @@ function Profile({ user, setUser }) {
     }
   };
 
-  const getImageUrl = (path) => {
-    if (!path) return "https://via.placeholder.com/150";
-    return `http://127.0.0.1:5555${path}`;
+  const getMediaUrl = (media) => {
+    if (!media || !media.file_url) return '';
+    return `http://127.0.0.1:5555${media.file_url}`;
   };
 
   const handleDeleteMedia = async () => {
@@ -203,6 +209,11 @@ function Profile({ user, setUser }) {
 
   return (
     <div className="page-wrapper">
+      {/* Add Logo Circle */}
+      <div className="purple-logo-circle">
+        Profile
+      </div>
+      
       {/* Banner */}
       <div className="banner-container">
         <div className="user-banner-square">
@@ -298,8 +309,16 @@ function Profile({ user, setUser }) {
       {/* Media Player */}
       <div className="media-player-square">
         {currentMedia && (
-          <audio ref={audioRef} controls>
-            <source src={currentMedia.url} type="audio/mpeg" />
+          <audio 
+            ref={audioRef} 
+            controls
+            key={currentMedia.id} // Force reload when media changes
+          >
+            <source 
+              src={getMediaUrl(currentMedia)} 
+              type={currentMedia.file_type || 'audio/mpeg'} 
+            />
+            Your browser does not support the audio element.
           </audio>
         )}
       </div>
