@@ -16,6 +16,7 @@ function Profile({ user, setUser }) {
   const mediaInputRef = useRef(null);
   const navigate = useNavigate();
   const [isUploading, setIsUploading] = useState(false);
+  const [currentContacts, setCurrentContacts] = useState([]);
   // const [uploadError, setUploadError] = useState(null);
 
   useEffect(() => {
@@ -99,13 +100,26 @@ function Profile({ user, setUser }) {
     }
   };
 
-  const handleMediaSelect = (media) => {
+  const handleMediaSelect = async (media) => {
     setCurrentMedia(media);
     if (audioRef.current) {
       audioRef.current.load();
       audioRef.current.play();
     }
-  };
+    
+  // Fetch contacts for selected media
+  try {
+    const response = await fetch(`/media_files/${media.id}`, { 
+      credentials: "include" 
+    });
+    if (response.ok) {
+      const data = await response.json();
+      setCurrentContacts(data.contacts || []);
+    }
+  } catch (error) {
+    console.error("Error fetching contacts:", error);
+  }
+};
 
   const handlePlayPause = () => {
     if (audioRef.current) {
@@ -244,8 +258,38 @@ function Profile({ user, setUser }) {
       <div className="track-contact-info-square">
         <div className="contact-info">
           <h3>Contact Info</h3>
+          {currentContacts.length > 0 ? (
+            currentContacts.map(contact => (
+              <div key={contact.id} className="contact-item">
+                <p><strong>{contact.name}</strong></p>
+                <p>{contact.email}</p>
+                <p>{contact.phone}</p>
+                <p>{contact.company}</p>
+                <p>{contact.discipline}</p>
+              </div>
+            ))
+          ) : (
+            <p>No contacts associated with this track</p>
+          )}
         </div>
       </div>
+
+        {/* Contact Picture Section */}
+      <div className="contact-pic-square">
+        {currentContacts && currentContacts[0] && (
+          <img 
+            src={currentContacts[0].contact_pic ? 
+              `http://127.0.0.1:5555${currentContacts[0].contact_pic}` : 
+              "https://via.placeholder.com/150"
+            }
+            alt={currentContacts[0].name}
+            className="contact-picture"
+          />
+        )}
+      </div>
+
+      {/* Contact Background */}
+      <div className="contact-background"></div>
 
       {/* MP Background */}
       <div className="mp-background">

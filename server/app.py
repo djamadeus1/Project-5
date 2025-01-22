@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-
+import json
 from sqlalchemy import or_, func
 from datetime import timedelta
-from flask import Flask, request, session, jsonify, make_response
+from flask import Flask, request, session, jsonify, make_response, send_from_directory
 from flask_restful import Resource
 from flask_cors import CORS
 from flask_session import Session
 from config import app, db, api, bcrypt
 from models import User, Contact, MediaFile, ContactMedia
 from werkzeug.security import check_password_hash
-from flask import send_from_directory
+# from flask import send_from_directory
 
 from werkzeug.utils import secure_filename
 import os
@@ -440,6 +440,9 @@ def upload_media():
         return {"error": "No file provided"}, 400
     
     file = request.files['media']
+    contacts_data = request.form.get('contacts', '[]')
+    contacts = json.loads(contacts_data)
+    
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
@@ -452,14 +455,49 @@ def upload_media():
             title=filename
         )
         db.session.add(new_media)
-        db.session.commit()
+        db.session.flush()
         
+        # Add contact associations
+        for contact_data in contacts:
+            contact_media = ContactMedia(
+                contact_id=contact_data['contact_id'],
+                media_file_id=new_media.id,
+                role=contact_data.get('role')
+            )
+            db.session.add(contact_media)
+            
+        db.session.commit()
         return new_media.to_dict(), 201
+        
     return {"error": "Invalid file type"}, 400
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+@app.route('/media_files/<int:id>', methods=['GET'])
+def get_media_file(id):
+    media = MediaFile.query.get_or_404(id)
+    return media.to_dict(), 200
+
+@app.route('/media_files/<int:media_id>/contacts', methods=['POST'])
+def add_contacts_to_media(media_id):
+    if 'user_id' not in session:
+        return {"error": "Unauthorized"}, 401
+    
+    media = MediaFile.query.get_or_404(media_id)
+    data = request.get_json()
+    
+    for contact_data in data.get('contacts', []):
+        contact_media = ContactMedia(
+            contact_id=contact_data['contact_id'],
+            media_file_id=media_id,
+            role=contact_data.get('role')
+        )
+        db.session.add(contact_media)
+    
+    db.session.commit()
+    return media.to_dict(), 200
 
 @app.route('/')
 def index():

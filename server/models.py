@@ -91,18 +91,33 @@ class MediaFile(db.Model, SerializerMixin):
 
     user = db.relationship('User', back_populates='media_files')
     contact_associations = db.relationship('ContactMedia', back_populates='media_file')
+    contacts = association_proxy('contact_associations', 'contact')
 
     # Exclude contact associations from being serialized
     serialize_rules = ('-contact_associations', '-user.media_files')
 
     def to_dict(self):
+        contacts_data = [
+            {
+                "id": assoc.contact.id,
+                "name": assoc.contact.name,
+                "email": assoc.contact.email,
+                "phone": assoc.contact.phone,
+                "company": assoc.contact.company,
+                "discipline": assoc.contact.discipline,
+                "role": assoc.role
+            }
+            for assoc in self.contact_associations
+        ]
+        
         return {
             "id": self.id,
             "user_id": self.user_id,
             "file_url": self.file_url,
             "file_type": self.file_type,
             "title": self.title,
-            "description": self.description
+            "description": self.description,
+            "contacts": contacts_data
         }
 
 
