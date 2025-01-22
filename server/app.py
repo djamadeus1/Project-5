@@ -42,7 +42,7 @@ CORS(app,
      supports_credentials=True,
      resources={r"/*": {
          "origins": ["http://localhost:3000"],
-         "methods": ["GET", "POST", "PUT", "DELETE"],
+         "methods": ["GET", "POST", "PUT", "PATCH", "DELETE"],
          "allow_headers": ["Content-Type"],
          "allow_credentials": True
      }})
