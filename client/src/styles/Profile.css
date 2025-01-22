@@ -58,7 +58,10 @@
     font-size: 17px;
     font-weight: 700;
     line-height: 8px;
-    color: #000000;
+    /* color: #000000; */
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000;
+    text-fill-color: #000000;
     /* text-align: center; */
     z-index: 3;
   }
@@ -69,4 +72,104 @@
   .upload-button:hover {
     background: #e6c001;
     transform: translateY(1px);
+  }
+
+  .edit-track-button {
+    position: absolute;
+    width: 76px;
+    height: 24px;
+    top: 16px;
+    left: 105px;  /* Position between Add and Delete */
+    background: #FFD501;
+    border: none;
+    border-radius: 4px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    font-family: Inter, sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 8px;
+    color: #000000;
+    text-align: center;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* color: #000000 !important;
+    -webkit-text-fill-color: #000000;
+    text-fill-color: #000000; */
+    z-index: 3;
+  }
+  
+  .edit-track-button:hover {
+    background: #e6c001;
+    transform: translateY(1px);
+  }
+  
+  .edit-track-button:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+  }
+
+  .delete-button {
+    position: absolute;
+    width: 76px;
+    height: 24px;
+    top: 16px;
+    left: 450px;  /* Position after Add button */
+    background: #a20000;
+    border: none;
+    border-radius: 4px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    font-family: Inter, sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 8px;
+    color: #000000;
+    /* text-align: center;      */
+    padding: 0;             
+    display: flex;          
+    align-items: center;   
+    justify-content: center; 
+    z-index: 3;
+  }
+  
+  .delete-button:hover {
+    background: #FF0101;
+    transform: translateY(1px);
+  }
+  
+  .delete-button:disabled {
+    background: #474747;
+    cursor: not-allowed;
+  }
+
+  .upload-progress {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(98, 0, 234, 0.8);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    z-index: 1000;
+  }
+
+  .upload-error {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 0, 0, 0.8);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    z-index: 1000;
+  }
+  
+  .edit-button.uploading {
+    background: #e6c001;
+    cursor: wait;
   }

@@ -6,14 +6,17 @@ import '../styles/shared.css';
 import '../styles/Profile.css';
 
 function Profile({ user, setUser }) {
+  console.log("User data:", user);
   const [mediaFiles, setMediaFiles] = useState([]);
   const [currentMedia, setCurrentMedia] = useState(null);
-  const [editMode, setEditMode] = useState(false);
+  // const [editMode, setEditMode] = useState(false);
   const audioRef = useRef(null);
   const profilePicInputRef = useRef(null);
   const bannerInputRef = useRef(null);
   const mediaInputRef = useRef(null);
   const navigate = useNavigate();
+  const [isUploading, setIsUploading] = useState(false);
+  // const [uploadError, setUploadError] = useState(null);
 
   useEffect(() => {
     if (!localStorage.getItem('businessMode')) {
@@ -133,37 +136,77 @@ function Profile({ user, setUser }) {
     }
   };
 
+  const getImageUrl = (path) => {
+    if (!path) return "https://via.placeholder.com/150";
+    return `http://127.0.0.1:5555${path}`;
+  };
+
+  const handleDeleteMedia = async () => {
+    if (!currentMedia) return;
+    try {
+      const response = await fetch(`/media_files/${currentMedia.id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      if (response.ok) {
+        setMediaFiles(mediaFiles.filter(media => media.id !== currentMedia.id));
+        setCurrentMedia(null);
+      }
+    } catch (error) {
+      console.error('Error deleting media:', error);
+    }
+  };
+
+  const handleEditMedia = async () => {
+    if (!currentMedia) return;
+    const newTitle = prompt("Enter new name for track:", currentMedia.title);
+    if (!newTitle) return;
+  
+    try {
+      const response = await fetch(`/media_files/${currentMedia.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ title: newTitle })
+      });
+      
+      if (response.ok) {
+        const updatedMedia = await response.json();
+        setMediaFiles(mediaFiles.map(media => 
+          media.id === currentMedia.id ? updatedMedia : media
+        ));
+        setCurrentMedia(updatedMedia);
+      }
+    } catch (error) {
+      console.error('Error updating media:', error);
+    }
+  };
+
   if (!user) return <p>Loading...</p>;
 
 
   return (
     <div className="page-wrapper">
-      {/* Banner Container with Edit Button */}
+      {/* Banner */}
       <div className="banner-container">
         <div className="user-banner-square">
-          <Banner bannerUrl={user.banner_url ? `http://127.0.0.1:5555/${user.banner_url}` : "https://via.placeholder.com/150"} />
-          <button className="edit-button" onClick={() => bannerInputRef.current.click()}>
-            Edit
+          <Banner bannerUrl={getImageUrl(user.logo)} />
+          <button 
+            className={`edit-button ${isUploading ? 'uploading' : ''}`} 
+            onClick={() => bannerInputRef.current.click()}
+          >
+            {isUploading ? 'Uploading...' : 'Edit'}
           </button>
-          <input
-            type="file"
-            ref={bannerInputRef}
-            onChange={handleBannerChange}
-            style={{ display: 'none' }}
-            accept="image/*"
-          />
-        </div>
-        
-        <div className="purple-logo-circle">
-          Profile
         </div>
       </div>
 
-      {/* Profile Section with Edit Button */}
+      {/* Profile Section */}
       <div className="profile-pic-container">
         <div className="purple-pic-square">
           <img
-            src={user.profile_pic ? `http://127.0.0.1:5555/${user.profile_pic}` : "https://via.placeholder.com/150"}
+            src={getImageUrl(user.picture_icon || user.profile_pic)}
             alt={`${user.username}'s profile`}
             className="profile-picture"
           />
@@ -219,6 +262,7 @@ function Profile({ user, setUser }) {
 
       {/* Track List with Upload Button */}
       <div className="track-list-square">
+        {/* Upload Controls */}
         <button className="upload-button" onClick={() => mediaInputRef.current.click()}>
           Add
         </button>
@@ -229,6 +273,24 @@ function Profile({ user, setUser }) {
           style={{ display: 'none' }}
           accept="audio/*"
         />
+        
+        {/* Edit and Delete Controls */}
+        <button 
+          className="edit-track-button" 
+          onClick={handleEditMedia}
+          disabled={!currentMedia}
+        >
+          Edit
+        </button>
+        <button 
+          className="delete-button" 
+          onClick={handleDeleteMedia}
+          disabled={!currentMedia}
+        >
+          Delete
+        </button>
+
+        {/* Media List */}
         <MediaList
           mediaFiles={mediaFiles}
           onMediaSelect={handleMediaSelect}
