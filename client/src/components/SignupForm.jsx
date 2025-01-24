@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import '../styles/index.css';  // Fix path to styles directory
+
 
 function SignupForm() {
   const [username, setUsername] = useState("");
@@ -19,8 +21,7 @@ function SignupForm() {
       });
 
       if (response.ok) {
-        // On success, redirect to login or home page
-        navigate("/login");
+        navigate("/login"); // On success, redirect to login
       } else {
         const errorData = await response.json();
         setError(errorData.error || "Signup failed");
@@ -32,39 +33,49 @@ function SignupForm() {
   };
 
   return (
-    <div>
+    <div className="signup-form-wrapper form-wrapper">
       <h2>Signup</h2>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Username</label>
+        <div className="form-group">
+          <label htmlFor="username">Username</label>
           <input
             type="text"
+            id="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
           />
         </div>
-        <div>
-          <label>Email</label>
+
+        <div className="form-group">
+          <label htmlFor="email">Email</label>
           <input
             type="email"
+            id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
-        <div>
-          <label>Password</label>
+
+        <div className="form-group">
+          <label htmlFor="password">Password</label>
           <input
             type="password"
+            id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
-        {error && <p style={{ color: "red" }}>{error}</p>}
+
         <button type="submit">Signup</button>
       </form>
+
+      <div className="login-link">
+        <p>Already have an account? <Link to="/login">Log in here</Link></p>
+      </div>
     </div>
   );
 }

@@ -16,6 +16,8 @@ class User(db.Model, SerializerMixin):
     logo = db.Column(db.String)
     discipline = db.Column(db.String)
     bio = db.Column(db.Text)
+    profile_pic = db.Column(db.String)  # URL or path for profile picture
+    banner_url = db.Column(db.String)  # URL or path for banner
 
     contacts = db.relationship('Contact', back_populates='user')
     media_files = db.relationship('MediaFile', back_populates='user', cascade='all, delete-orphan')
@@ -57,11 +59,11 @@ class Contact(db.Model, SerializerMixin):
     phone = db.Column(db.String, nullable=False)
     company = db.Column(db.String, nullable=True)
     discipline = db.Column(db.String, nullable=True)
+    contact_pic = db.Column(db.String, nullable=True)  
 
     user = db.relationship('User', back_populates='contacts')
     media_associations = db.relationship('ContactMedia', back_populates='contact')
 
-    # Exclude media associations from being serialized to prevent circular references
     serialize_rules = ('-media_associations', '-user.contacts')
 
     def to_dict(self):
@@ -72,7 +74,8 @@ class Contact(db.Model, SerializerMixin):
             "email": self.email,
             "phone": self.phone,
             "company": self.company,
-            "discipline": self.discipline
+            "discipline": self.discipline,
+            "contact_pic": self.contact_pic  
         }
 
 
@@ -88,18 +91,33 @@ class MediaFile(db.Model, SerializerMixin):
 
     user = db.relationship('User', back_populates='media_files')
     contact_associations = db.relationship('ContactMedia', back_populates='media_file')
+    contacts = association_proxy('contact_associations', 'contact')
 
     # Exclude contact associations from being serialized
     serialize_rules = ('-contact_associations', '-user.media_files')
 
     def to_dict(self):
+        contacts_data = [
+            {
+                "id": assoc.contact.id,
+                "name": assoc.contact.name,
+                "email": assoc.contact.email,
+                "phone": assoc.contact.phone,
+                "company": assoc.contact.company,
+                "discipline": assoc.contact.discipline,
+                "role": assoc.role
+            }
+            for assoc in self.contact_associations
+        ]
+        
         return {
             "id": self.id,
             "user_id": self.user_id,
             "file_url": self.file_url,
             "file_type": self.file_type,
             "title": self.title,
-            "description": self.description
+            "description": self.description,
+            "contacts": contacts_data
         }
 
 
