@@ -49,7 +49,7 @@ class User(db.Model, SerializerMixin):
         }
 
 
-class Contact(db.Model, SerializerMixin):
+class Contact(db.Model, SerializerMixin):  # Add SerializerMixin here
     __tablename__ = 'contacts'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -60,6 +60,10 @@ class Contact(db.Model, SerializerMixin):
     company = db.Column(db.String, nullable=True)
     discipline = db.Column(db.String, nullable=True)
     contact_pic = db.Column(db.String, nullable=True)  
+    bio = db.Column(db.Text)
+    picture_icon = db.Column(db.String)
+    logo = db.Column(db.String)
+    address = db.Column(db.String)
 
     user = db.relationship('User', back_populates='contacts')
     media_associations = db.relationship('ContactMedia', back_populates='contact')
@@ -68,14 +72,17 @@ class Contact(db.Model, SerializerMixin):
 
     def to_dict(self):
         return {
-            "id": self.id,
-            "user_id": self.user_id,
-            "name": self.name,
-            "email": self.email,
-            "phone": self.phone,
-            "company": self.company,
-            "discipline": self.discipline,
-            "contact_pic": self.contact_pic  
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'phone': self.phone,
+            'company': self.company,
+            'discipline': self.discipline,
+            'user_id': self.user_id,
+            'bio': self.bio,
+            'picture_icon': self.picture_icon,
+            'logo': self.logo,
+            'address': self.address
         }
 
 

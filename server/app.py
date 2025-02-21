@@ -39,13 +39,14 @@ Session(app)
 
 # Configure CORS
 CORS(app, 
-     supports_credentials=True,
-     resources={r"/*": {
-         "origins": ["http://localhost:3000"],
-         "methods": ["GET", "POST", "PUT", "PATCH", "DELETE"],
-         "allow_headers": ["Content-Type"],
-         "allow_credentials": True
-     }})
+    supports_credentials=True,
+    resources={r"/*": {
+        "origins": ["http://localhost:3000", "http://127.0.0.1:3000"],
+        "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"],
+        "expose_headers": ["Content-Type"],
+    }}
+)
 
 # @app.route('/check_session')
 # def check_session():
@@ -175,7 +176,7 @@ class ContactsResource(Resource):
         return [contact.to_dict() for contact in contacts], 200
     
     def patch(self, id):
-        contact = Contact.query.get(id)
+        contact = db.session.get(Contact, id)
         if not contact:
             return {"error": "Contact not found"}, 404
 
@@ -187,7 +188,7 @@ class ContactsResource(Resource):
         return contact.to_dict(), 200
     
     def delete(self, id):
-        contact = db.session.query(Contact).get(id)
+        contact = db.session.get(Contact, id)
         if not contact:
             return {"error": "Contact not found"}, 404
 
@@ -258,20 +259,59 @@ class MediaFilesResource(Resource):
             return {"error": str(e)}, 400
 
 class MediaFileResource(Resource):
+    def get(self, id):
+        media = db.session.get(MediaFile, id)
+        if not media:
+            return {"error": "Media file not found"}, 404
+        return media.to_dict(), 200
+
     def patch(self, id):
-        media_file = db.session.query(MediaFile).get(id)
-        if not media_file:
+        print(f"Headers received: {dict(request.headers)}")
+        print(f"Data received: {request.get_json()}")
+        media = db.session.get(MediaFile, id)
+        if not media:
             return {"error": "Media file not found"}, 404
 
         data = request.get_json()
-        for key, value in data.items():
-            setattr(media_file, key, value)
+        print("Received update data:", data)  # Debug log
 
-        db.session.commit()
-        return media_file.to_dict(), 200
+        try:
+            if 'title' in data:
+                media.title = data['title']
+            if 'description' in data:
+                media.description = data['description']
+
+            # Handle contact associations if provided
+            if 'contacts' in data:
+                # Clear existing associations first
+                ContactMedia.query.filter_by(media_file_id=id).delete()
+                
+                for contact_data in data['contacts']:
+                    contact_id = contact_data.get('contact_id')
+                    if not contact_id:
+                        return {"error": "Missing contact_id in contacts data"}, 400
+
+                    contact = db.session.get(Contact, contact_id)
+                    if not contact:
+                        return {"error": f"Contact {contact_id} not found"}, 404
+
+                    contact_media = ContactMedia(
+                        contact_id=contact_id,
+                        media_file_id=id,
+                        role=contact_data.get('role', 'Creator')
+                    )
+                    db.session.add(contact_media)
+
+            db.session.commit()
+            return media.to_dict(), 200
+
+        except Exception as e:
+            db.session.rollback()
+            print("Error updating media:", str(e))  # Debug log
+            return {"error": str(e)}, 400
 
     def delete(self, id):
-        media_file = db.session.query(MediaFile).get(id)
+        media_file = db.session.get(MediaFile, id)
         if not media_file:
             return {"error": "Media file not found"}, 404
 
@@ -282,6 +322,7 @@ class MediaFileResource(Resource):
 class ContactMediaResource(Resource):
     def post(self):
         data = request.get_json()
+        print('Received data:', data)  # Add this debug line
         try:
             new_contact_media = ContactMedia(
                 contact_id=data['contact_id'],
@@ -290,18 +331,18 @@ class ContactMediaResource(Resource):
             )
             db.session.add(new_contact_media)
             db.session.commit()
-            return {"message": "ContactMedia created successfully"}, 201
+            return new_contact_media.to_dict(), 201  # Add proper return
         except KeyError as e:
             return {"error": f"Missing required field: {str(e)}"}, 400
         except Exception as e:
-            return {"error": str(e)}, 500
+            return {"error": str(e)}, 400
 
     def get(self):
         contact_media = db.session.query(ContactMedia).all()
         return [cm.to_dict() for cm in contact_media], 200
 
     def delete(self, id):
-        contact_media = db.session.query(ContactMedia).get(id)
+        contact_media = db.session.get(ContactMedia, id)  # Updated
         if not contact_media:
             return {"error": "ContactMedia not found"}, 404
 
@@ -311,7 +352,7 @@ class ContactMediaResource(Resource):
     
     def patch(self, id):
         data = request.get_json()
-        contact_media = db.session.query(ContactMedia).get(id)
+        contact_media = db.session.get(ContactMedia, id)  # Updated
         if not contact_media:
             return {"error": "ContactMedia not found"}, 404
 
@@ -411,25 +452,23 @@ def update_banner():
 
 @app.route('/contacts/<int:id>', methods=['PATCH'])
 def update_contact(id):
-    contact = db.session.query(Contact).get(id)
+    contact = db.session.get(Contact, id)
     if not contact:
         return {"error": "Contact not found"}, 404
-
-    if 'contact_pic' not in request.files:
-        return {"error": "No file provided"}, 400
-
-    file = request.files['contact_pic']
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(filepath)
-
-        contact.contact_pic = f"/uploads/{filename}" 
+    
+    data = request.get_json()
+    try:
+        for field in ['name', 'email', 'phone', 'company', 
+                     'discipline', 'bio', 'picture_icon', 
+                     'logo', 'address']:
+            if field in data:
+                setattr(contact, field, data[field])
+                
         db.session.commit()
-
         return contact.to_dict(), 200
-
-    return {"error": "Invalid file type"}, 400
+    except Exception as e:
+        db.session.rollback()
+        return {"error": str(e)}, 400
 
 @app.route('/upload_media', methods=['POST'])
 def upload_media():
@@ -475,29 +514,28 @@ def upload_media():
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
-@app.route('/media_files/<int:id>', methods=['GET'])
-def get_media_file(id):
-    media = MediaFile.query.get_or_404(id)
-    return media.to_dict(), 200
-
-@app.route('/media_files/<int:media_id>/contacts', methods=['POST'])
-def add_contacts_to_media(media_id):
-    if 'user_id' not in session:
-        return {"error": "Unauthorized"}, 401
-    
-    media = MediaFile.query.get_or_404(media_id)
+@app.route('/contacts', methods=['POST'])
+def create_contact():
     data = request.get_json()
-    
-    for contact_data in data.get('contacts', []):
-        contact_media = ContactMedia(
-            contact_id=contact_data['contact_id'],
-            media_file_id=media_id,
-            role=contact_data.get('role')
+    try:
+        new_contact = Contact(
+            name=data.get('name'),
+            email=data.get('email'),
+            phone=data.get('phone'),
+            company=data.get('company'),
+            discipline=data.get('discipline'),
+            bio=data.get('bio'),
+            picture_icon=data.get('picture_icon'),
+            logo=data.get('logo'),
+            address=data.get('address'),
+            user_id=data.get('user_id')
         )
-        db.session.add(contact_media)
-    
-    db.session.commit()
-    return media.to_dict(), 200
+        db.session.add(new_contact)
+        db.session.commit()
+        return new_contact.to_dict(), 201
+    except Exception as e:
+        db.session.rollback()
+        return {"error": str(e)}, 400
 
 @app.route('/')
 def index():
@@ -513,5 +551,61 @@ def test_session():
     session['test_key'] = 'test_value'
     return {"message": "Session set"}
 
+@app.route('/users/<int:id>', methods=['GET'])
+def get_user(id):
+    user = db.session.get(User, id)
+    if not user:
+        return {"error": "User not found"}, 404
+    return user.to_dict(), 200
+
+@app.route('/media_files/<int:id>', methods=['PATCH'])
+def update_media(id):
+    print(f"Headers received: {dict(request.headers)}")
+    print(f"Data received: {request.get_json()}")
+    media = db.session.get(MediaFile, id)
+    if not media:
+        return {"error": "Media file not found"}, 404
+
+    data = request.get_json()
+    print("Received update data:", data)  # Debug log
+
+    try:
+        # Update basic media fields
+        if 'title' in data:
+            media.title = data['title']
+        if 'description' in data:
+            media.description = data['description']
+
+        # Handle contact associations
+        if 'contacts' in data:
+            # Clear existing associations
+            ContactMedia.query.filter_by(media_file_id=id).delete()
+            
+            for contact_data in data['contacts']:
+                contact_id = contact_data.get('contact_id')
+                if not contact_id:
+                    print("Missing contact_id in:", contact_data)  # Debug log
+                    return {"error": "Missing contact_id in contacts data"}, 400
+
+                contact = db.session.get(Contact, contact_id)
+                if not contact:
+                    return {"error": f"Contact {contact_id} not found"}, 404
+
+                # Create new contact-media association
+                contact_media = ContactMedia(
+                    contact_id=contact_id,
+                    media_file_id=id,
+                    role=contact_data.get('role', 'Creator')
+                )
+                db.session.add(contact_media)
+
+        db.session.commit()
+        return media.to_dict(), 200
+
+    except Exception as e:
+        db.session.rollback()
+        print("Error updating media:", str(e))  # Debug log
+        return {"error": str(e)}, 400
+
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5555, debug=True)
+    app.run(port=5555, debug=True)
