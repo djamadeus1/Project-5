@@ -47,6 +47,16 @@ In an industry where networking, organization, and quick access to work samples 
 4. **Capture Ideas** - Use notes, voice memos, and video memos to document creative inspirations.
 5. **Showcase Your Work** - Present your portfolio in a polished, business-ready format.
 
+## Setup Instructions
+
+1. Clone the repository
+2. Create required directories:
+   ```bash
+   mkdir -p server/uploads
+   mkdir -p server/flask_session
+   mkdir -p client/public/assets
+   ```
+
 ## Future Enhancements
 - **Cloud Syncing** for access across multiple devices.
 - **Collaboration Tools** for seamless project management with teams.
