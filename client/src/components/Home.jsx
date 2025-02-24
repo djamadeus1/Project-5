@@ -43,8 +43,8 @@ function Home({ user }) {
   const handleMediaSelect = async (media) => {
     setCurrentMedia(media);
     if (audioRef.current) {
-      audioRef.current.load();
-      audioRef.current.play();
+      audioRef.current.load();  // Load before playing
+      audioRef.current.play().catch(e => console.error("Playback error:", e));  // Add error handling
     }
     
     // Fetch contacts for selected media
@@ -199,7 +199,7 @@ function Home({ user }) {
           <audio 
             ref={audioRef} 
             controls
-            key={currentMedia.id}  // Force reload when media changes
+            key={currentMedia.id}  // Add key prop to force remount
           >
             <source 
               src={getMediaUrl(currentMedia)} 
