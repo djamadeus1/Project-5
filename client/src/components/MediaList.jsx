@@ -16,6 +16,7 @@ function MediaList({ mediaFiles, onMediaSelect, currentMedia }) {
                     className={`media-item ${currentMedia?.id === media.id ? "selected" : ""}`}
                     onClick={() => onMediaSelect(media)}
                 >
+                    <img src={media.imageUrl || "/assets/default-image.png"} />
                     {media.title}
                 </li>
             ))}

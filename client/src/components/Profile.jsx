@@ -2,18 +2,19 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 import MediaList from "./MediaList";
 import Banner from "./Banner";
+import EditMediaForm from "./EditMediaForm"; // <-- New import
 import '../styles/shared.css';
 import '../styles/Profile.css';
 
 function Profile({ user, setUser }) {
   console.log("User data:", user);
   const getImageUrl = (path) => {
-    if (!path) return "https://via.placeholder.com/150";
+    if (!path) return "/assets/default-banner.png";  // Changed from placeholder
     return `http://127.0.0.1:5555${path}`;
   }
   const [mediaFiles, setMediaFiles] = useState([]);
   const [currentMedia, setCurrentMedia] = useState(null);
-  // const [editMode, setEditMode] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false); // <-- New state
   const audioRef = useRef(null);
   const profilePicInputRef = useRef(null);
   const bannerInputRef = useRef(null);
@@ -21,7 +22,6 @@ function Profile({ user, setUser }) {
   const navigate = useNavigate();
   const [isUploading, setIsUploading] = useState(false);
   const [currentContacts, setCurrentContacts] = useState([]);
-  // const [uploadError, setUploadError] = useState(null);
 
   useEffect(() => {
     if (!localStorage.getItem('businessMode')) {
@@ -66,6 +66,9 @@ function Profile({ user, setUser }) {
 
   const handleBannerChange = async (e) => {
     const file = e.target.files[0];
+    if (!file) return;
+
+    setIsUploading(true);
     const formData = new FormData();
     formData.append('banner', file);
 
@@ -75,12 +78,19 @@ function Profile({ user, setUser }) {
         body: formData,
         credentials: 'include'
       });
+      
       if (response.ok) {
         const updatedUser = await response.json();
         setUser(updatedUser);
+      } else {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to update banner');
       }
     } catch (error) {
       console.error('Error updating banner:', error);
+      alert(error.message);
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -179,28 +189,25 @@ function Profile({ user, setUser }) {
 
   const handleEditMedia = async () => {
     if (!currentMedia) return;
-    const newTitle = prompt("Enter new name for track:", currentMedia.title);
-    if (!newTitle) return;
-  
+    // Instead of prompt, open pop-up form
+    setShowEditForm(true);
+  };
+
+  const handleUpdateMedia = async (updatedMedia) => {
     try {
-      const response = await fetch(`/media_files/${currentMedia.id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ title: newTitle })
+      const response = await fetch(`/media_files/${updatedMedia.id}`, {
+        credentials: "include"
       });
-      
       if (response.ok) {
-        const updatedMedia = await response.json();
+        const data = await response.json();
         setMediaFiles(mediaFiles.map(media => 
-          media.id === currentMedia.id ? updatedMedia : media
+          media.id === data.id ? data : media
         ));
-        setCurrentMedia(updatedMedia);
+        setCurrentMedia(data);
       }
     } catch (error) {
-      console.error('Error updating media:', error);
+      console.error("Error updating media:", error);
+      alert(error.message);
     }
   };
 
@@ -224,6 +231,14 @@ function Profile({ user, setUser }) {
           >
             {isUploading ? 'Uploading...' : 'Edit'}
           </button>
+          {/* Add this input element */}
+          <input
+            type="file"
+            ref={bannerInputRef}
+            onChange={handleBannerChange}
+            style={{ display: 'none' }}
+            accept="image/*"
+          />
         </div>
       </div>
 
@@ -231,8 +246,8 @@ function Profile({ user, setUser }) {
       <div className="profile-pic-container">
         <div className="purple-pic-square">
           <img
-            src={getImageUrl(user.picture_icon || user.profile_pic)}
-            alt={`${user.username}'s profile`}
+            src={user.picture_icon || "/assets/default-avatar.png"}
+            alt="Profile"
             className="profile-picture"
           />
           <button className="edit-button" onClick={() => profilePicInputRef.current.click()}>
@@ -248,15 +263,6 @@ function Profile({ user, setUser }) {
         </div>
         <h2 className="home-username">{user.username}</h2>
       </div>
-
-      {/* Contact Picture Section */}
-      {/* <div className="contact-pic-square">
-        <img 
-          src={contact.contact_pic ? `http://127.0.0.1:5555${contact.contact_pic}` : "https://via.placeholder.com/150"}
-          alt={contact.name}
-          className="contact-picture"
-        />
-      </div> */}
 
       {/* Project List Square */}
       <div className="project-list-square">
@@ -291,7 +297,7 @@ function Profile({ user, setUser }) {
           <img 
             src={currentContacts[0].contact_pic ? 
               `http://127.0.0.1:5555${currentContacts[0].contact_pic}` : 
-              "https://via.placeholder.com/150"
+              "/assets/default-contact.png"  // Changed from placeholder
             }
             alt={currentContacts[0].name}
             className="contact-picture"
@@ -352,6 +358,18 @@ function Profile({ user, setUser }) {
         >
           Delete
         </button>
+
+        {/* Conditionally render EditMediaForm pop-up */}
+        {showEditForm && currentMedia && (
+          <EditMediaForm 
+            media={currentMedia}
+            onClose={() => setShowEditForm(false)}
+            onUpdate={(updatedMedia) => {
+              handleUpdateMedia(updatedMedia);
+              setShowEditForm(false);
+            }}
+          />
+        )}
 
         {/* Media List */}
         <MediaList

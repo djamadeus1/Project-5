@@ -559,3 +559,89 @@
   .password-popup .close-button:hover {
     background-color: darkred;
   }
+
+  .popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .edit-popup {
+    background-color: white;
+    width: 500px;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .edit-popup h2 {
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .edit-popup h3 {
+    color: #555;
+    margin: 20px 0 15px;
+  }
+  
+  .edit-popup .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .edit-popup label {
+    display: block;
+    margin-bottom: 5px;
+    color: #444;
+  }
+  
+  .edit-popup input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  .edit-popup .button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .edit-popup button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  .edit-popup button[type="submit"] {
+    background-color: #6200ea;
+    color: white;
+  }
+  
+  .edit-popup button[type="submit"]:hover {
+    background-color: #4500a0;
+  }
+  
+  .edit-popup .cancel-button {
+    background-color: #f5f5f5;
+    color: #333;
+  }
+  
+  .edit-popup .cancel-button:hover {
+    background-color: #e0e0e0;
+  }

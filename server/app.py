@@ -41,7 +41,7 @@ Session(app)
 CORS(app, 
     supports_credentials=True,
     resources={r"/*": {
-        "origins": ["http://localhost:3000", "http://127.0.0.1:3000"],
+        "origins": ["http://localhost:3000"],  # Revert to original setting
         "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"],
         "expose_headers": ["Content-Type"],
@@ -165,7 +165,7 @@ class ContactsResource(Resource):
 
             db.session.add(new_contact)
             db.session.commit()
-            return {"message": "Contact created successfully"}, 201
+            return new_contact.to_dict(), 201  # This ensures the frontend receives the full contact data
         except KeyError as e:
             return {"error": f"Missing required field: {str(e)}"}, 400
         except Exception as e:
@@ -266,14 +266,14 @@ class MediaFileResource(Resource):
         return media.to_dict(), 200
 
     def patch(self, id):
-        print(f"Headers received: {dict(request.headers)}")
-        print(f"Data received: {request.get_json()}")
+        # print(f"Headers received: {dict(request.headers)}")
+        # print(f"Data received: {request.get_json()}")
         media = db.session.get(MediaFile, id)
         if not media:
             return {"error": "Media file not found"}, 404
 
         data = request.get_json()
-        print("Received update data:", data)  # Debug log
+        # print("Received update data:", data)  # Debug log
 
         try:
             if 'title' in data:

@@ -64,3 +64,38 @@ __pycache__
 instance
 .vscode
 package-lock.json
+
+# Database
+*.db
+instance/
+server/instance/
+
+# Sessions
+flask_session/
+server/flask_session/
+
+# Uploads and Media
+uploads/
+server/uploads/
+public/assets/
+client/public/assets/
+
+# Environment variables
+.env
+.flaskenv
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Node
+node_modules/
+.npm
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# System files
+.DS_Store

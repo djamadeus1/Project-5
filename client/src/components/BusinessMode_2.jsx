@@ -5,6 +5,7 @@ import Banner from "./Banner";
 // import '../styles/BusinessMode_2.css';
 import '../styles/shared.css';
 
+const defaultImage = "/assets/default-image.png";
 
 function BusinessMode_2({ user }) {
   const [mediaFiles, setMediaFiles] = useState([]);
@@ -141,7 +142,7 @@ function BusinessMode_2({ user }) {
       <div className="profile-pic-container">
         <div className="purple-pic-square">
           <img
-            src={getImageUrl(user.picture_icon || user.profile_pic)}
+            src={getImageUrl(user.picture_icon || user.profile_pic) || defaultImage}
             alt={`${user.username}'s profile`}
             className="profile-picture"
           />
@@ -155,7 +156,7 @@ function BusinessMode_2({ user }) {
           <img 
             src={currentContacts[0].contact_pic ? 
               getImageUrl(currentContacts[0].contact_pic) : 
-              "https://via.placeholder.com/150"
+              defaultImage
             }
             alt={currentContacts[0].name}
             className="contact-picture"
