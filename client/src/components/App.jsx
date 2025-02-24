@@ -4,15 +4,17 @@ import Header from './Header';
 import LoginForm from './LoginForm';
 import SignupForm from './SignupForm';
 import ContactsList from './ContactsList';
-import ContactForm from './ContactForm';
 import Home from './Home';
-import BusinessMode_2 from "./BusinessMode_2";
+import BusinessMode_2 from "./BusinessMode_2"; // Revert to original name
 import Profile from './Profile';
+import MediaList from './MediaList'; // Import MediaList component
 // import '../styles/index.css';
 
 function App() {
   const [user, setUser] = useState(null);
   const [contacts, setContacts] = useState([]);
+  const [mediaFiles, setMediaFiles] = useState([]); // Add state for media files
+  const [currentMedia, setCurrentMedia] = useState(null); // Add state for current media
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggedOut, setIsLoggedOut] = useState(false);
   const [isBusinessMode, setIsBusinessMode] = useState(false);
@@ -43,6 +45,7 @@ function App() {
           const userData = await response.json();
           setUser(userData);
           fetchContacts();
+          fetchMediaFiles(); // Fetch media files
         } else if (response.status === 401) {
           setUser(null);
           navigate("/login");
@@ -79,6 +82,32 @@ function App() {
     } catch (error) {
       console.error("Error fetching contacts:", error);
     }
+  };
+
+  const fetchMediaFiles = async () => {
+    try {
+      const response = await fetch("/media_files", {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setMediaFiles(data);
+      } else {
+        console.error("Failed to fetch media files");
+      }
+    } catch (error) {
+      console.error("Error fetching media files:", error);
+    }
+  };
+
+  const handleMediaSelect = (media) => {
+    setCurrentMedia(media);
   };
 
   async function handleLogout() {
@@ -137,7 +166,7 @@ function App() {
     
     return children;
   };
-  console.log(user)
+
   return (
     <div>
       <Header user={user} handleLogout={handleLogout} isBusinessMode={isBusinessMode} />
@@ -168,6 +197,13 @@ function App() {
           <BusinessProtectedRoute>
             <ContactsList contacts={contacts} />
           </BusinessProtectedRoute>
+        } />
+
+        {/* Media List Route */}
+        <Route path="/media" element={
+          <ProtectedRoute>
+            <MediaList mediaFiles={mediaFiles} onMediaSelect={handleMediaSelect} currentMedia={currentMedia} />
+          </ProtectedRoute>
         } />
 
         {/* Catch all redirect */}
