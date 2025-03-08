@@ -1,34 +1,33 @@
+// client/src/components/Profile.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 import MediaList from "./MediaList";
 import Banner from "./Banner";
-import EditMediaForm from "./EditMediaForm"; // <-- New import
+import EditMediaForm from "./EditMediaForm";
 import '../styles/shared.css';
 import '../styles/Profile.css';
 
 function Profile({ user, setUser }) {
-  console.log("User data:", user);
-  const getImageUrl = (path) => {
-    if (!path) return "/assets/default-banner.png";  // Changed from placeholder
-    return `http://127.0.0.1:5555${path}`;
-  }
+  const navigate = useNavigate();
   const [mediaFiles, setMediaFiles] = useState([]);
   const [currentMedia, setCurrentMedia] = useState(null);
-  const [showEditForm, setShowEditForm] = useState(false); // <-- New state
-  const audioRef = useRef(null);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [currentContacts, setCurrentContacts] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
   const profilePicInputRef = useRef(null);
   const bannerInputRef = useRef(null);
   const mediaInputRef = useRef(null);
-  const navigate = useNavigate();
-  const [isUploading, setIsUploading] = useState(false);
-  const [currentContacts, setCurrentContacts] = useState([]);
+  const contactPicInputRef = useRef(null);
+  const audioRef = useRef(null);
 
+  // Protect the route based on user session/business mode
   useEffect(() => {
     if (!localStorage.getItem('businessMode')) {
       navigate('/');
     }
   }, [navigate]);
 
+  // Fetch media files from the backend
   useEffect(() => {
     const fetchMediaFiles = async () => {
       try {
@@ -44,11 +43,39 @@ function Profile({ user, setUser }) {
     fetchMediaFiles();
   }, []);
 
+  // New useEffect to re-fetch media details (including contacts) when currentMedia changes
+  useEffect(() => {
+    if (currentMedia) {
+      const fetchMediaDetails = async () => {
+        try {
+          const response = await fetch(`/media_files/${currentMedia.id}`, {
+            credentials: "include",
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setCurrentContacts(data.contacts || []);
+          } else {
+            console.error("Failed to fetch media details");
+          }
+        } catch (error) {
+          console.error("Error fetching media details:", error);
+        }
+      };
+      fetchMediaDetails();
+    }
+  }, [currentMedia]);
+
+  // Utility: Construct an image URL from a given path
+  const getImageUrl = (path) => {
+    if (!path) return "/assets/default-banner.png";
+    return `http://127.0.0.1:5555${path}`;
+  };
+
+  // Update profile picture
   const handleProfilePicChange = async (e) => {
     const file = e.target.files[0];
     const formData = new FormData();
     formData.append('profile_pic', file);
-
     try {
       const response = await fetch('/update_profile_pic', {
         method: 'PATCH',
@@ -64,21 +91,19 @@ function Profile({ user, setUser }) {
     }
   };
 
+  // Update banner image
   const handleBannerChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     setIsUploading(true);
     const formData = new FormData();
     formData.append('banner', file);
-
     try {
       const response = await fetch('/update_banner', {
         method: 'PATCH',
         body: formData,
         credentials: 'include'
       });
-      
       if (response.ok) {
         const updatedUser = await response.json();
         setUser(updatedUser);
@@ -94,11 +119,11 @@ function Profile({ user, setUser }) {
     }
   };
 
+  // Handle adding a new media file
   const handleAddMedia = async (e) => {
     const file = e.target.files[0];
     const formData = new FormData();
     formData.append('media', file);
-
     try {
       const response = await fetch('/upload_media', {
         method: 'POST',
@@ -114,63 +139,46 @@ function Profile({ user, setUser }) {
     }
   };
 
+  // When a media file is selected, update current media and fetch its contacts
   const handleMediaSelect = async (media) => {
-    console.log("Selected media:", media);
-    console.log("Audio URL:", getMediaUrl(media));
     setCurrentMedia(media);
     if (audioRef.current) {
       audioRef.current.load();
       audioRef.current.play().catch(e => console.error("Playback error:", e));
     }
-    
-  // Fetch contacts for selected media
-  try {
-    const response = await fetch(`/media_files/${media.id}`, { 
-      credentials: "include" 
-    });
-    if (response.ok) {
-      const data = await response.json();
-      setCurrentContacts(data.contacts || []);
-    }
-  } catch (error) {
-    console.error("Error fetching contacts:", error);
-  }
-};
-
-  const handlePlayPause = () => {
-    if (audioRef.current) {
-      if (audioRef.current.paused) {
-        audioRef.current.play();
-      } else {
-        audioRef.current.pause();
+    try {
+      const response = await fetch(`/media_files/${media.id}`, { credentials: "include" });
+      if (response.ok) {
+        const data = await response.json();
+        setCurrentContacts(data.contacts || []);
       }
+    } catch (error) {
+      console.error("Error fetching contacts:", error);
     }
   };
 
+  // Audio controls
+  const handlePlayPause = () => {
+    if (audioRef.current) {
+      audioRef.current.paused ? audioRef.current.play() : audioRef.current.pause();
+    }
+  };
   const handleStop = () => {
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
   };
+  const handleSkipForward = () => { if (audioRef.current) audioRef.current.currentTime += 10; };
+  const handleSkipBackward = () => { if (audioRef.current) audioRef.current.currentTime -= 10; };
 
-  const handleSkipForward = () => {
-    if (audioRef.current) {
-      audioRef.current.currentTime += 10;
-    }
-  };
-
-  const handleSkipBackward = () => {
-    if (audioRef.current) {
-      audioRef.current.currentTime -= 10;
-    }
-  };
-
+  // Utility: Construct media URL
   const getMediaUrl = (media) => {
     if (!media || !media.file_url) return '';
     return `http://127.0.0.1:5555${media.file_url}`;
   };
 
+  // Delete a media file
   const handleDeleteMedia = async () => {
     if (!currentMedia) return;
     try {
@@ -187,12 +195,13 @@ function Profile({ user, setUser }) {
     }
   };
 
+  // Open edit form for media
   const handleEditMedia = async () => {
     if (!currentMedia) return;
-    // Instead of prompt, open pop-up form
     setShowEditForm(true);
   };
 
+  // Update media info
   const handleUpdateMedia = async (updatedMedia) => {
     try {
       const response = await fetch(`/media_files/${updatedMedia.id}`, {
@@ -211,17 +220,48 @@ function Profile({ user, setUser }) {
     }
   };
 
-  if (!user) return <p>Loading...</p>;
+  // Update the contact picture for the first contact associated with the selected media
+  const handleContactPicChange = async (e) => {
+    if (!currentMedia || !currentContacts || !currentContacts[0]) {
+      alert("Please select a media file first");
+      return;
+    }
+    const file = e.target.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('contact_pic', file);
+    formData.append('contact_id', currentContacts[0].id);
+    formData.append('media_id', currentMedia.id);
+  
+    try {
+      const response = await fetch('/update_contact_pic', {
+        method: 'PATCH',
+        body: formData,
+        credentials: 'include'
+      });
+      if (response.ok) {
+        const updatedContact = await response.json();
+        setCurrentContacts(prev =>
+          prev.map(contact =>
+            contact.id === updatedContact.id ? updatedContact : contact
+          )
+        );
+      } else {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to update contact picture');
+      }
+    } catch (error) {
+      console.error('Error updating contact picture:', error);
+      alert(error.message);
+    }
+  };
 
+  if (!user) return <p>Loading...</p>;
 
   return (
     <div className="page-wrapper">
-      {/* Add Logo Circle */}
-      <div className="purple-logo-circle">
-        Profile
-      </div>
-      
-      {/* Banner */}
+      {/* Logo and Banner */}
+      <div className="purple-logo-circle">Profile</div>
       <div className="banner-container">
         <div className="user-banner-square">
           <Banner bannerUrl={getImageUrl(user.logo)} />
@@ -231,18 +271,11 @@ function Profile({ user, setUser }) {
           >
             {isUploading ? 'Uploading...' : 'Edit'}
           </button>
-          {/* Add this input element */}
-          <input
-            type="file"
-            ref={bannerInputRef}
-            onChange={handleBannerChange}
-            style={{ display: 'none' }}
-            accept="image/*"
-          />
+          <input type="file" ref={bannerInputRef} onChange={handleBannerChange} style={{ display: 'none' }} accept="image/*" />
         </div>
       </div>
 
-      {/* Profile Section */}
+      {/* Profile Picture */}
       <div className="profile-pic-container">
         <div className="purple-pic-square">
           <img
@@ -253,25 +286,19 @@ function Profile({ user, setUser }) {
           <button className="edit-button" onClick={() => profilePicInputRef.current.click()}>
             Edit
           </button>
-          <input
-            type="file"
-            ref={profilePicInputRef}
-            onChange={handleProfilePicChange}
-            style={{ display: 'none' }}
-            accept="image/*"
-          />
+          <input type="file" ref={profilePicInputRef} onChange={handleProfilePicChange} style={{ display: 'none' }} accept="image/*" />
         </div>
         <h2 className="home-username">{user.username}</h2>
       </div>
 
-      {/* Project List Square */}
+      {/* Projects Section */}
       <div className="project-list-square">
         <div className="project-list">
           <h3>Projects</h3>
         </div>
       </div>
 
-      {/* Track Contact Info Square */}
+      {/* Track Contact Info */}
       <div className="track-contact-info-square">
         <div className="contact-info">
           <h3>Contact Info</h3>
@@ -291,75 +318,51 @@ function Profile({ user, setUser }) {
         </div>
       </div>
 
-        {/* Contact Picture Section */}
+      {/* Contact Picture Section */}
       <div className="contact-pic-square">
         {currentContacts && currentContacts[0] && (
-          <img 
-            src={currentContacts[0].contact_pic ? 
-              `http://127.0.0.1:5555${currentContacts[0].contact_pic}` : 
-              "/assets/default-contact.png"  // Changed from placeholder
-            }
-            alt={currentContacts[0].name}
-            className="contact-picture"
-          />
+          <>
+            {currentContacts[0].contact_pic ? (
+              <img 
+              src={`http://127.0.0.1:5555${currentContacts[0].contact_pic}?t=${Date.now()}`}
+                alt={currentContacts[0].name}
+                className="contact-picture"
+                onError={(e) => {
+                  e.target.src = "/assets/default-contact.png";
+                }}
+              />
+            ) : (
+              <div className="default-contact-pic">
+                {/* You can put a default image or icon here */}
+              </div>
+            )}
+            <button className="edit-button" onClick={() => contactPicInputRef.current.click()}>
+              Edit
+            </button>
+            <input type="file" ref={contactPicInputRef} onChange={handleContactPicChange} style={{ display: 'none' }} accept="image/*" />
+          </>
         )}
       </div>
 
       {/* Contact Background */}
       <div className="contact-background"></div>
 
-      {/* MP Background */}
-      <div className="mp-background">
-      </div>
-
       {/* Media Player */}
       <div className="media-player-square">
         {currentMedia && (
-          <audio 
-            ref={audioRef} 
-            controls
-            key={currentMedia.id} // Force reload when media changes
-          >
-            <source 
-              src={getMediaUrl(currentMedia)} 
-              type={currentMedia.file_type || 'audio/mpeg'} 
-            />
+          <audio ref={audioRef} controls key={currentMedia.id}>
+            <source src={getMediaUrl(currentMedia)} type={currentMedia.file_type || 'audio/mpeg'} />
             Your browser does not support the audio element.
           </audio>
         )}
       </div>
 
-      {/* Track List with Upload Button */}
+      {/* Track List and Upload Controls */}
       <div className="track-list-square">
-        {/* Upload Controls */}
-        <button className="upload-button" onClick={() => mediaInputRef.current.click()}>
-          Add
-        </button>
-        <input
-          type="file"
-          ref={mediaInputRef}
-          onChange={handleAddMedia}
-          style={{ display: 'none' }}
-          accept="audio/*"
-        />
-        
-        {/* Edit and Delete Controls */}
-        <button 
-          className="edit-track-button" 
-          onClick={handleEditMedia}
-          disabled={!currentMedia}
-        >
-          Edit
-        </button>
-        <button 
-          className="delete-button" 
-          onClick={handleDeleteMedia}
-          disabled={!currentMedia}
-        >
-          Delete
-        </button>
-
-        {/* Conditionally render EditMediaForm pop-up */}
+        <button className="upload-button" onClick={() => mediaInputRef.current.click()}>Add</button>
+        <input type="file" ref={mediaInputRef} onChange={handleAddMedia} style={{ display: 'none' }} accept="audio/*" />
+        <button className="edit-track-button" onClick={handleEditMedia} disabled={!currentMedia}>Edit</button>
+        <button className="delete-button" onClick={handleDeleteMedia} disabled={!currentMedia}>Delete</button>
         {showEditForm && currentMedia && (
           <EditMediaForm 
             media={currentMedia}
@@ -370,13 +373,7 @@ function Profile({ user, setUser }) {
             }}
           />
         )}
-
-        {/* Media List */}
-        <MediaList
-          mediaFiles={mediaFiles}
-          onMediaSelect={handleMediaSelect}
-          currentMedia={currentMedia}
-        />
+        <MediaList mediaFiles={mediaFiles} onMediaSelect={handleMediaSelect} currentMedia={currentMedia} />
       </div>
 
       {/* Labels */}

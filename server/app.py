@@ -145,9 +145,9 @@ class CheckSession(Resource):
         return {"error": "User not found"}, 404
     
 class Logout(Resource):
-    def post(self):
-        session.clear()  # This clears the session
-        return {"message": "Logout successful"}, 200
+    def delete(self):
+        session.clear()
+        return {"message": "Successfully logged out"}, 200
     
 class ContactsResource(Resource):
     def post(self):
@@ -361,12 +361,6 @@ class ContactMediaResource(Resource):
 
         db.session.commit()
         return {"message": "ContactMedia updated successfully"}
-    
-class Logout(Resource):
-    def delete(self):
-        session.clear()
-        return {"message": "Successfully logged out"}, 200
-
 
 # Add the route to your API
 api.add_resource(Signup, '/signup')
@@ -412,10 +406,10 @@ def update_profile_pic():
     if 'user_id' not in session:
         return {"error": "Unauthorized"}, 401
 
-    if 'profile_pic' not in request.files:
+    if 'contact_pic' not in request.files:
         return {"error": "No file provided"}, 400
     
-    file = request.files['profile_pic']
+    file = request.files['contact_pic']
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
@@ -607,5 +601,36 @@ def update_media(id):
         print("Error updating media:", str(e))  # Debug log
         return {"error": str(e)}, 400
 
-if __name__ == "__main__":
+@app.route('/update_contact_pic', methods=['PATCH'])
+def update_contact_pic():
+    print("Received files:", request.files)  # Debug log
+    print("Received form data:", request.form)  # Debug log
+
+    if 'contact_pic' not in request.files:
+        return {'error': 'No file provided'}, 400
+
+    file = request.files['contact_pic']
+    contact_id = request.form.get('contact_id')
+
+    contact = db.session.get(Contact, contact_id)
+    if not contact:
+        return {'error': 'Contact not found'}, 404
+
+    if file:
+        filename = secure_filename(file.filename)
+        uploads_dir = os.path.join(app.root_path, 'uploads')
+        os.makedirs(uploads_dir, exist_ok=True)
+
+        file_path = os.path.join(uploads_dir, filename)
+        file.save(file_path)
+
+        # Update the field using the new name "contact_pic"
+        contact.contact_pic = f'/uploads/{filename}'
+        db.session.commit()
+
+        print("Saved contact pic path:", contact.contact_pic)  # Debug log
+
+    return contact.to_dict(), 200
+
+if __name__ == "__main__":  # Fixed syntax
     app.run(port=5555, debug=True)

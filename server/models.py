@@ -81,9 +81,10 @@ class Contact(db.Model, SerializerMixin):  # Add SerializerMixin here
             'user_id': self.user_id,
             'bio': self.bio,
             'picture_icon': self.picture_icon,
+            'contact_pic': self.contact_pic,  # Add this line
             'logo': self.logo,
             'address': self.address
-        }
+    }
 
 
 class MediaFile(db.Model, SerializerMixin):
@@ -105,27 +106,28 @@ class MediaFile(db.Model, SerializerMixin):
 
     def to_dict(self):
         contacts_data = [
-            {
-                "id": assoc.contact.id,
-                "name": assoc.contact.name,
-                "email": assoc.contact.email,
-                "phone": assoc.contact.phone,
-                "company": assoc.contact.company,
-                "discipline": assoc.contact.discipline,
-                "role": assoc.role
-            }
-            for assoc in self.contact_associations
-        ]
-        
-        return {
-            "id": self.id,
-            "user_id": self.user_id,
-            "file_url": self.file_url,
-            "file_type": self.file_type,
-            "title": self.title,
-            "description": self.description,
-            "contacts": contacts_data
+        {
+            "id": assoc.contact.id,
+            "name": assoc.contact.name,
+            "email": assoc.contact.email,
+            "phone": assoc.contact.phone,
+            "company": assoc.contact.company,
+            "discipline": assoc.contact.discipline,
+            "role": assoc.role,
+            "contact_pic": assoc.contact.contact_pic  # Add this line
         }
+        for assoc in self.contact_associations
+    ]
+    
+        return {
+        "id": self.id,
+        "user_id": self.user_id,
+        "file_url": self.file_url,
+        "file_type": self.file_type,
+        "title": self.title,
+        "description": self.description,
+        "contacts": contacts_data
+    }
 
 
 class ContactMedia(db.Model, SerializerMixin):
