@@ -40,8 +40,31 @@ function Home({ user }) {
     fetchMediaFiles();
   }, [navigate]);
 
+  // In Home.jsx, near your state definitions
+  useEffect(() => {
+    const savedMediaId = localStorage.getItem("currentMediaId");
+    if (savedMediaId) {
+      const fetchSavedMedia = async () => {
+        try {
+          const response = await fetch(`/media_files/${savedMediaId}`, { credentials: "include" });
+          if (response.ok) {
+            const mediaData = await response.json();
+            setCurrentMedia(mediaData);
+            setCurrentContacts(mediaData.contacts || []);
+          } else {
+            console.error("Failed to fetch saved media");
+          }
+        } catch (error) {
+          console.error("Error fetching saved media:", error);
+        }
+      };
+      fetchSavedMedia();
+    }
+  }, []);
+
   const handleMediaSelect = async (media) => {
     setCurrentMedia(media);
+    localStorage.setItem("currentMediaId", media.id);
     if (audioRef.current) {
       audioRef.current.load();  // Load before playing
       audioRef.current.play().catch(e => console.error("Playback error:", e));  // Add error handling
@@ -194,17 +217,20 @@ function Home({ user }) {
     </div>
 
       {/* Media Player */}
-      <div className="media-player-square">
+      <div
+        className="media-player-square"
+        style={{
+          backgroundImage: currentMedia && currentMedia.artwork_url 
+            ? `url(http://127.0.0.1:5555${currentMedia.artwork_url}?t=${Date.now()})`
+            : 'none',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
         {currentMedia && (
-          <audio 
-            ref={audioRef} 
-            controls
-            key={currentMedia.id}  // Add key prop to force remount
-          >
-            <source 
-              src={getMediaUrl(currentMedia)} 
-              type={currentMedia.file_type || 'audio/mpeg'} 
-            />
+          <audio ref={audioRef} controls key={currentMedia.id}>
+            <source src={getMediaUrl(currentMedia)} type={currentMedia.file_type || 'audio/mpeg'} />
             Your browser does not support the audio element.
           </audio>
         )}
