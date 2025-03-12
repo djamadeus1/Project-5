@@ -4,17 +4,18 @@ import '../styles/shared.css';
 function EditMediaForm({ media, onClose, onUpdate }) {
   const [formData, setFormData] = useState({
     title: media.title || "",
-    description: media.description || "", // Add description field from ERD
+    description: media.description || "",
+    artwork: null, // new field for artwork file
     contact: media.contacts?.[0] || {
       name: "",
       email: "",
       phone: "",
       company: "",
       discipline: "",
-      bio: "",        // Add bio field from ERD
-      picture_icon: "",// Add picture_icon field from ERD
-      logo: "",       // Add logo field from ERD
-      address: ""     // Add address field from ERD
+      bio: "",
+      picture_icon: "",
+      logo: "",
+      address: ""
     }
   });
 
@@ -34,74 +35,87 @@ function EditMediaForm({ media, onClose, onUpdate }) {
     e.preventDefault();
     
     try {
-        // First update or create contact
-        let contactResponse;
-        const contactData = {
-            ...formData.contact,
-            user_id: media.user_id
-        };
-
-        //console.log("Contact data being sent:", contactData);
-
-        // Update or create contact
-        if (formData.contact.id) {
-            contactResponse = await fetch(`/contacts/${formData.contact.id}`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify(contactData)
-            });
-        } else {
-            contactResponse = await fetch('/contacts', {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify(contactData)
-            });
-        }
-
-        if (!contactResponse.ok) {
-            throw new Error('Failed to update contact');
-        }
-
-        const updatedContact = await contactResponse.json();
-        //console.log("Updated contact ID:", updatedContact?.id);
-
-        // Now update media with the confirmed contact ID
-        const mediaData = {
-            title: formData.title,
-            description: formData.description,
-            contacts: [{
-                contact_id: updatedContact?.id,  // Ensure it's not undefined
-                role: "Creator"
-            }]
-        };
-
-        //console.log("Media update payload:", mediaData);
-
-        const mediaResponse = await fetch(`/media_files/${media.id}`, {
-            method: "PATCH",
-            headers: { 
-                "Content-Type": "application/json"  // Removed "Accept" header
-            },
-            credentials: "include",
-            body: JSON.stringify(mediaData)
+      // 1. Update or create the contact (same as before)
+      let contactResponse;
+      const contactData = {
+        ...formData.contact,
+        user_id: media.user_id
+      };
+  
+      if (formData.contact.id) {
+        contactResponse = await fetch(`/contacts/${formData.contact.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(contactData)
         });
-
-        if (!mediaResponse.ok) {
-            const error = await mediaResponse.json();
-            throw new Error(error.error || 'Failed to update media');
+      } else {
+        contactResponse = await fetch('/contacts', {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(contactData)
+        });
+      }
+  
+      if (!contactResponse.ok) {
+        throw new Error('Failed to update contact');
+      }
+      const updatedContact = await contactResponse.json();
+  
+      // 2. Update the media metadata (title, description, contacts)
+      const mediaPayload = {
+        title: formData.title,
+        description: formData.description,
+        contacts: [{
+          contact_id: updatedContact?.id,
+          role: "Creator"
+        }]
+      };
+  
+      const mediaResponse = await fetch(`/media_files/${media.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(mediaPayload)
+      });
+  
+      if (!mediaResponse.ok) {
+        const error = await mediaResponse.json();
+        throw new Error(error.error || 'Failed to update media');
+      }
+  
+      let updatedMedia = await mediaResponse.json();
+  
+      // 3. If an artwork file is provided, send a separate PATCH request to update artwork
+      if (formData.artwork) {
+        const artworkFormData = new FormData();
+        artworkFormData.append("artwork", formData.artwork);
+        
+        const artworkResponse = await fetch(`/update_artwork/${media.id}`, {
+          method: "PATCH",
+          credentials: "include",
+          body: artworkFormData
+        });
+        
+        if (!artworkResponse.ok) {
+          const error = await artworkResponse.json();
+          throw new Error(error.error || 'Failed to update artwork');
         }
-
-        const updatedMedia = await mediaResponse.json();
-        onUpdate(updatedMedia);
-        onClose();
-
+        
+        // Get the updated media data with the new artwork_url
+        updatedMedia = await artworkResponse.json();
+      }
+  
+      // Update the UI with the final updated media data and close the form
+      onUpdate(updatedMedia);
+      onClose();
+  
     } catch (error) {
-        console.error("Error in form submission:", error);
-        alert(error.message);
+      console.error("Error in form submission:", error);
+      alert(error.message);
     }
-};
+  };
 
   // Add fields to match ERD structure
   return (
@@ -120,6 +134,18 @@ function EditMediaForm({ media, onClose, onUpdate }) {
             />
           </div>
           
+          <div className="form-group">
+            <label>Load Artwork:</label>
+            <input
+              type="file"
+              name="artwork"
+              onChange={(e) => {
+                setFormData(prev => ({ ...prev, artwork: e.target.files[0] }));
+              }}
+              accept="image/*"
+            />
+          </div>
+
           <div className="form-group">
             <label>Description:</label>
             <textarea

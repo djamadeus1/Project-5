@@ -189,6 +189,37 @@
     background-color: #d1e7dd; /* Highlight color */
     font-weight: bold;
   }
+
+  .media-item-container {
+    display: flex;
+    align-items: center; /* vertically center the content */
+    gap: 16px;         /* space between artwork and info */
+    padding: 8px;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .media-artwork {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+  }
+  
+  .media-info {
+    flex: 1;
+  }
+  
+  .media-title {
+    margin: 0 0 8px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .media-description {
+    margin: 0;
+    font-size: 14px;
+    color: #555;
+  }
     
   Transport Buttons
   .transport-buttons {

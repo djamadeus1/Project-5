@@ -201,46 +201,10 @@ from flask import jsonify  # Ensure this is imported
 class MediaFilesResource(Resource):
     def get(self):
         try:
-            # Query all media files
             media_files = db.session.query(MediaFile).all()
-            media_list = []
-
-            for media in media_files:
-                # Get all contacts associated with this media file
-                contacts = (
-                    db.session.query(Contact)
-                    .join(ContactMedia, Contact.id == ContactMedia.contact_id)
-                    .filter(ContactMedia.media_file_id == media.id)
-                    .all()
-                )
-
-                # Convert contacts to dictionary format
-                contact_data = [
-                    {
-                        "id": contact.id,
-                        "name": contact.name,
-                        "email": contact.email,
-                        "phone": contact.phone,
-                        "company": contact.company,
-                        "discipline": contact.discipline,
-                    }
-                    for contact in contacts
-                ]
-
-                # Append media file with associated contacts
-                media_list.append({
-                    "id": media.id,
-                    "user_id": media.user_id,
-                    "file_url": media.file_url,
-                    "file_type": media.file_type,
-                    "title": media.title,
-                    "description": media.description,
-                    "contacts": contact_data  # ✅ Adding associated contacts here
-                })
-
-            return media_list, 200  # ✅ Correct return format
+            return [media.to_dict() for media in media_files], 200
         except Exception as e:
-            return {"error": str(e)}, 500  # ✅ Catch errors and return JSON response
+            return {"error": str(e)}, 500
     
     def post(self):
         data = request.get_json()
@@ -631,6 +595,31 @@ def update_contact_pic():
         print("Saved contact pic path:", contact.contact_pic)  # Debug log
 
     return contact.to_dict(), 200
+
+@app.route('/update_artwork/<int:media_id>', methods=['PATCH'])
+def update_artwork(media_id):
+    if 'user_id' not in session:
+        return {"error": "Unauthorized"}, 401
+
+    if 'artwork' not in request.files:
+        return {"error": "No artwork file provided"}, 400
+
+    file = request.files['artwork']
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+
+        media = db.session.get(MediaFile, media_id)
+        if not media:
+            return {"error": "Media file not found"}, 404
+
+        media.artwork_url = f"/uploads/{filename}"
+        db.session.commit()
+
+        return media.to_dict(), 200
+    else:
+        return {"error": "Invalid file type"}, 400
 
 if __name__ == "__main__":  # Fixed syntax
     app.run(port=5555, debug=True)

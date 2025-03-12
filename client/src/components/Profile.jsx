@@ -65,6 +65,27 @@ function Profile({ user, setUser }) {
     }
   }, [currentMedia]);
 
+  useEffect(() => {
+    const savedMediaId = localStorage.getItem("currentMediaId");
+    if (savedMediaId) {
+      const fetchSavedMedia = async () => {
+        try {
+          const response = await fetch(`/media_files/${savedMediaId}`, { credentials: "include" });
+          if (response.ok) {
+            const mediaData = await response.json();
+            setCurrentMedia(mediaData);
+            setCurrentContacts(mediaData.contacts || []);
+          } else {
+            console.error("Failed to fetch saved media");
+          }
+        } catch (error) {
+          console.error("Error fetching saved media:", error);
+        }
+      };
+      fetchSavedMedia();
+    }
+  }, []);
+
   // Utility: Construct an image URL from a given path
   const getImageUrl = (path) => {
     if (!path) return "/assets/default-banner.png";
@@ -142,6 +163,7 @@ function Profile({ user, setUser }) {
   // When a media file is selected, update current media and fetch its contacts
   const handleMediaSelect = async (media) => {
     setCurrentMedia(media);
+    localStorage.setItem("currentMediaId", media.id);
     if (audioRef.current) {
       audioRef.current.load();
       audioRef.current.play().catch(e => console.error("Playback error:", e));
@@ -153,7 +175,7 @@ function Profile({ user, setUser }) {
         setCurrentContacts(data.contacts || []);
       }
     } catch (error) {
-      console.error("Error fetching contacts:", error);
+      console.error("Error fetching media details:", error);
     }
   };
 
@@ -348,7 +370,17 @@ function Profile({ user, setUser }) {
       <div className="contact-background"></div>
 
       {/* Media Player */}
-      <div className="media-player-square">
+      <div
+        className="media-player-square"
+        style={{
+          backgroundImage: currentMedia && currentMedia.artwork_url 
+            ? `url(http://127.0.0.1:5555${currentMedia.artwork_url}?t=${Date.now()})`
+            : 'none',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
         {currentMedia && (
           <audio ref={audioRef} controls key={currentMedia.id}>
             <source src={getMediaUrl(currentMedia)} type={currentMedia.file_type || 'audio/mpeg'} />

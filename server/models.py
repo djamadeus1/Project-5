@@ -96,6 +96,7 @@ class MediaFile(db.Model, SerializerMixin):
     file_type = db.Column(db.String, nullable=False)
     title = db.Column(db.String, nullable=False)
     description = db.Column(db.String, nullable=True)
+    artwork_url = db.Column(db.String, nullable=True)
 
     user = db.relationship('User', back_populates='media_files')
     contact_associations = db.relationship('ContactMedia', back_populates='media_file')
@@ -126,6 +127,7 @@ class MediaFile(db.Model, SerializerMixin):
         "file_type": self.file_type,
         "title": self.title,
         "description": self.description,
+        "artwork_url": self.artwork_url,
         "contacts": contacts_data
     }
 
