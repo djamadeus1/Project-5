@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import MediaList from "./MediaList";
 import Banner from "./Banner";
-// import '../styles/BusinessMode_2.css';
 import '../styles/shared.css';
 
 const defaultImage = "/assets/default-image.png";
@@ -13,14 +12,16 @@ function BusinessMode_2({ user }) {
   const audioRef = useRef(null);
   const navigate = useNavigate();
   const [currentContacts, setCurrentContacts] = useState([]);
+
   const getMediaUrl = (media) => {
     if (!media || !media.file_url) return '';
     return `http://127.0.0.1:5555${media.file_url}`;
   };
+
   const getImageUrl = (path) => {
     if (!path) return "https://via.placeholder.com/150";
     return `http://127.0.0.1:5555${path}`;
-  }
+  };
 
   // Verify user is logged in
   useEffect(() => {
@@ -44,7 +45,6 @@ function BusinessMode_2({ user }) {
         navigate('/');
       }
     };
-    
     checkAuthorization();
   }, [navigate]);
 
@@ -67,7 +67,6 @@ function BusinessMode_2({ user }) {
         navigate('/login');
       }
     };
-
     fetchMediaFiles();
   }, [navigate]);
 
@@ -76,9 +75,8 @@ function BusinessMode_2({ user }) {
     setCurrentMedia(media);
     if (audioRef.current) {
       audioRef.current.load();
-      audioRef.current.play();
+      audioRef.current.play().catch(e => console.error("Playback error:", e));
     }
-    
     // Fetch contacts for selected media
     try {
       const response = await fetch(`/media_files/${media.id}`, { 
@@ -122,6 +120,28 @@ function BusinessMode_2({ user }) {
     }
   };
 
+  // Rehydrate current media from localStorage (if needed)
+  useEffect(() => {
+    const savedMediaId = localStorage.getItem("currentMediaId");
+    if (savedMediaId) {
+      const fetchSavedMedia = async () => {
+        try {
+          const response = await fetch(`/media_files/${savedMediaId}`, { credentials: "include" });
+          if (response.ok) {
+            const mediaData = await response.json();
+            setCurrentMedia(mediaData);
+            setCurrentContacts(mediaData.contacts || []);
+          } else {
+            console.error("Failed to fetch saved media");
+          }
+        } catch (error) {
+          console.error("Error fetching saved media:", error);
+        }
+      };
+      fetchSavedMedia();
+    }
+  }, []);
+
   if (!user) return <p>Loading...</p>;
 
   return (
@@ -131,8 +151,7 @@ function BusinessMode_2({ user }) {
         <div className="user-banner-square">
           <Banner bannerUrl={getImageUrl(user.logo)} />
         </div>
-        
-        {/* Business Mode Logo - No click handler */}
+        {/* Business Mode Logo */}
         <div className="purple-logo-circle">
           Business Mode
         </div>
@@ -164,16 +183,15 @@ function BusinessMode_2({ user }) {
         )}
       </div>
 
-    {/* Project List Square */}
-    <div className="project-list-square">
-      <div className="project-list">
-        <h3>Projects</h3>
-        {/* Project list items will go here */}
+      {/* Project List */}
+      <div className="project-list-square">
+        <div className="project-list">
+          <h3>Projects</h3>
+        </div>
       </div>
-    </div>
 
-    {/* Track Contact Info Square */}
-    <div className="track-contact-info-square">
+      {/* Track Contact Info */}
+      <div className="track-contact-info-square">
         <div className="contact-info">
           <h3>Contact Info</h3>
           {currentContacts.length > 0 ? (
@@ -190,34 +208,35 @@ function BusinessMode_2({ user }) {
             <p>No contacts associated with this track</p>
           )}
         </div>
-    </div>
+      </div>
 
-    {/* Contact Background */}
-    <div className="contact-background"></div>      
+      {/* Contact Background */}
+      <div className="contact-background"></div>
 
       {/* MP Background */}
-    <div className="mp-background">
-      {/* Purple background for media player */}
-    </div>
+      <div className="mp-background"></div>
 
       {/* Media Player */}
-      <div className="media-player-square">
+      <div
+        className="media-player-square"
+        style={{
+          backgroundImage: currentMedia && currentMedia.artwork_url 
+            ? `url(http://127.0.0.1:5555${currentMedia.artwork_url}?t=${Date.now()})`
+            : 'none',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
         {currentMedia && (
-          <audio 
-            ref={audioRef} 
-            controls
-            key={currentMedia.id}  // Force reload when media changes
-          >
-            <source 
-              src={getMediaUrl(currentMedia)} 
-              type={currentMedia.file_type || 'audio/mpeg'} 
-            />
+          <audio ref={audioRef} controls key={currentMedia.id}>
+            <source src={getMediaUrl(currentMedia)} type={currentMedia.file_type || 'audio/mpeg'} />
             Your browser does not support the audio element.
           </audio>
         )}
       </div>
 
-      {/* Track List - Using same class as Home */}
+      {/* Track List */}
       <div className="track-list-square">
         <MediaList
           mediaFiles={mediaFiles}
