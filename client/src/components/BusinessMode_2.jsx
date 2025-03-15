@@ -202,6 +202,8 @@ function BusinessMode_2({ user }) {
                 <p>{contact.phone}</p>
                 <p>{contact.company}</p>
                 <p>{contact.discipline}</p>
+                <br />
+                {contact.bio && <p><strong>Bio:</strong> {contact.bio}</p>}
               </div>
             ))
           ) : (

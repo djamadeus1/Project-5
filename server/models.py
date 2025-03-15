@@ -107,28 +107,29 @@ class MediaFile(db.Model, SerializerMixin):
 
     def to_dict(self):
         contacts_data = [
-        {
-            "id": assoc.contact.id,
-            "name": assoc.contact.name,
-            "email": assoc.contact.email,
-            "phone": assoc.contact.phone,
-            "company": assoc.contact.company,
-            "discipline": assoc.contact.discipline,
-            "role": assoc.role,
-            "contact_pic": assoc.contact.contact_pic  # Add this line
-        }
-        for assoc in self.contact_associations
-    ]
+            {
+                "id": assoc.contact.id,
+                "name": assoc.contact.name,
+                "email": assoc.contact.email,
+                "phone": assoc.contact.phone,
+                "company": assoc.contact.company,
+                "discipline": assoc.contact.discipline,
+                "role": assoc.role,
+                "contact_pic": assoc.contact.contact_pic,  # Add this line
+                "bio": assoc.contact.bio  # <--- Add this line
+            }
+            for assoc in self.contact_associations
+        ]
     
         return {
-        "id": self.id,
-        "user_id": self.user_id,
-        "file_url": self.file_url,
-        "file_type": self.file_type,
-        "title": self.title,
-        "description": self.description,
-        "artwork_url": self.artwork_url,
-        "contacts": contacts_data
+            "id": self.id,
+            "user_id": self.user_id,
+            "file_url": self.file_url,
+            "file_type": self.file_type,
+            "title": self.title,
+            "description": self.description,
+            "artwork_url": self.artwork_url,
+            "contacts": contacts_data
     }
 
 
