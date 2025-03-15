@@ -191,6 +191,7 @@ function Home({ user }) {
     {/* Track Contact Info Square */}
     <div className="track-contact-info-square">
         <div className="contact-info">
+          {console.log('DEBUG: currentContacts', currentContacts)}
           <h3>Contact Info</h3>
           {currentContacts.length > 0 ? (
             currentContacts.map(contact => (
@@ -200,6 +201,8 @@ function Home({ user }) {
                 <p>{contact.phone}</p>
                 <p>{contact.company}</p>
                 <p>{contact.discipline}</p>
+                <br />
+                {contact.bio && <p><strong>Bio:</strong> {contact.bio}</p>}
               </div>
             ))
           ) : (

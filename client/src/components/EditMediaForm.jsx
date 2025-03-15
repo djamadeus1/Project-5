@@ -41,6 +41,9 @@ function EditMediaForm({ media, onClose, onUpdate }) {
         ...formData.contact,
         user_id: media.user_id
       };
+
+      // Debugging log to confirm bio is present
+      console.log('CONTACT DATA TO SEND:', contactData);
   
       if (formData.contact.id) {
         contactResponse = await fetch(`/contacts/${formData.contact.id}`, {
