@@ -351,6 +351,20 @@
   
   
   /* Project List Square */
+  /* .project-list-square {
+    width: 33vw;
+    height: 16vh;
+    max-width: 620px;
+    max-height: 154px;
+    background-color: #8007F9;
+    box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25),
+    0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    position: absolute;
+    top: 31vh;
+    left: 60vw;
+  } */
+
   .project-list-square {
     width: 33vw;
     height: 16vh;
@@ -363,7 +377,9 @@
     position: absolute;
     top: 31vh;
     left: 60vw;
-  }
+    overflow-y: auto;
+    z-index: 4;
+}
   
 /* Track List Square */
 .track-list-square {
@@ -438,6 +454,28 @@
     transform: translate(-20%, 50%);
     z-index: 3;   /* Added z-index */
     /* outline: 2px solid blue; */
+}
+
+/* Reposition Projects CRUD Buttons */
+.add-button.projects {
+  position: absolute;
+  top: 240px;  /* Align vertically with the Projects label */
+  left: 1120px;  /* Adjust this value to position the Add button to the left of the Projects label */
+  width: 60px;  /* Adjust width if needed */
+}
+
+.edit-button.projects {
+  position: absolute;
+  top: 240px;
+  left: 1180px;  /* Adjust to position between the Add button and the Projects label */
+  width: 60px;
+}
+
+.delete-button.projects {
+  position: absolute;
+  top: 240px;
+  left: 1400px;  /* Adjust to position the Delete button to the right of the Projects label */
+  width: 60px;
 }
 
  /* Contact Picture Square */

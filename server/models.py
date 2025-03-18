@@ -89,7 +89,6 @@ class Contact(db.Model, SerializerMixin):  # Add SerializerMixin here
 
 class MediaFile(db.Model, SerializerMixin):
     __tablename__ = 'media_files'
-
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     file_url = db.Column(db.String, nullable=False)
@@ -102,8 +101,11 @@ class MediaFile(db.Model, SerializerMixin):
     contact_associations = db.relationship('ContactMedia', back_populates='media_file')
     contacts = association_proxy('contact_associations', 'contact')
 
-    # Exclude contact associations from being serialized
-    serialize_rules = ('-contact_associations', '-user.media_files')
+    # New relationship for projects
+    project_associations = db.relationship('ProjectMedia', back_populates='media_file')
+    projects = association_proxy('project_associations', 'project')
+
+    serialize_rules = ('-contact_associations', '-user.media_files', '-project_associations')
 
     def to_dict(self):
         contacts_data = [
@@ -115,8 +117,8 @@ class MediaFile(db.Model, SerializerMixin):
                 "company": assoc.contact.company,
                 "discipline": assoc.contact.discipline,
                 "role": assoc.role,
-                "contact_pic": assoc.contact.contact_pic,  # Add this line
-                "bio": assoc.contact.bio  # <--- Add this line
+                "contact_pic": assoc.contact.contact_pic,
+                "bio": assoc.contact.bio
             }
             for assoc in self.contact_associations
         ]
@@ -130,12 +132,11 @@ class MediaFile(db.Model, SerializerMixin):
             "description": self.description,
             "artwork_url": self.artwork_url,
             "contacts": contacts_data
-    }
+        }
 
 
 class ContactMedia(db.Model, SerializerMixin):
     __tablename__ = 'contact_media'
-
     id = db.Column(db.Integer, primary_key=True)
     contact_id = db.Column(db.Integer, db.ForeignKey('contacts.id'), nullable=False)
     media_file_id = db.Column(db.Integer, db.ForeignKey('media_files.id'), nullable=False)
@@ -144,7 +145,6 @@ class ContactMedia(db.Model, SerializerMixin):
     contact = db.relationship('Contact', back_populates='media_associations')
     media_file = db.relationship('MediaFile', back_populates='contact_associations')
 
-    # Exclude both sides to prevent circular serialization
     serialize_rules = ('-contact.media_associations', '-media_file.contact_associations')
 
     def to_dict(self):
@@ -153,4 +153,51 @@ class ContactMedia(db.Model, SerializerMixin):
             "contact_id": self.contact_id,
             "media_file_id": self.media_file_id,
             "role": self.role
+        }
+
+class Project(db.Model, SerializerMixin):
+    __tablename__ = 'projects'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    project_name = db.Column(db.String, nullable=False)
+    artist = db.Column(db.String, nullable=True)
+    genre = db.Column(db.String, nullable=True)
+    year = db.Column(db.String, nullable=True)
+    description = db.Column(db.Text, nullable=True)
+    project_pic = db.Column(db.String, nullable=True)
+
+    user = db.relationship('User', backref='projects')
+    media_associations = db.relationship('ProjectMedia', back_populates='project', cascade="all, delete-orphan")
+    projects_media = association_proxy('media_associations', 'media_file')
+
+    serialize_rules = ('-media_associations', '-user.projects')
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "project_name": self.project_name,
+            "artist": self.artist,
+            "genre": self.genre,
+            "year": self.year,
+            "description": self.description,
+            "project_pic": self.project_pic
+        }
+
+class ProjectMedia(db.Model, SerializerMixin):
+    __tablename__ = 'project_media'
+    id = db.Column(db.Integer, primary_key=True)
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), nullable=False)
+    media_file_id = db.Column(db.Integer, db.ForeignKey('media_files.id'), nullable=False)
+
+    project = db.relationship('Project', back_populates='media_associations')
+    media_file = db.relationship('MediaFile', back_populates='project_associations')
+
+    serialize_rules = ('-project.media_associations', '-media_file.project_associations')
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "project_id": self.project_id,
+            "media_file_id": self.media_file_id
         }

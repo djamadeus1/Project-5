@@ -6,6 +6,8 @@ import Banner from "./Banner";
 import EditMediaForm from "./EditMediaForm";
 import '../styles/shared.css';
 import '../styles/Profile.css';
+import ProjectsList from './ProjectsList';
+import ProjectModal from './ProjectModal';
 
 function Profile({ user, setUser }) {
   const navigate = useNavigate();
@@ -19,6 +21,11 @@ function Profile({ user, setUser }) {
   const mediaInputRef = useRef(null);
   const contactPicInputRef = useRef(null);
   const audioRef = useRef(null);
+  const [projectSearch, setProjectSearch] = useState('');
+  const [showProjectModal, setShowProjectModal] = useState(false);
+  const [editingProject, setEditingProject] = useState(null);
+  const [projectsRefreshTrigger, setProjectsRefreshTrigger] = useState(0);
+  const [selectedProject, setSelectedProject] = useState(null);
 
   // Protect the route based on user session/business mode
   useEffect(() => {
@@ -85,6 +92,26 @@ function Profile({ user, setUser }) {
       fetchSavedMedia();
     }
   }, []);
+
+  // Function to handle deletion of a project:
+const handleDeleteProject = async (project) => {
+  if (window.confirm(`Are you sure you want to Delete Project ${project.project_name}?`)) {
+    try {
+      const response = await fetch(`/projects/${project.id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete project');
+      }
+      // Trigger refresh
+      setProjectsRefreshTrigger(prev => prev + 1);
+    } catch (error) {
+      console.error('Error deleting project:', error);
+      alert(error.message);
+    }
+  }
+};
 
   // Utility: Construct an image URL from a given path
   const getImageUrl = (path) => {
@@ -297,6 +324,40 @@ function Profile({ user, setUser }) {
         </div>
       </div>
 
+      {/* Projects Section */}
+      <div className="project-list-square">
+  <div className="projects-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '5px' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <h3 style={{ margin: 0 }}>Projects</h3>
+    </div>
+    <input 
+      type="text" 
+      placeholder="Search Projects" 
+      value={projectSearch} 
+      onChange={(e) => setProjectSearch(e.target.value)} 
+      style={{ width: '150px', padding: '5px' }}
+    />
+  </div>
+  <ProjectsList 
+    searchQuery={projectSearch} 
+    onSelect={setSelectedProject}
+    selectedProject={selectedProject}
+    refreshTrigger={projectsRefreshTrigger}
+  />
+</div>
+
+    {/* Conditionally render the ProjectModal */}
+    {showProjectModal && (
+  <ProjectModal 
+    project={editingProject} 
+    onClose={() => { setShowProjectModal(false); setEditingProject(null); }} 
+    onSave={(savedProject) => {
+      setProjectsRefreshTrigger(prev => prev + 1);
+    }}
+    user={user}
+  />
+)}
+
       {/* Profile Picture */}
       <div className="profile-pic-container">
         <div className="purple-pic-square">
@@ -313,12 +374,12 @@ function Profile({ user, setUser }) {
         <h2 className="home-username">{user.username}</h2>
       </div>
 
-      {/* Projects Section */}
+      {/* Projects Section
       <div className="project-list-square">
         <div className="project-list">
           <h3>Projects</h3>
         </div>
-      </div>
+      </div> */}
 
       {/* Track Contact Info */}
       <div className="track-contact-info-square">
@@ -411,8 +472,66 @@ function Profile({ user, setUser }) {
       </div>
 
       {/* Labels */}
-      <div className="tracks-label">Tracks</div>
-      <div className="projects-label">Projects</div>
+<div className="tracks-label">Tracks</div>
+<div className="projects-label" style={{ display: 'flex', alignItems: 'center' }}>
+  <div style={{ 
+    display: 'flex', 
+    gap: '10px', 
+    marginRight: '00px',
+    marginLeft: '-240px'  
+  }}>
+    <button 
+      className="upload-button"  // Changed from add-button
+      style={{
+        position: 'relative',
+        top: '10px',
+        left: '10px',  // Adjust as needed
+        zIndex: 1
+      }}
+      onClick={() => { setShowProjectModal(true); setEditingProject(null); }}
+    >
+      Add
+    </button>
+    <button 
+      className="edit-track-button"  // Changed from edit-button
+      style={{
+        position: 'relative',
+        top: '10px',
+        left: '10px',  // Adjust as needed
+        zIndex: 1
+      }}
+      onClick={() => { 
+        if (selectedProject) { 
+          setEditingProject(selectedProject); 
+          setShowProjectModal(true); 
+        } else { 
+          alert('Please select a project'); 
+        } 
+      }}
+    >
+      Edit
+    </button>
+    <button 
+      className="delete-button" 
+      style={{
+        position: 'relative',
+        top: '10px',     
+        left: '280px',    
+        zIndex: 1       
+      }}
+      onClick={() => { 
+        if (selectedProject) { 
+          handleDeleteProject(selectedProject); 
+        } else { 
+          alert('Please select a project'); 
+        } 
+      }}
+    >
+      Delete
+    </button>
+  </div>
+  <span className="projects-title">Projects</span>
+</div>
 
       {/* Transport Controls */}
       <div className="transport-control-square">
