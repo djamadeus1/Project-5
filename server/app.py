@@ -7,7 +7,7 @@ from flask_restful import Resource
 from flask_cors import CORS
 from flask_session import Session
 from config import app, db, api, bcrypt
-from models import User, Contact, MediaFile, ContactMedia
+from models import User, Contact, MediaFile, ContactMedia, Project, ProjectMedia
 from werkzeug.security import check_password_hash
 # from flask import send_from_directory
 
@@ -326,6 +326,124 @@ class ContactMediaResource(Resource):
         db.session.commit()
         return {"message": "ContactMedia updated successfully"}
 
+class ProjectsResource(Resource):
+    def get(self):
+        try:
+            projects = Project.query.all()
+            return [project.to_dict() for project in projects], 200
+        except Exception as e:
+            return {"error": str(e)}, 500
+
+    def post(self):
+        # Check if the request is multipart/form-data (for file uploads)
+        if request.content_type and 'multipart/form-data' in request.content_type:
+            data = request.form
+            user_id = data.get('user_id')
+            project_name = data.get('project_name')
+            artist = data.get('artist')
+            genre = data.get('genre')
+            year = data.get('year')
+            description = data.get('description')
+            project_pic = None
+            if 'project_pic' in request.files:
+                file = request.files['project_pic']
+                if file and allowed_file(file.filename):
+                    filename = secure_filename(file.filename)
+                    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                    file.save(file_path)
+                    # Assuming you want the file URL to be relative to the server's root
+                    project_pic = '/' + file_path
+            try:
+                new_project = Project(
+                    user_id=user_id,
+                    project_name=project_name,
+                    artist=artist,
+                    genre=genre,
+                    year=year,
+                    description=description,
+                    project_pic=project_pic
+                )
+                db.session.add(new_project)
+                db.session.commit()
+                return new_project.to_dict(), 201
+            except Exception as e:
+                db.session.rollback()
+                return {"error": str(e)}, 400
+        else:
+            data = request.get_json()
+            try:
+                new_project = Project(
+                    user_id=data['user_id'],
+                    project_name=data['project_name'],
+                    artist=data.get('artist'),
+                    genre=data.get('genre'),
+                    year=data.get('year'),
+                    description=data.get('description'),
+                    project_pic=data.get('project_pic')
+                )
+                db.session.add(new_project)
+                db.session.commit()
+                return new_project.to_dict(), 201
+            except Exception as e:
+                db.session.rollback()
+                return {"error": str(e)}, 400
+
+class ProjectResource(Resource):
+    def patch(self, id):
+        project = db.session.get(Project, id)
+        if not project:
+            return {"error": "Project not found"}, 404
+        data = request.get_json()
+        try:
+            if 'project_name' in data:
+                project.project_name = data['project_name']
+            if 'artist' in data:
+                project.artist = data['artist']
+            if 'genre' in data:
+                project.genre = data['genre']
+            if 'year' in data:
+                project.year = data['year']
+            if 'description' in data:
+                project.description = data['description']
+            if 'project_pic' in data:
+                project.project_pic = data['project_pic']
+            db.session.commit()
+            return project.to_dict(), 200
+        except Exception as e:
+            db.session.rollback()
+            return {"error": str(e)}, 400
+
+    def delete(self, id):
+        project = db.session.get(Project, id)
+        if not project:
+            return {"error": "Project not found"}, 404
+        db.session.delete(project)
+        db.session.commit()
+        return {"message": "Project deleted successfully"}, 204
+
+class ProjectMediaResource(Resource):
+    def post(self):
+        data = request.get_json()
+        try:
+            new_association = ProjectMedia(
+                project_id=data['project_id'],
+                media_file_id=data['media_file_id']
+            )
+            db.session.add(new_association)
+            db.session.commit()
+            return new_association.to_dict(), 201
+        except Exception as e:
+            db.session.rollback()
+            return {"error": str(e)}, 400
+
+    def delete(self, id):
+        association = db.session.get(ProjectMedia, id)
+        if not association:
+            return {"error": "Association not found"}, 404
+        db.session.delete(association)
+        db.session.commit()
+        return {"message": "Association deleted successfully"}, 200
+
 # Add the route to your API
 api.add_resource(Signup, '/signup')
 api.add_resource(Login, '/login')
@@ -335,6 +453,9 @@ api.add_resource(ContactsResource, '/contacts', '/contacts/<int:id>')
 api.add_resource(MediaFilesResource, '/media_files')
 api.add_resource(MediaFileResource, '/media_files/<int:id>')
 api.add_resource(ContactMediaResource, '/contact_media', '/contact_media/<int:id>')
+api.add_resource(ProjectsResource, '/projects')
+api.add_resource(ProjectResource, '/projects/<int:id>')
+api.add_resource(ProjectMediaResource, '/project_media', '/project_media/<int:id>')
 
 @app.route('/verify_password', methods=['POST'])
 def verify_password():
