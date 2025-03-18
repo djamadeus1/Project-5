@@ -17,8 +17,8 @@ import os
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp3', 'wav'}
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -41,10 +41,11 @@ Session(app)
 CORS(app, 
     supports_credentials=True,
     resources={r"/*": {
-        "origins": ["http://localhost:3000"],  # Revert to original setting
+        "origins": ["http://localhost:3000"],
         "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"],
         "expose_headers": ["Content-Type"],
+        "max_age": 3600
     }}
 )
 
@@ -741,6 +742,94 @@ def update_artwork(media_id):
         return media.to_dict(), 200
     else:
         return {"error": "Invalid file type"}, 400
+
+@app.patch('/projects/<int:id>')
+def update_project(id):
+    try:
+        print("Content-Type:", request.content_type)  # Debug log
+        print("Form data:", request.form)            # Debug log
+        print("Files:", request.files)               # Debug log
+
+        project = Project.query.get(id)
+        if not project:
+            return {'error': 'Project not found'}, 404
+
+        # Handle form data
+        if request.form:
+            if 'project_name' in request.form:
+                project.project_name = request.form['project_name']
+            if 'artist' in request.form:
+                project.artist = request.form['artist']
+            if 'genre' in request.form:
+                project.genre = request.form['genre']
+            if 'year' in request.form:
+                project.year = request.form['year']
+            if 'description' in request.form:
+                project.description = request.form['description']
+
+        # Handle file upload
+        if 'project_pic' in request.files:
+            file = request.files['project_pic']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(filepath)
+                project.project_pic = f'/uploads/{filename}'
+
+        db.session.commit()
+        return project.to_dict(), 200
+
+    except Exception as e:
+        print(f"Error updating project: {str(e)}")  # Debug log
+        db.session.rollback()
+        return {'error': str(e)}, 400
+
+@app.route('/projects', methods=['POST'])
+def create_project():
+    try:
+        data = request.get_json()  # Get JSON data instead of form data
+        
+        if not data.get('project_name'):
+            return {'error': 'Project name is required'}, 400
+
+        project = Project(
+            user_id=session.get('user_id'),  # Use session user_id instead of payload
+            project_name=data['project_name'],
+            artist=data.get('artist'),
+            genre=data.get('genre'),
+            year=data.get('year'),
+            description=data.get('description')
+        )
+
+        db.session.add(project)
+        db.session.commit()
+        return project.to_dict(), 201
+
+    except Exception as e:
+        print(f"Error creating project: {str(e)}")
+        db.session.rollback()
+        return {'error': str(e)}, 400
+
+@app.route('/update_project_pic/<int:project_id>', methods=['PATCH'])
+def update_project_pic(project_id):
+    if 'project_pic' not in request.files:
+        return {'error': 'No file provided'}, 400
+    
+    file = request.files['project_pic']
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+        
+        project = Project.query.get(project_id)
+        if not project:
+            return {'error': 'Project not found'}, 404
+            
+        project.project_pic = f'/uploads/{filename}'
+        db.session.commit()
+        return project.to_dict(), 200
+        
+    return {'error': 'Invalid file type'}, 400
 
 if __name__ == "__main__":  # Fixed syntax
     app.run(port=5555, debug=True)

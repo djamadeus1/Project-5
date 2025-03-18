@@ -48,7 +48,12 @@ function ProjectsList({ searchQuery, onSelect, selectedProject, refreshTrigger }
             <img 
               src={project.project_pic ? `http://127.0.0.1:5555${project.project_pic}` : '/assets/default-project.png'} 
               alt={project.project_name} 
-              style={{ width: '30px', height: '30px', objectFit: 'cover', marginRight: '10px' }}
+              style={{ 
+                width: '60px',       // Doubled from 30px
+                height: '60px',      // Doubled from 30px
+                objectFit: 'cover', 
+                marginRight: '10px' 
+              }}
             />
             <div style={{ flex: 1 }}>
               <p><strong>{project.project_name}</strong></p>

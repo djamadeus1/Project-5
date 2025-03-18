@@ -36,53 +36,55 @@ function ProjectModal({ project, onClose, onSave, user }) {  // Added user prop
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      let payload;
-      let response;
+      // Change URL and method based on whether we're editing or creating
+      const url = project ? `/projects/${project.id}` : '/projects';
+      const method = project ? 'PATCH' : 'POST';
+
+      const metadataResponse = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          user_id: user.id,  // Add user_id to the payload
+          project_name: formData.project_name,
+          artist: formData.artist,
+          genre: formData.genre,
+          year: formData.year,
+          description: formData.description
+        })
+      });
+
+      if (!metadataResponse.ok) {
+        const error = await metadataResponse.json();
+        throw new Error(error.error || 'Failed to save project');
+      }
+
+      let savedProject = await metadataResponse.json();
+
+      // Then if there's a picture, send it separately
       if (formData.project_pic) {
-        const formPayload = new FormData();
-        formPayload.append('project_name', formData.project_name);
-        formPayload.append('artist', formData.artist);
-        formPayload.append('genre', formData.genre);
-        formPayload.append('year', formData.year);
-        formPayload.append('description', formData.description);
-        formPayload.append('project_pic', formData.project_pic);
-        if (!project) { // If adding a new project, include user_id
-          formPayload.append('user_id', user.id);
-        }
-        payload = formPayload;
-      } else {
-        if (!project) { // Add mode: include user_id
-          payload = JSON.stringify({ ...formData, user_id: user.id });
-        } else {
-          payload = JSON.stringify(formData);
-        }
-      }
-      
-      if (project) {
-        // Edit mode: PATCH request
-        response = await fetch(`/projects/${project.id}`, {
+        const picFormData = new FormData();
+        picFormData.append('project_pic', formData.project_pic);
+
+        const picResponse = await fetch(`/update_project_pic/${savedProject.id}`, {
           method: 'PATCH',
-          headers: formData.project_pic ? {} : { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: payload
+          body: picFormData
         });
-      } else {
-        // Add mode: POST request
-        response = await fetch('/projects', {
-          method: 'POST',
-          headers: formData.project_pic ? {} : { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: payload
-        });
+
+        if (!picResponse.ok) {
+          const error = await picResponse.json();
+          throw new Error(error.error || 'Failed to upload picture');
+        }
+        savedProject = await picResponse.json();
       }
-      if (!response.ok) {
-        throw new Error('Failed to save project');
-      }
-      const savedProject = await response.json();
+
       onSave(savedProject);
       onClose();
     } catch (error) {
-      console.error('Error saving project:', error);
+      console.error('Error details:', error);
       alert(error.message);
     }
   };
