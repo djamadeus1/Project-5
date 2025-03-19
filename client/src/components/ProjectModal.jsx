@@ -91,8 +91,8 @@ function ProjectModal({ project, onClose, onSave, user }) {  // Added user prop
 
   return (
     <div className="modal-overlay">
-      <div className="project-modal" style={{ fontFamily: 'Inter, sans-serif' }}>
-        <h2 style={{ textAlign: 'center', marginTop: '-0.5em', marginBottom: '1em' }}>
+      <div className="project-modal">
+        <h2 className="modal-title">
           {project ? 'Edit Project' : 'Add Project'}
         </h2>
         <form onSubmit={handleSubmit}>
@@ -120,7 +120,7 @@ function ProjectModal({ project, onClose, onSave, user }) {  // Added user prop
             <label>Project Picture:</label>
             <input type="file" name="project_pic" onChange={handleChange} accept="image/*" />
             {(formData.project_pic || (project && project.project_pic)) && (
-              <div style={{ marginTop: '1em', textAlign: 'center' }}>
+              <div className="preview-container">
                 <img 
                   src={
                     formData.project_pic instanceof File 
@@ -128,14 +128,14 @@ function ProjectModal({ project, onClose, onSave, user }) {  // Added user prop
                       : `http://127.0.0.1:5555${project.project_pic}`
                   }
                   alt="Project Preview" 
-                  style={{ width: '150px', height: '150px', objectFit: 'cover', border: '1px solid #ccc', marginTop: '0.5em' }}
+                  className="preview-image"
                 />
               </div>
             )}
           </div>
-          <div className="button-group" style={{ display: 'flex', justifyContent: 'center', marginTop: '1em', gap: '1em' }}>
-            <button type="button" onClick={onClose} className="cancel-button" style={{ fontSize: '1.30em', padding: '0.30em 2em' }}>Cancel</button>
-            <button type="submit" className="save-button" style={{ fontSize: '1.30em', padding: '0.30em 2em' }}>Save</button>
+          <div className="button-group">
+            <button type="button" onClick={onClose} className="cancel-button">Cancel</button>
+            <button type="submit" className="save-button">Save</button>
           </div>
         </form>
       </div>

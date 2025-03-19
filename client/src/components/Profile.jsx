@@ -532,6 +532,9 @@ const handleDeleteProject = async (project) => {
   </div>
   <span className="projects-title">Projects</span>
 </div>
+<div className="projects-label">
+  <span className="projects-label-text">Projects</span>
+</div>
 
       {/* Transport Controls */}
       <div className="transport-control-square">

@@ -30,46 +30,37 @@ function ProjectsList({ searchQuery, onSelect, selectedProject, refreshTrigger }
   );
 
   return (
-    <div>
-      {filteredProjects.length > 0 ? (
-        filteredProjects.map(project => (
-          <div 
-            key={project.id} 
-            className="project-item" 
-            onClick={() => onSelect(project)}
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              marginBottom: '10px',
-              cursor: 'pointer',
-              backgroundColor: selectedProject && selectedProject.id === project.id ? 'rgba(255,255,255,0.3)' : 'transparent'
-            }}
-          >
-            <img 
-              src={project.project_pic ? `http://127.0.0.1:5555${project.project_pic}` : '/assets/default-project.png'} 
-              alt={project.project_name} 
-              style={{ 
-                width: '60px',       // Doubled from 30px
-                height: '60px',      // Doubled from 30px
-                objectFit: 'cover', 
-                marginRight: '10px' 
-              }}
-            />
-            <div style={{ flex: 1 }}>
-              <p><strong>{project.project_name}</strong></p>
-              <p>Artist: {project.artist}</p>
-              <p>Genre: {project.genre}</p>
-              <p>Year: {project.year}</p>
-              <p>Description: {project.description}</p>
+    <>
+      <span className="projects-count">: {filteredProjects.length}</span>
+      <div className="projects-container">
+        {filteredProjects.length > 0 ? (
+          filteredProjects.map(project => (
+            <div 
+              key={project.id} 
+              className={`project-item ${selectedProject && selectedProject.id === project.id ? 'selected' : ''}`}
+              onClick={() => onSelect(project)}
+            >
+              <img 
+                src={project.project_pic ? `http://127.0.0.1:5555${project.project_pic}` : '/assets/default-project.png'} 
+                alt={project.project_name} 
+                className="project-image"
+              />
+              <div className="project-info">
+                <p className="project-name"><strong>{project.project_name}</strong></p>
+                <p className="project-detail">Artist: {project.artist}</p>
+                <p className="project-detail">Genre: {project.genre}</p>
+                <p className="project-detail">Year: {project.year}</p>
+                <p className="project-detail">Description: {project.description}</p>
+              </div>
             </div>
+          ))
+        ) : (
+          <div className="no-matches">
+            <p>No Matches</p>
           </div>
-        ))
-      ) : (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-          <p>No Matches</p>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 }
 

@@ -433,7 +433,7 @@
     z-index: 3;
 }
 
-  
+/* Projects section layout */
 .projects-label {
     width: 150px;
     height: 29px;
@@ -450,10 +450,75 @@
     font-size: 16px;
     position: absolute;
     top: 240px;
-    left: 1250px;
+    left: 1247px;
     transform: translate(-20%, 50%);
     z-index: 3;   /* Added z-index */
     /* outline: 2px solid blue; */
+    display: flex;
+    align-items: center;
+    gap: 4px;  /* Space between "Projects" and count */
+}
+
+.projects-count {
+    position: absolute;
+    top: 11px;
+    left: 72px;  
+    color: white;
+    font-family: Inter, sans-serif;
+    font-weight: bold;
+    font-size: 16px;
+    z-index: 3;
+}
+
+.projects-label-text {
+    position: relative;
+    left: 0px;    /* Adjust this value to move left/right */
+    top: 0px;     /* Adjust this value to move up/down */
+}
+
+/* Project List Styling */
+.project-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 12px 8px;    /* Increased top/bottom padding */
+  margin-bottom: 0;     /* Remove bottom margin since we're using padding */
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);  /* Made border more visible */
+  transition: background-color 0.2s ease;
+  gap: 12px;               /* Space between elements */
+}
+
+/* Add padding to the bottom of the last item to match */
+.project-item:last-child {
+  border-bottom: none;
+  padding-bottom: 12px;
+}
+
+/* Adjust spacing for project image */
+.project-item .project-image {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  margin-right: 12px;   /* Increased right margin */
+  border-radius: 4px;
+  margin-top: 10px;      /* Move image down */
+  align-self: flex-start; /* Align to top of container */
+}
+
+/* Adjust text container spacing */
+.project-item div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;             /* Increased gap between text lines */
+  padding: 4px 0;       /* Add vertical padding to text container */
+}
+
+/* Info text styling */
+.project-item div p:not(:first-child) {
+  font-size: 0.8em;   /* Smaller size for details */
+  color: rgba(255, 255, 255, 0.8); /* Slightly dimmer text */
+  margin-top: 1px;    /* Minimal spacing */
 }
 
 /* Reposition Projects CRUD Buttons */
@@ -462,6 +527,14 @@
   top: 240px;  /* Align vertically with the Projects label */
   left: 1120px;  /* Adjust this value to position the Add button to the left of the Projects label */
   width: 60px;  /* Adjust width if needed */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  padding-top: 0px;    /* Adjust this to move text up/down */
+  padding-left: 0px;   /* Adjust this to move text left/right */
 }
 
 .edit-button.projects {
@@ -469,6 +542,14 @@
   top: 240px;
   left: 1180px;  /* Adjust to position between the Add button and the Projects label */
   width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  padding-top: 0px;    /* Adjust this to move text up/down */
+  padding-left: 0px;   /* Adjust this to move text left/right */
 }
 
 .delete-button.projects {
@@ -714,3 +795,112 @@
   .edit-popup .cancel-button:hover {
     background-color: #e0e0e0;
   }
+
+/* Projects List Styling */
+.projects-container {
+  padding: 10px;
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
+}
+
+.project-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 1px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  border-bottom: px solid rgba(255, 255, 255, 0.2);
+  transition: background-color 0.2s ease;
+}
+
+.project-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.project-item.selected {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.project-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  margin-right: 12px;
+  border-radius: 4px;
+}
+
+.project-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.project-name {
+  font-size: 1.1em;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+}
+
+.project-detail {
+  font-size: 0.85em;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* Project Modal Styling */
+.project-modal {
+  font-family: 'Inter', sans-serif;
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 90%;
+}
+
+.modal-title {
+  text-align: center;
+  margin: -0.5em 0 1em;
+  color: #333;
+}
+
+.preview-container {
+  margin-top: 1em;
+  text-align: center;
+}
+
+.preview-image {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-top: 0.5em;
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+  margin-top: 1.5em;
+}
+
+.button-group button {
+  font-size: 1.3em;
+  padding: 0.3em 2em;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+
+.save-button {
+  background-color: #6200ea;
+  color: white;
+}
+
+.cancel-button {
+  background-color: #f5f5f5;
+  color: #333;
+}
