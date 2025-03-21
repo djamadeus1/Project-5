@@ -305,6 +305,22 @@ const handleDeleteProject = async (project) => {
     }
   };
 
+  // Update the useEffect for media files
+  useEffect(() => {
+    if (selectedProject) {
+      fetch(`/projects/${selectedProject.id}/media_files`, { credentials: "include" })
+        .then(response => response.ok ? response.json() : [])
+        .then(data => setMediaFiles(data))
+        .catch(error => console.error("Error fetching project media files:", error));
+    } else {
+      // If no project is selected, fetch all media files
+      fetch("/media_files", { credentials: "include" })
+        .then(response => response.ok ? response.json() : [])
+        .then(data => setMediaFiles(data))
+        .catch(error => console.error("Error fetching all media files:", error));
+    }
+  }, [selectedProject]);
+
   if (!user) return <p>Loading...</p>;
 
   return (
@@ -315,7 +331,7 @@ const handleDeleteProject = async (project) => {
         <div className="user-banner-square">
           <Banner bannerUrl={getImageUrl(user.logo)} />
           <button 
-            className={`edit-button ${isUploading ? 'uploading' : ''}`} 
+            class={`edit-button ${isUploading ? 'uploading' : ''}`} 
             onClick={() => bannerInputRef.current.click()}
           >
             {isUploading ? 'Uploading...' : 'Edit'}
@@ -329,6 +345,12 @@ const handleDeleteProject = async (project) => {
   <div className="projects-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '5px' }}>
     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
       <h3 style={{ margin: 0 }}>Projects</h3>
+      <button 
+        className="all-button" 
+        onClick={() => { setSelectedProject(null); setProjectSearch(''); }}
+      >
+        All
+      </button>
     </div>
     <input 
       type="text" 

@@ -831,5 +831,17 @@ def update_project_pic(project_id):
         
     return {'error': 'Invalid file type'}, 400
 
+@app.route('/projects/<int:project_id>/media_files', methods=['GET'])
+def get_project_media_files(project_id):
+    try:
+        # Query the ProjectMedia table for associations with the given project_id
+        project_media_assocs = ProjectMedia.query.filter_by(project_id=project_id).all()
+        # Extract the media file from each association
+        media_files = [assoc.media_file for assoc in project_media_assocs]
+        # Return the media files as a list of dictionaries
+        return jsonify([media.to_dict() for media in media_files]), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == "__main__":  # Fixed syntax
     app.run(port=5555, debug=True)

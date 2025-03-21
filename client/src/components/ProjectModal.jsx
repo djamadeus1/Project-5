@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 function ProjectModal({ project, onClose, onSave, user }) {  // Added user prop
   // If project exists, we're editing; otherwise, adding a new project.
@@ -10,6 +10,10 @@ function ProjectModal({ project, onClose, onSave, user }) {  // Added user prop
     description: project ? project.description : '',
     project_pic: null
   });
+  const [selectedMediaIds, setSelectedMediaIds] = useState([]);
+  const [selectedMediaFiles, setSelectedMediaFiles] = useState([]);
+  const mediaFileInputRef = useRef(null);
+  const [projectTracks, setProjectTracks] = useState([]);
 
   useEffect(() => {
     if (project) {
@@ -21,6 +25,18 @@ function ProjectModal({ project, onClose, onSave, user }) {  // Added user prop
         description: project.description,
         project_pic: null
       });
+    }
+  }, [project]);
+
+  useEffect(() => {
+    if (project) {
+      fetch(`/project_media?project_id=${project.id}`, { credentials: 'include' })
+        .then(response => response.ok ? response.json() : [])
+        .then(data => {
+          const tracks = data.map(assoc => assoc.media_file);
+          setProjectTracks(tracks);
+        })
+        .catch(error => console.error('Error fetching project tracks:', error));
     }
   }, [project]);
 
@@ -80,6 +96,46 @@ function ProjectModal({ project, onClose, onSave, user }) {  // Added user prop
         }
         savedProject = await picResponse.json();
       }
+      
+      // If there are selected media IDs, associate them with the project
+      if (selectedMediaIds.length > 0) {
+        for (const mediaId of selectedMediaIds) {
+          await fetch('/project_media', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+              project_id: savedProject.id,
+              media_file_id: mediaId
+            })
+          });
+        }
+      }
+
+      // Add this after processing project picture and before onSave
+      if (selectedMediaFiles.length > 0) {
+        for (const file of selectedMediaFiles) {
+          const mediaFormData = new FormData();
+          mediaFormData.append('media', file);
+          const mediaResponse = await fetch('/upload_media', {
+            method: 'POST',
+            body: mediaFormData,
+            credentials: 'include'
+          });
+          if (mediaResponse.ok) {
+            const newMedia = await mediaResponse.json();
+            await fetch('/project_media', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({
+                project_id: savedProject.id,
+                media_file_id: newMedia.id
+              })
+            });
+          }
+        }
+      }
 
       onSave(savedProject);
       onClose();
@@ -130,6 +186,35 @@ function ProjectModal({ project, onClose, onSave, user }) {  // Added user prop
                   alt="Project Preview" 
                   className="preview-image"
                 />
+              </div>
+            )}
+          </div>
+          <div className="form-group media-files-button-group">
+            <button
+              type="button"
+              className="add-media-btn"
+              onClick={() => mediaFileInputRef.current.click()}
+            >
+              Add Media Files
+            </button>
+            <input
+              type="file"
+              multiple
+              style={{ display: 'none' }}
+              ref={mediaFileInputRef}
+              onChange={(e) => {
+                const filesArray = Array.from(e.target.files);
+                setSelectedMediaFiles(filesArray);
+              }}
+            />
+            {selectedMediaFiles.length > 0 && (
+              <div className="selected-media-list">
+                <p>Selected Files:</p>
+                <ul>
+                  {selectedMediaFiles.map((file, index) => (
+                    <li key={index}>{file.name}</li>
+                  ))}
+                </ul>
               </div>
             )}
           </div>
