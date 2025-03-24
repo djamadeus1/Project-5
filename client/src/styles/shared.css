@@ -288,6 +288,32 @@
     
   }
 
+  /* Default artwork for media player when no artwork is attached */
+.default-media-artwork {
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 550px;         /* Default width; adjust as needed */
+  height: 550px;        /* Default height; adjust as needed */
+  background-color: #8007F9;  /* Purple background */
+  color: #fff;          /* White font */
+  font-size: 48px;      /* Adjust font size as needed */
+  font-weight: bold;
+  text-align: center;
+  border-radius: 8px;   /* Rounded corners; adjust as needed */
+  /* Optional: add a border or shadow if desired */
+  border: 2px solid #6406c9;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.media-player-square .media-artwork {
+  width: 100%;
+  height: 94%;
+  object-fit: cover;
+  z-index: 0; /* Ensure it stays above the background */
+}
+
   .transport-control-square {
     width: 450px;
     height: 85px;
@@ -510,7 +536,7 @@
 .project-item div {
   display: flex;
   flex-direction: column;
-  gap: 4px;             /* Increased gap between text lines */
+  gap: 2px;  /*px;             /* Increased gap between text lines */
   padding: 4px 0;       /* Add vertical padding to text container */
 }
 
@@ -586,10 +612,19 @@
     border: 1px solid #000000;
     box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 10px;
-    position: absolute;
+    position: relative;  /* Changed from absolute to relative */
     top: 41vh; /* Adjust vertical position dynamically */
     left: 6vw; /* Adjust horizontal position dynamically */
-    z-index: 1000;
+    z-index: 2;
+  }
+
+  .contact-pic-square .edit-button {
+    position: absolute;
+    top: 200px;
+    right: 10px;
+    width: 3vw;
+    height: 4vh;
+    z-index: 2;
   }
 
   /* Track Contact Info Square */
@@ -815,9 +850,29 @@
 
 /* Projects List Styling */
 .projects-container {
+  position: relative;
   padding: 10px;
   overflow-y: auto;
   max-height: calc(100vh - 200px);
+}
+
+/* Center the "No Matches" message inside the projects container */
+.projects-container .no-matches {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Inter', sans-serif; /* or your chosen font */
+  font-size: 1.3rem; /* Adjust size as needed */
+  color: #333; /* Adjust color as needed */
+  text-align: center;
+}
+
+.projects-title {
+  font-family: 'Inter', sans-serif; /* Change to your desired font */
+  font-size: 1.05rem; /* Adjust size as needed */
+  font-weight: bold; /* Adjust weight as needed */
+  color: #333; /* Change color if needed */
 }
 
 .project-item {
@@ -1001,3 +1056,52 @@
   z-index: 5;
 }
 
+.default-artwork-placeholder {
+  font-family: 'Inter', sans-serif;
+  display: 0 0 150px;
+  align-items: center;
+  justify-content: center;
+  width: 150px;          /* Match expected artwork width */
+  height: 150px;         /* Match expected artwork height */
+  background-color: rgb(255, 255, 255);
+  border: 1px solid #8007F9; /* Purple border */
+  color: #ffffff;            /* Purple text */
+  font-weight: bold;
+  font-size: 18px;
+  text-align: center;
+  border-radius: 8px;
+}
+
+.default-artwork-placeholder span {
+  position: relative;
+  top: 64px;
+}
+
+/* Allow the media info (title and description) to wrap text properly */
+.media-info {
+  flex: 1;
+  font-family: 'Inter', sans-serif;
+  white-space: normal;      /* Allow text to wrap */
+  word-wrap: break-word;    /* Break long words if needed */
+}
+
+/* Optionally, ensure that the media title wraps if it’s too long */
+.media-title {
+  overflow-wrap: break-word;
+  word-break: break-all;
+}
+
+.default-contact-pic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 150px;   /* Adjust to your desired size */
+  height: 150px;  /* Adjust to your desired size */
+  background-color: #8007F9;  /* Purple background */
+  color: white;   /* White font */
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;  /* Adjust font size as needed */
+  font-weight: bold;
+  text-align: center;
+  border-radius: 50%;  /* Make it circular if desired */
+}
