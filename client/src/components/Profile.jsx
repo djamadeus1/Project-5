@@ -344,7 +344,7 @@ const handleDeleteProject = async (project) => {
       <div className="project-list-square">
   <div className="projects-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '5px' }}>
     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-      <h3 style={{ margin: 0 }}>Projects</h3>
+      <h3 className="projects-title" style={{ margin: 0 }}>Projects</h3>
       <button 
         className="all-button" 
         onClick={() => { setSelectedProject(null); setProjectSearch(''); }}
@@ -431,7 +431,7 @@ const handleDeleteProject = async (project) => {
           <>
             {currentContacts[0].contact_pic ? (
               <img 
-              src={`http://127.0.0.1:5555${currentContacts[0].contact_pic}?t=${Date.now()}`}
+                src={`http://127.0.0.1:5555${currentContacts[0].contact_pic}?t=${Date.now()}`}
                 alt={currentContacts[0].name}
                 className="contact-picture"
                 onError={(e) => {
@@ -440,7 +440,7 @@ const handleDeleteProject = async (project) => {
               />
             ) : (
               <div className="default-contact-pic">
-                {/* You can put a default image or icon here */}
+                <span>No Contact Image</span>
               </div>
             )}
             <button className="edit-button" onClick={() => contactPicInputRef.current.click()}>
@@ -455,24 +455,25 @@ const handleDeleteProject = async (project) => {
       <div className="contact-background"></div>
 
       {/* Media Player */}
-      <div
-        className="media-player-square"
-        style={{
-          backgroundImage: currentMedia && currentMedia.artwork_url 
-            ? `url(http://127.0.0.1:5555${currentMedia.artwork_url}?t=${Date.now()})`
-            : 'none',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        }}
-      >
-        {currentMedia && (
-          <audio ref={audioRef} controls key={currentMedia.id}>
-            <source src={getMediaUrl(currentMedia)} type={currentMedia.file_type || 'audio/mpeg'} />
-            Your browser does not support the audio element.
-          </audio>
-        )}
-      </div>
+      <div className="media-player-square">
+  {currentMedia && currentMedia.artwork_url ? (
+    <img 
+      src={`http://127.0.0.1:5555${currentMedia.artwork_url}?t=${Date.now()}`}
+      alt={currentMedia.title}
+      className="media-artwork"
+    />
+  ) : (
+    <div className="default-media-artwork">
+      <span>MUSIC - ONE</span>
+    </div>
+  )}
+  {currentMedia && (
+    <audio ref={audioRef} controls key={currentMedia.id}>
+      <source src={getMediaUrl(currentMedia)} type={currentMedia.file_type || 'audio/mpeg'} />
+      Your browser does not support the audio element.
+    </audio>
+  )}
+</div>
 
       {/* Track List and Upload Controls */}
       <div className="track-list-square">

@@ -5,16 +5,15 @@ import LoginForm from './LoginForm';
 import SignupForm from './SignupForm';
 import ContactsList from './ContactsList';
 import Home from './Home';
-import BusinessMode_2 from "./BusinessMode_2"; // Revert to original name
+import BusinessMode_2 from "./BusinessMode_2";
 import Profile from './Profile';
-import MediaList from './MediaList'; // Import MediaList component
-// import '../styles/index.css';
+import MediaList from './MediaList';
 
 function App() {
   const [user, setUser] = useState(null);
   const [contacts, setContacts] = useState([]);
-  const [mediaFiles, setMediaFiles] = useState([]); // Add state for media files
-  const [currentMedia, setCurrentMedia] = useState(null); // Add state for current media
+  const [mediaFiles, setMediaFiles] = useState([]);
+  const [currentMedia, setCurrentMedia] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggedOut, setIsLoggedOut] = useState(false);
   const [isBusinessMode, setIsBusinessMode] = useState(false);
@@ -171,18 +170,14 @@ function App() {
     <div>
       <Header user={user} handleLogout={handleLogout} isBusinessMode={isBusinessMode} />
       <Routes>
-        {/* Public Routes */}
+        {/* Your routes remain unchanged */}
         <Route path="/login" element={<LoginForm onLogin={setUser} />} />
         <Route path="/signup" element={<SignupForm />} />
-
-        {/* Protected Home Route */}
         <Route path="/" element={
           <ProtectedRoute>
             <Home user={user} />
           </ProtectedRoute>
         } />
-
-        {/* Business Protected Routes */}
         <Route path="/business-mode-2" element={
           <BusinessProtectedRoute>
             <BusinessMode_2 user={user} />
@@ -198,15 +193,11 @@ function App() {
             <ContactsList contacts={contacts} />
           </BusinessProtectedRoute>
         } />
-
-        {/* Media List Route */}
         <Route path="/media" element={
           <ProtectedRoute>
             <MediaList mediaFiles={mediaFiles} onMediaSelect={handleMediaSelect} currentMedia={currentMedia} />
           </ProtectedRoute>
         } />
-
-        {/* Catch all redirect */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </div>
