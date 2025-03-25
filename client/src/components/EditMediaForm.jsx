@@ -136,6 +136,16 @@ function EditMediaForm({ media, onClose, onUpdate }) {
               required
             />
           </div>
+         { (formData.artwork || media.artwork_url) && (
+          <div className="artwork-preview">
+            <p>Artwork Preview:</p>
+            <img
+              src={formData.artwork ? URL.createObjectURL(formData.artwork) : `http://127.0.0.1:5555${media.artwork_url}`}
+              alt="Artwork Preview"
+              className="artwork-image"
+            />
+          </div>
+        )}
           
           <div className="form-group">
             <label>Load Artwork:</label>
@@ -189,6 +199,7 @@ function EditMediaForm({ media, onClose, onUpdate }) {
               value={formData.contact.phone}
               onChange={handleChange}
               required
+              placeholder="Enter phone number"
             />
           </div>
           
@@ -231,9 +242,9 @@ function EditMediaForm({ media, onClose, onUpdate }) {
             />
           </div>
           
-          <div className="button-group">
-            <button type="submit">Save Changes</button>
+          <div className="button-group">            
             <button type="button" onClick={onClose} className="cancel-button">Cancel</button>
+            <button type="submit">Save Changes</button>
           </div>
         </form>
       </div>

@@ -404,7 +404,7 @@
     top: 31vh;
     left: 60vw;
     overflow-y: auto;
-    z-index: 4;
+    z-index: 1;
 }
   
 /* Track List Square */
@@ -456,7 +456,7 @@
     top: 496px;
     left: 1220px;
     /* transform: translate(-30%, 50%); */
-    z-index: 3;
+    z-index: 2;
 }
 
 /* Projects section layout */
@@ -478,7 +478,7 @@
     top: 240px;
     left: 1247px;
     transform: translate(-20%, 50%);
-    z-index: 3;   /* Added z-index */
+    z-index: 1;   /* Added z-index */
     /* outline: 2px solid blue; */
     display: flex;
     align-items: center;
@@ -762,6 +762,12 @@
     background-color: darkred;
   }
 
+ /* Edit Button for Banner - Lower z-index */
+ .user-banner-square .edit-button {
+  z-index: 1;
+}
+
+/* EditMediaForm css */
   .popup-overlay {
     position: fixed;
     top: 0;
@@ -772,12 +778,33 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 10;
+  }
+
+  .artwork-preview {
+    text-align: center;
+    margin: 0;
+    padding: 0;
   }
   
+  .artwork-preview p {
+    margin: 0 0 5px 0;  /* Reduced bottom margin for the label */
+    padding: 0;
+  }
+  
+  .artwork-image {
+    max-width: 250px;
+    max-height: 250px;
+    margin: 0;  /* Remove any extra margin that might create a gap */
+  }
+  
+  .artwork-preview + .form-group {
+    margin-top: -50px; /* Adjust this value as needed */
+  }
+
   .edit-popup {
     background-color: white;
-    width: 500px;
+    width: 400px;
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
@@ -789,15 +816,18 @@
     color: #333;
     margin-bottom: 20px;
     text-align: center;
+    font-family: Inter, sans-serif;
   }
   
   .edit-popup h3 {
     color: #555;
-    margin: 20px 0 15px;
+    margin: 20px 1px;
+    font-family: Inter, sans-serif;
   }
   
   .edit-popup .form-group {
-    margin-bottom: 15px;
+    margin-bottom: px;
+    font-family: Inter, sans-serif;
   }
   
   .edit-popup label {
@@ -807,10 +837,11 @@
   }
   
   .edit-popup input {
-    width: 100%;
+    width: 80%;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
+    font-family: Inter, sans-serif;
     font-size: 14px;
   }
   

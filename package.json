@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "libphonenumber-js": "^1.12.6",
+    "react-phone-number-input": "^3.4.12"
+  }
+}

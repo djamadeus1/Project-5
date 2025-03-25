@@ -342,24 +342,24 @@ const handleDeleteProject = async (project) => {
 
       {/* Projects Section */}
       <div className="project-list-square">
-  <div className="projects-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '5px' }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-      <h3 className="projects-title" style={{ margin: 0 }}>Projects</h3>
-      <button 
-        className="all-button" 
-        onClick={() => { setSelectedProject(null); setProjectSearch(''); }}
-      >
-        All
-      </button>
-    </div>
-    <input 
-      type="text" 
-      placeholder="Search Projects" 
-      value={projectSearch} 
-      onChange={(e) => setProjectSearch(e.target.value)} 
-      style={{ width: '150px', padding: '5px' }}
-    />
-  </div>
+        <div className="projects-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '5px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <h3 className="projects-title" style={{ margin: 0 }}>Projects</h3>
+            <button 
+              className="all-button" 
+              onClick={() => { setSelectedProject(null); setProjectSearch(''); }}
+            >
+              All
+            </button>
+          </div>
+            <input 
+              type="text" 
+              placeholder="Search Projects" 
+              value={projectSearch} 
+              onChange={(e) => setProjectSearch(e.target.value)} 
+              style={{ width: '150px', padding: '5px' }}
+            />
+          </div>
   <ProjectsList 
     searchQuery={projectSearch} 
     onSelect={setSelectedProject}
