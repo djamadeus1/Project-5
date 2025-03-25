@@ -1,8 +1,10 @@
 import React from "react";
 import '../styles/index.css';  // Adjust path as needed
 
-function MediaList({ mediaFiles, searchQuery, onMediaSelect, currentMedia }) {
+function MediaList({ mediaFiles, searchQuery = "", onMediaSelect, currentMedia }) {
   console.log("Media Files in MediaList:", mediaFiles); // Debugging log
+  console.log("Search Query:", searchQuery);
+  console.log("All Media Files:", mediaFiles);
 
   if (!mediaFiles || mediaFiles.length === 0) {
     return (
@@ -19,7 +21,7 @@ const query = searchQuery ? searchQuery.toLowerCase() : "";
 
 // Filter mediaFiles based on title, description, and associated contacts (name, company, discipline)
 const filteredMedia = mediaFiles.filter(media => {
-  if (!query) return true; // If query is empty, include all media files
+  if (!query) return true;
   const titleMatch = media.title && media.title.toLowerCase().includes(query);
   const descriptionMatch = media.description && media.description.toLowerCase().includes(query);
   const contactMatch = media.contacts && media.contacts.some(contact => {
@@ -31,6 +33,7 @@ const filteredMedia = mediaFiles.filter(media => {
   });
   return titleMatch || descriptionMatch || contactMatch;
 });
+console.log("Filtered Media:", filteredMedia);
 
   return (
     <div className="media-list-container">
@@ -47,17 +50,17 @@ const filteredMedia = mediaFiles.filter(media => {
             onClick={() => onMediaSelect(media)}
           >
             <div className="media-item-container">
-            {media.artwork_url ? (
-              <img
-                src={`http://127.0.0.1:5555${media.artwork_url}?t=${Date.now()}`}
-                alt={media.title}
-                className="media-artwork"
-              />
-            ) : (
-              <div className="default-artwork-placeholder">
-                <span>MUSIC - ONE</span>
-              </div>
-            )}
+              {media.artwork_url ? (
+                <img 
+                  src={`http://127.0.0.1:5555${media.artwork_url}?t=${Date.now()}`}
+                  alt={media.title}
+                  className="media-artwork"
+                />
+              ) : (
+                <div className="default-artwork-placeholder">
+                  <span>MUSIC - ONE</span>
+                </div>
+              )}
               <div className="media-info">
                 <h4 className="media-title">{media.title}</h4>
                 <p className="media-description">{media.description}</p>
