@@ -222,7 +222,7 @@
   }
     
   Transport Buttons
-  /* .transport-buttons {
+  .transport-buttons {
     width: 400px;
     display: flex;
     justify-content: space-around;
@@ -236,7 +236,7 @@
   
   .transport-buttons {
     width: 400px;
-    height: 76px;
+    height: 80px;
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -245,15 +245,15 @@
     line-height: 58.09px;
     color: #000000; 
     position: absolute;
-    left: 30px;
+    left: 20px;
     
     
   }
 
-  .transport-buttons button {
-    padding: 10px;
+   .transport-buttons button {
+    padding: px;
     font-size: 35px;
-    background-color: #6200ea;
+    background-color: #ff9c06;
     color: white;
     border: none;
     border-radius:10px;
@@ -261,7 +261,7 @@
     box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
     top: 50;
-  } */
+  }
   
   .transport-buttons button:hover {
     background-color: #4500a0;
@@ -271,12 +271,21 @@
 /* Container for transport buttons – adjust these custom properties to reposition the group */
 .transport-controls {
   position: absolute;
-  top: var(--transport-controls-top, 85vh);    /* Adjust vertical position */
-  left: var(--transport-controls-left, 50%);     /* Adjust horizontal position */
-  transform: translateX(-50%);                   /* Center horizontally by default */
+  top: var(--transport-controls-top, 85vh);
+  left: var(--transport-controls-left, 50%);
+  transform: translateX(-50%);
   display: flex;
-  gap: var(--transport-gap, 0px);                /* Set gap between buttons; default is 0 */
+  gap: var(--transport-gap, 0px);
+  
+  background-image: url('../assets/chromegold-background.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0px 4px;
 }
+
 
 /* Skip-backward Button */
 .skip-backward-button {
@@ -288,6 +297,7 @@
   width: var(--skip-backward-width, 80px);
   height: var(--skip-backward-height, 80px);
   display: inline-block;
+  z-index: 100
 }
 
 .skip-backward-button img {

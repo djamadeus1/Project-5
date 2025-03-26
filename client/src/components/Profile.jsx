@@ -1,4 +1,3 @@
-// client/src/components/Profile.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 import MediaList from "./MediaList";
@@ -95,24 +94,24 @@ function Profile({ user, setUser }) {
   }, []);
 
   // Function to handle deletion of a project:
-const handleDeleteProject = async (project) => {
-  if (window.confirm(`Are you sure you want to Delete Project ${project.project_name}?`)) {
-    try {
-      const response = await fetch(`/projects/${project.id}`, {
-        method: 'DELETE',
-        credentials: 'include'
-      });
-      if (!response.ok) {
-        throw new Error('Failed to delete project');
+  const handleDeleteProject = async (project) => {
+    if (window.confirm(`Are you sure you want to Delete Project ${project.project_name}?`)) {
+      try {
+        const response = await fetch(`/projects/${project.id}`, {
+          method: 'DELETE',
+          credentials: 'include'
+        });
+        if (!response.ok) {
+          throw new Error('Failed to delete project');
+        }
+        // Trigger refresh
+        setProjectsRefreshTrigger(prev => prev + 1);
+      } catch (error) {
+        console.error('Error deleting project:', error);
+        alert(error.message);
       }
-      // Trigger refresh
-      setProjectsRefreshTrigger(prev => prev + 1);
-    } catch (error) {
-      console.error('Error deleting project:', error);
-      alert(error.message);
     }
-  }
-};
+  };
 
   // Utility: Construct an image URL from a given path
   const getImageUrl = (path) => {
@@ -337,7 +336,7 @@ const handleDeleteProject = async (project) => {
         <div className="user-banner-square">
           <Banner bannerUrl={getImageUrl(user.logo)} />
           <button 
-            class={`edit-button ${isUploading ? 'uploading' : ''}`} 
+            className={`edit-button ${isUploading ? 'uploading' : ''}`} 
             onClick={() => bannerInputRef.current.click()}
           >
             {isUploading ? 'Uploading...' : 'Edit'}
@@ -358,33 +357,33 @@ const handleDeleteProject = async (project) => {
               All
             </button>
           </div>
-            <input 
-              type="text" 
-              placeholder="Search Projects" 
-              value={projectSearch} 
-              onChange={(e) => setProjectSearch(e.target.value)} 
-              style={{ width: '150px', padding: '5px' }}
-            />
-          </div>
-  <ProjectsList 
-    searchQuery={projectSearch} 
-    onSelect={setSelectedProject}
-    selectedProject={selectedProject}
-    refreshTrigger={projectsRefreshTrigger}
-  />
-</div>
+          <input 
+            type="text" 
+            placeholder="Search Projects" 
+            value={projectSearch} 
+            onChange={(e) => setProjectSearch(e.target.value)} 
+            style={{ width: '150px', padding: '5px' }}
+          />
+        </div>
+        <ProjectsList 
+          searchQuery={projectSearch} 
+          onSelect={setSelectedProject}
+          selectedProject={selectedProject}
+          refreshTrigger={projectsRefreshTrigger}
+        />
+      </div>
 
-    {/* Conditionally render the ProjectModal */}
-    {showProjectModal && (
-  <ProjectModal 
-    project={editingProject} 
-    onClose={() => { setShowProjectModal(false); setEditingProject(null); }} 
-    onSave={(savedProject) => {
-      setProjectsRefreshTrigger(prev => prev + 1);
-    }}
-    user={user}
-  />
-)}
+      {/* Conditionally render the ProjectModal */}
+      {showProjectModal && (
+        <ProjectModal 
+          project={editingProject} 
+          onClose={() => { setShowProjectModal(false); setEditingProject(null); }} 
+          onSave={(savedProject) => {
+            setProjectsRefreshTrigger(prev => prev + 1);
+          }}
+          user={user}
+        />
+      )}
 
       {/* Profile Picture */}
       <div className="profile-pic-container">
@@ -401,13 +400,6 @@ const handleDeleteProject = async (project) => {
         </div>
         <h2 className="home-username">{user.username}</h2>
       </div>
-
-      {/* Projects Section
-      <div className="project-list-square">
-        <div className="project-list">
-          <h3>Projects</h3>
-        </div>
-      </div> */}
 
       {/* Track Contact Info */}
       <div className="track-contact-info-square">
@@ -462,24 +454,24 @@ const handleDeleteProject = async (project) => {
 
       {/* Media Player */}
       <div className="media-player-square">
-  {currentMedia && currentMedia.artwork_url ? (
-    <img 
-      src={`http://127.0.0.1:5555${currentMedia.artwork_url}?t=${Date.now()}`}
-      alt={currentMedia.title}
-      className="media-artwork"
-    />
-  ) : (
-    <div className="default-media-artwork">
-      <span>MUSIC - ONE</span>
-    </div>
-  )}
-  {currentMedia && (
-    <audio ref={audioRef} controls key={currentMedia.id}>
-      <source src={getMediaUrl(currentMedia)} type={currentMedia.file_type || 'audio/mpeg'} />
-      Your browser does not support the audio element.
-    </audio>
-  )}
-</div>
+        {currentMedia && currentMedia.artwork_url ? (
+          <img 
+            src={`http://127.0.0.1:5555${currentMedia.artwork_url}?t=${Date.now()}`}
+            alt={currentMedia.title}
+            className="media-artwork"
+          />
+        ) : (
+          <div className="default-media-artwork">
+            <span>MUSIC - ONE</span>
+          </div>
+        )}
+        {currentMedia && (
+          <audio ref={audioRef} controls key={currentMedia.id}>
+            <source src={getMediaUrl(currentMedia)} type={currentMedia.file_type || 'audio/mpeg'} />
+            Your browser does not support the audio element.
+          </audio>
+        )}
+      </div>
 
       {/* Track List and Upload Controls */}
       <div className="track-list-square">
@@ -501,89 +493,97 @@ const handleDeleteProject = async (project) => {
       </div>
 
       {/* Labels */}
-<div className="tracks-label">Tracks</div>
-<div className="projects-label" style={{ display: 'flex', alignItems: 'center' }}>
-  <div style={{ 
-    display: 'flex', 
-    gap: '10px', 
-    marginRight: '00px',
-    marginLeft: '-240px'  
-  }}>
-    <button 
-      className="upload-button"  // Changed from add-button
-      style={{
-        position: 'relative',
-        top: '10px',
-        left: '10px',  // Adjust as needed
-        zIndex: 1
-      }}
-      onClick={() => { setShowProjectModal(true); setEditingProject(null); }}
-    >
-      Add
-    </button>
-    <button 
-      className="edit-track-button"  // Changed from edit-button
-      style={{
-        position: 'relative',
-        top: '10px',
-        left: '10px',  // Adjust as needed
-        zIndex: 1
-      }}
-      onClick={() => { 
-        if (selectedProject) { 
-          setEditingProject(selectedProject); 
-          setShowProjectModal(true); 
-        } else { 
-          alert('Please select a project'); 
-        } 
-      }}
-    >
-      Edit
-    </button>
-    <button 
-      className="delete-button" 
-      style={{
-        position: 'relative',
-        top: '10px',     
-        left: '280px',    
-        zIndex: 1       
-      }}
-      onClick={() => { 
-        if (selectedProject) { 
-          handleDeleteProject(selectedProject); 
-        } else { 
-          alert('Please select a project'); 
-        } 
-      }}
-    >
-      Delete
-    </button>
-  </div>
-  <span className="projects-title">Projects</span>
-</div>
-<div className="projects-label">
-  <span className="projects-label-text">Projects</span>
-</div>
-
-      {/* Transport Controls */}
-      <div className="transport-control-square">
-        <div className="transport-buttons">
-          <button onClick={handleSkipBackward} className="skip-backward-button">
-            <img src="/assets/gold-rewind.svg" alt="Skip Backward" />
+      <div className="tracks-label">Tracks</div>
+      <div className="projects-label" style={{ display: 'flex', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '10px', marginRight: '0px', marginLeft: '-240px' }}>
+          <button 
+            className="upload-button"  
+            style={{
+              position: 'relative',
+              top: '10px',
+              left: '10px',
+              zIndex: 1
+            }}
+            onClick={() => { setShowProjectModal(true); setEditingProject(null); }}
+          >
+            Add
           </button>
-          <button onClick={handlePause} className="pause-button">
-            <img src="/assets/gold-pause.svg" alt="Pause" />
+          <button 
+            className="edit-track-button"  
+            style={{
+              position: 'relative',
+              top: '10px',
+              left: '10px',
+              zIndex: 1
+            }}
+            onClick={() => { 
+              if (selectedProject) { 
+                setEditingProject(selectedProject); 
+                setShowProjectModal(true); 
+              } else { 
+                alert('Please select a project'); 
+              } 
+            }}
+          >
+            Edit
           </button>
-          <button onClick={handlePlayPause} className="play-button">
-            <img src="/assets/gold-play.svg" alt="Play" />
-          </button>
-          <button onClick={handleSkipForward} className="skip-forward-button">
-            <img src="/assets/gold-skipforward.svg" alt="Skip Forward" />
-          </button>
-          <button onClick={handleStop} className="stop-button">
-            <img src="/assets/gold-stop.svg" alt="Stop" />
+          <button 
+            className="delete-button" 
+            style={{
+              position: 'relative',
+              top: '10px',
+              left: '280px',
+              zIndex: 1
+            }}
+            onClick={() => { 
+              if (selectedProject) { 
+                handleDeleteProject(selectedProject); 
+              } else { 
+                alert('Please select a project'); 
+              } 
+            }}
+          >
+            Delete
           </button>
         </div>
+        <span className="projects-title">Projects</span>
+      </div>
+      <div className="projects-label">
+        <span className="projects-label-text">Projects</span>
+      </div>
+
+      {/* Transport Controls */}
+      <div
+        className="transport-controls"
+        style={{
+          backgroundImage: `url(${process.env.PUBLIC_URL}/assets/chromegold-background.svg)`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          padding: '10px',
+          position: 'absolute',
+          top: '85vh',
+          left: '37%',
+          transform: 'translateX(-50%)',
+          display: 'flex',
+          gap: '0px'
+        }}
+      >
+        <button onClick={handleSkipBackward} className="skip-backward-button">
+          <img src="/assets/gold-rewind.svg" alt="Skip Backward" />
+        </button>
+        <button onClick={handlePause} className="pause-button">
+          <img src="/assets/gold-pause.svg" alt="Pause" />
+        </button>
+        <button onClick={handlePlayPause} className="play-button">
+          <img src="/assets/gold-play.svg" alt="Play" />
+        </button>
+        <button onClick={handleSkipForward} className="skip-forward-button">
+          <img src="/assets/gold-skipforward.svg" alt="Skip Forward" />
+        </button>
+        <button onClick={handleStop} className="stop-button">
+          <img src="/assets/gold-stop.svg" alt="Stop" />
+        </button>
       </div>
     </div>
   );
