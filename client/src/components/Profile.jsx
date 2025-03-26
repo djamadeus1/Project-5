@@ -209,7 +209,8 @@ function Profile({ user, setUser }) {
   // Audio controls
   const handlePlayPause = () => {
     if (audioRef.current) {
-      audioRef.current.paused ? audioRef.current.play() : audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(e => console.error("Playback error:", e));
     }
   };
   const handleStop = () => {
@@ -328,6 +329,15 @@ function Profile({ user, setUser }) {
 
   if (!user) return <p>Loading...</p>;
 
+  const handleButtonClick = (e, callback) => {
+    const button = e.currentTarget;
+    button.classList.add('pressed');
+    setTimeout(() => {
+      button.classList.remove('pressed');
+    }, 300);
+    if (callback) callback(e);
+  };
+
   return (
     <div className="page-wrapper">
       {/* Logo and Banner */}
@@ -398,7 +408,9 @@ function Profile({ user, setUser }) {
           </button>
           <input type="file" ref={profilePicInputRef} onChange={handleProfilePicChange} style={{ display: 'none' }} accept="image/*" />
         </div>
-        <h2 className="home-username">{user.username}</h2>
+        <div className="username-container">
+          <h2 className="home-username">{user.username}</h2>
+        </div>
       </div>
 
       {/* Track Contact Info */}
@@ -569,20 +581,20 @@ function Profile({ user, setUser }) {
           gap: '0px'
         }}
       >
-        <button onClick={handleSkipBackward} className="skip-backward-button">
-          <img src="/assets/gold-rewind.svg" alt="Skip Backward" />
+        <button onClick={(e) => handleButtonClick(e, handleSkipBackward)} className="skip-backward-button">
+          <img src="/assets/rounded-skipback.svg" alt="Skip Backward" />
         </button>
-        <button onClick={handlePause} className="pause-button">
-          <img src="/assets/gold-pause.svg" alt="Pause" />
+        <button onClick={(e) => handleButtonClick(e, handlePause)} className="pause-button">
+          <img src="/assets/rounded-pause.svg" alt="Pause" />
         </button>
-        <button onClick={handlePlayPause} className="play-button">
-          <img src="/assets/gold-play.svg" alt="Play" />
+        <button onClick={(e) => handleButtonClick(e, handlePlayPause)} className="play-button">
+          <img src="/assets/rounded-play.svg" alt="Play" />
         </button>
-        <button onClick={handleSkipForward} className="skip-forward-button">
-          <img src="/assets/gold-skipforward.svg" alt="Skip Forward" />
+        <button onClick={(e) => handleButtonClick(e, handleSkipForward)} className="skip-forward-button">
+          <img src="/assets/rounded-skipforward.svg" alt="Skip Forward" />
         </button>
-        <button onClick={handleStop} className="stop-button">
-          <img src="/assets/gold-stop.svg" alt="Stop" />
+        <button onClick={(e) => handleButtonClick(e, handleStop)} className="stop-button">
+          <img src="/assets/rounded-stop.svg" alt="Stop" />
         </button>
       </div>
     </div>
