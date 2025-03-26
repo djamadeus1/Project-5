@@ -19,6 +19,26 @@
     line-height: 1px;
     z-index: 5;
   }
+
+  /* Ensure a smooth transition for both buttons */
+.purple-pic-square .edit-button,
+.user-banner-square .edit-button {
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+/* Hover effect for both Banner and Profile Pic Edit buttons */
+.purple-pic-square .edit-button:hover,
+.user-banner-square .edit-button:hover {
+  background: #e6c001;
+  transform: translateY(1px);
+}
+
+/* Hover effect for both Banner and Profile Pic Edit buttons */
+.purple-pic-square .edit-button:hover,
+.user-banner-square .edit-button:hover {
+  background: #e6c001;
+  transform: translateY(1px);
+}
   
   /* Banner Edit Button Container */
 .user-banner-square {
@@ -273,6 +293,8 @@
 
 .contact-pic-square .edit-button:hover {
   background: rgba(128, 0, 128, 1);
+  transform: translateY(1px);
+  transition: background 0.3s ease, transform 0.2s ease;
 }
 
 /* Contact Picture Image */
