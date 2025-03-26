@@ -8,6 +8,7 @@ import '../styles/shared.css';
 import '../styles/Profile.css';
 import ProjectsList from './ProjectsList';
 import ProjectModal from './ProjectModal';
+// import stopIcon from '../assets/gold-stop.svg';
 
 function Profile({ user, setUser }) {
   const navigate = useNavigate();
@@ -216,6 +217,11 @@ const handleDeleteProject = async (project) => {
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
+    }
+  };
+  const handlePause = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
     }
   };
   const handleSkipForward = () => { if (audioRef.current) audioRef.current.currentTime += 10; };
@@ -562,10 +568,21 @@ const handleDeleteProject = async (project) => {
       {/* Transport Controls */}
       <div className="transport-control-square">
         <div className="transport-buttons">
-          <button onClick={handleSkipBackward}>⏪</button>
-          <button onClick={handlePlayPause}>⏯️</button>
-          <button onClick={handleSkipForward}>⏩</button>
-          <button onClick={handleStop}>⏹️</button>
+          <button onClick={handleSkipBackward} className="skip-backward-button">
+            <img src="/assets/gold-rewind.svg" alt="Skip Backward" />
+          </button>
+          <button onClick={handlePause} className="pause-button">
+            <img src="/assets/gold-pause.svg" alt="Pause" />
+          </button>
+          <button onClick={handlePlayPause} className="play-button">
+            <img src="/assets/gold-play.svg" alt="Play" />
+          </button>
+          <button onClick={handleSkipForward} className="skip-forward-button">
+            <img src="/assets/gold-skipforward.svg" alt="Skip Forward" />
+          </button>
+          <button onClick={handleStop} className="stop-button">
+            <img src="/assets/gold-stop.svg" alt="Stop" />
+          </button>
         </div>
       </div>
     </div>

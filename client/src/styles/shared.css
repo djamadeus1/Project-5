@@ -222,7 +222,7 @@
   }
     
   Transport Buttons
-  .transport-buttons {
+  /* .transport-buttons {
     width: 400px;
     display: flex;
     justify-content: space-around;
@@ -261,12 +261,117 @@
     box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25),
     0px 4px 4px rgba(0, 0, 0, 0.25);
     top: 50;
-  }
+  } */
   
   .transport-buttons button:hover {
     background-color: #4500a0;
   }
 
+
+/* skip-backward-button */
+.skip-backward-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  width: 80px;
+  height: 80px;
+}
+
+/* Set the size and transition for the SVG */
+.skip-backward-button img {
+  width: 80px;
+  height: 80px;
+  transition: filter 0.2s ease;
+}
+
+.skip-backward-button:hover img {
+  filter: brightness(1.3);
+}
+
+/* Pause Button */
+.pause-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  width: 80px;
+  height: 80px;
+}
+
+.pause-button img {
+  width: 80px;
+  height: 80px;
+  transition: filter 0.2s ease;
+}
+
+.pause-button:hover img {
+  filter: brightness(1.3);
+}
+
+/* Play Button */
+.play-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  width: 80px;
+  height: 80px;
+}
+
+.play-button img {
+  width: 80px;
+  height: 80px;
+  transition: filter 0.2s ease;
+}
+
+.play-button:hover img {
+  filter: brightness(1.3);
+}
+
+/* skip-forward-button */
+.skip-forward-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  width: 80px;
+  height: 80px;
+}
+
+.skip-forward-button img {
+  width: 80px;
+  height: 80px;
+  transition: filter 0.2s ease;
+}
+
+.skip-forward-button:hover img {
+  filter: brightness(1.3);
+}
+
+/* Stop Button */
+.stop-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  width: 80px;
+  height: 80px;
+}
+
+/* Set the size and transition for the SVG */
+.stop-button img {
+  width: 80px;
+  height:80px;
+  top: 50;
+  left: 50;
+  transition: filter 0.2s ease;
+}
+
+/* Optional: Add a hover effect */
+.stop-button:hover img {
+  filter: brightness(1.3);
+}
 
   .media-player-square {
     position: absolute;
