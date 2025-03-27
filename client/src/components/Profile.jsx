@@ -21,6 +21,15 @@ function Profile({ user, setUser }) {
   const mediaInputRef = useRef(null);
   const contactPicInputRef = useRef(null);
   const audioRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const skipHoldThreshold = 300; // milliseconds
+  const skipForwardTimeoutRef = useRef(null);
+  const skipForwardIntervalRef = useRef(null);
+  const skipForwardScrubTriggeredRef = useRef(false);
+  const skipBackwardTimeoutRef = useRef(null);
+  const skipBackwardIntervalRef = useRef(null);
+  const skipBackwardScrubTriggeredRef = useRef(false);
   const [projectSearch, setProjectSearch] = useState('');
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
@@ -207,25 +216,119 @@ function Profile({ user, setUser }) {
   };
 
   // Audio controls
-  const handlePlayPause = () => {
+  const handlePlay = () => {
     if (audioRef.current) {
       audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(e => console.error("Playback error:", e));
+      audioRef.current.play();
+      setIsPlaying(true);
+      setIsPaused(false);
     }
   };
+  
+  const handlePause = () => {
+    if (audioRef.current) {
+      // If the track is playing, pause it.
+      if (!audioRef.current.paused) {
+        audioRef.current.pause();
+        setIsPaused(true);
+        setIsPlaying(false);
+      } else {
+        // If the track is already paused, only resume if it's not stopped (i.e. currentTime > 0)
+        if (audioRef.current.currentTime > 0) {
+          audioRef.current.play();
+          setIsPaused(false);
+          setIsPlaying(true);
+        }
+        // Otherwise, do nothing (track is stopped)
+      }
+    }
+  };
+  
   const handleStop = () => {
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+      setIsPaused(false);
     }
   };
-  const handlePause = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
+  // Single-click skip-forward (10 seconds)
+const handleSkipForwardClick = () => {
+  if (!skipForwardScrubTriggeredRef.current && audioRef.current) {
+    audioRef.current.currentTime += 10;
+  }
+};
+
+// Start continuous scrubbing forward
+const startScrubForward = () => {
+  if (audioRef.current) {
+    skipForwardIntervalRef.current = setInterval(() => {
+      audioRef.current.currentTime += 0.5; // adjust increment as needed
+    }, 100); // adjust interval as needed
+  }
+};
+
+const handleSkipForwardMouseDown = (e) => {
+  // Reset flag
+  skipForwardScrubTriggeredRef.current = false;
+  // Set a timeout that starts scrubbing after the threshold
+  skipForwardTimeoutRef.current = setTimeout(() => {
+    skipForwardScrubTriggeredRef.current = true;
+    startScrubForward();
+  }, skipHoldThreshold);
+};
+
+const handleSkipForwardMouseUp = (e) => {
+  if (skipForwardTimeoutRef.current) {
+    clearTimeout(skipForwardTimeoutRef.current);
+    skipForwardTimeoutRef.current = null;
+  }
+  if (skipForwardIntervalRef.current) {
+    clearInterval(skipForwardIntervalRef.current);
+    skipForwardIntervalRef.current = null;
+  }
+};
+  
+/// Single-click skip-backward (10 seconds)
+const handleSkipBackwardClick = () => {
+  if (!skipBackwardScrubTriggeredRef.current && audioRef.current) {
+    audioRef.current.currentTime -= 10;
+    if (audioRef.current.currentTime < 0) {
+      audioRef.current.currentTime = 0;
     }
-  };
-  const handleSkipForward = () => { if (audioRef.current) audioRef.current.currentTime += 10; };
-  const handleSkipBackward = () => { if (audioRef.current) audioRef.current.currentTime -= 10; };
+  }
+};
+
+// Start continuous scrubbing backward
+const startScrubBackward = () => {
+  if (audioRef.current) {
+    skipBackwardIntervalRef.current = setInterval(() => {
+      audioRef.current.currentTime -= 0.5; // adjust increment as needed
+      if (audioRef.current.currentTime < 0) {
+        audioRef.current.currentTime = 0;
+      }
+    }, 100);
+  }
+};
+
+const handleSkipBackwardMouseDown = (e) => {
+  skipBackwardScrubTriggeredRef.current = false;
+  skipBackwardTimeoutRef.current = setTimeout(() => {
+    skipBackwardScrubTriggeredRef.current = true;
+    startScrubBackward();
+  }, skipHoldThreshold);
+};
+
+const handleSkipBackwardMouseUp = (e) => {
+  if (skipBackwardTimeoutRef.current) {
+    clearTimeout(skipBackwardTimeoutRef.current);
+    skipBackwardTimeoutRef.current = null;
+  }
+  if (skipBackwardIntervalRef.current) {
+    clearInterval(skipBackwardIntervalRef.current);
+    skipBackwardIntervalRef.current = null;
+  }
+};
 
   // Utility: Construct media URL
   const getMediaUrl = (media) => {
@@ -337,6 +440,32 @@ function Profile({ user, setUser }) {
     }, 300);
     if (callback) callback(e);
   };
+
+  // const startScrubForward = () => {
+  //   if (audioRef.current) {
+  //     skipIntervalRef.current = setInterval(() => {
+  //       audioRef.current.currentTime += 0.5; // Increase currentTime by 0.5 seconds; adjust as needed
+  //     }, 100); // Every 100ms; adjust interval if needed
+  //   }
+  // };
+  
+  // const startScrubBackward = () => {
+  //   if (audioRef.current) {
+  //     skipIntervalRef.current = setInterval(() => {
+  //       audioRef.current.currentTime -= 0.5; // Decrease currentTime by 0.5 seconds; adjust as needed
+  //       if (audioRef.current.currentTime < 0) {
+  //         audioRef.current.currentTime = 0;
+  //       }
+  //     }, 100);
+  //   }
+  // };
+  
+  // const stopScrub = () => {
+  //   if (skipIntervalRef.current) {
+  //     clearInterval(skipIntervalRef.current);
+  //     skipIntervalRef.current = null;
+  //   }
+  // };
 
   return (
     <div className="page-wrapper">
@@ -581,16 +710,29 @@ function Profile({ user, setUser }) {
           gap: '0px'
         }}
       >
-        <button onClick={(e) => handleButtonClick(e, handleSkipBackward)} className="skip-backward-button">
+        <button
+          onClick={handleSkipBackwardClick}
+          onMouseDown={(e) => handleButtonClick(e, handleSkipBackwardMouseDown)}
+          onMouseUp={handleSkipBackwardMouseUp}
+          onMouseLeave={handleSkipBackwardMouseUp}
+          className="skip-backward-button"
+        >
           <img src="/assets/rounded-skipback.svg" alt="Skip Backward" />
         </button>
-        <button onClick={(e) => handleButtonClick(e, handlePause)} className="pause-button">
+        <button className={`pause-button ${isPaused ? 'lit' : ''}`} onClick={(e) => handleButtonClick(e, handlePause)}>
           <img src="/assets/rounded-pause.svg" alt="Pause" />
         </button>
-        <button onClick={(e) => handleButtonClick(e, handlePlayPause)} className="play-button">
+
+        <button className={`play-button ${isPlaying ? 'lit' : ''}`} onClick={(e) => handleButtonClick(e, handlePlay)}>
           <img src="/assets/rounded-play.svg" alt="Play" />
         </button>
-        <button onClick={(e) => handleButtonClick(e, handleSkipForward)} className="skip-forward-button">
+        <button
+          onClick={handleSkipForwardClick}
+          onMouseDown={(e) => handleButtonClick(e, handleSkipForwardMouseDown)}
+          onMouseUp={handleSkipForwardMouseUp}
+          onMouseLeave={handleSkipForwardMouseUp}
+          className="skip-forward-button"
+        >
           <img src="/assets/rounded-skipforward.svg" alt="Skip Forward" />
         </button>
         <button onClick={(e) => handleButtonClick(e, handleStop)} className="stop-button">

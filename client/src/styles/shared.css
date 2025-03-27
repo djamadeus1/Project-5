@@ -422,6 +422,12 @@
   filter: brightness(0.9);
 }
 
+.play-button.lit,
+.pause-button.lit {
+  filter: brightness(1.5); /* Adjust brightness as desired */
+  transform: translateY(3px); /* Optional: add a pressed effect */
+}
+
   .media-player-square {
     position: absolute;
     top: 265px;          /* Fixed pixels instead of vh */
