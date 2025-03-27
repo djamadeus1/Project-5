@@ -470,7 +470,9 @@ const handleSkipBackwardMouseUp = (e) => {
   return (
     <div className="page-wrapper">
       {/* Logo and Banner */}
-      <div className="purple-logo-circle">Profile</div>
+      <div className="purple-logo-circle" onClick={() => navigate("/business-mode-2")}>
+        Exit Profile
+      </div>
       <div className="banner-container">
         <div className="user-banner-square">
           <Banner bannerUrl={getImageUrl(user.logo)} />
