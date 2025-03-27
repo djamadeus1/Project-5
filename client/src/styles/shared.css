@@ -665,6 +665,23 @@
     top: 0px;     /* Adjust this value to move up/down */
 }
 
+.projects-header {
+  position: relative; /* Ensures the pseudo-element is positioned relative to this container */
+  z-index: 2; /* Keep header items above the pseudo-element */
+}
+
+.projects-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 43px; /* Adjust as needed */
+  background-color: #f0f0f055; /* Light gray background */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  z-index: -1; /* Place behind the header content */
+}
+
 /* Project List Styling */
 .project-item {
   display: flex;
@@ -850,70 +867,70 @@
   } */
   
     /* Password Popup Overlay */
-    .password-popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000; /* Ensure it stays on top */
-  }
-  
-  /* Password Popup Container */
-  .password-popup {
-    background-color: white;
-    width: 400px;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-    text-align: center;
-    z-index: 10001; /* Ensure it's above the overlay */
-  }
-
-  .password-popup {
-    position: fixed;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    /* ...existing code... */
+.password-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it stays on top */
 }
-  
-  /* Popup Title */
-  .password-popup h2 {
-    font-size: 20px;
-    color: #333;
-    margin-bottom: 15px;
-  }
-  
-  /* Input Field */
-  .password-popup input {
-    width: 90%;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 15px;
-  }
-  
-  /* Button Styles */
-  .password-popup button {
-    width: 100%;
-    padding: 10px;
-    background-color: #6200ea;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  
-  .password-popup button:hover {
-    background-color: #4500a0;
-  }
+
+/* Password Popup Container */
+.password-popup {
+  background-color: white;
+  width: 325px;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  z-index: 10001; /* Ensure it's above the overlay */
+  position: fixed;
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* ...existing code... */
+}
+
+/* Popup Title */
+.password-popup h2 {
+  font-size: 40px;
+  color: #333;
+  margin-bottom: 2px;
+}
+
+/* Input Field */
+.password-popup input {
+  width: 70%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin: 10px auto -45px auto; /* 10px top, 5px bottom */
+  display: block;
+}
+
+/* Button Styles */
+.password-popup button {
+  width: 50%;
+  padding: 10px;
+  background-color: #6200ea;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  cursor: pointer;
+  margin: 0 auto 15px auto; /* 0px top, 10px bottom */
+  display: block;
+}
+
+.password-popup button:hover {
+  background-color: #4500a0;
+}
   
   /* Close Button */
   .password-popup .close-button {
