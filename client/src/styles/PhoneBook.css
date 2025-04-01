@@ -9,7 +9,7 @@
   left: 69%;           /* Center horizontally */
   transform: translateX(-50%);
   text-align: center;
-  font-size: 3.5rem;
+  font-size: 3.2rem;
   color: #ffd501;
   font-family: 'Inter', sans-serif;
   -webkit-text-stroke: 0px black; /* Adds a 1px black outline (for WebKit browsers) */
@@ -27,8 +27,8 @@
 /* Exit Phone Book Button (unchanged) */
 .phonebook-purple-logo-circle {
   position: absolute;
-  width: 150px;
-  height: 55px;
+  width: 140px;
+  height: 48px;
   top: 70px;
   right: 80px;
   background-color: #8007F9;
@@ -41,7 +41,7 @@
   line-height: 1.2;
   font-family: 'Inter', sans-serif;
   font-weight: bold;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   color: white;
   cursor: pointer;
   z-index: 10;
@@ -146,10 +146,10 @@
 /* Static square styling */
 .phonebook-square {
   position: absolute;
-  top: 140px;       /* Adjust vertical position as needed */
+  top: 132px;       /* Adjust vertical position as needed */
   left: 650px;      /* Adjust horizontal position as needed */
   width: 950px;     /* Set your desired width */
-  height: 785px;    /* Set your desired height */
+  height: 796px;    /* Set your desired height */
   background-color: #8007F9;  /* Purple scheme */
   border: 2px solid #000;     /* Black outline/stroke */
   box-sizing: border-box;
@@ -162,7 +162,7 @@
   left: 67.7%;               /* Center horizontally */
   transform: translateX(-50%);  /* Ensure perfect centering */
   width: 930px;            /* Square width */
-  height: 725px;           /* Square height */
+  height: 722px;           /* Square height */
   overflow-y: auto;        /* Makes it scrollable */
   background-color: #ffffff;  /* or another background color */
   border: 1px solid #000;     /* Black outline */
@@ -204,18 +204,19 @@
 .crud-buttons {
   position: absolute;
   /* Adjust these to position the container where you want it */
-  top: 880px;    /* Example: 850px from top of container */
-  left: 56%;     /* Center horizontally by default */
+  top: 885px;    /* Example: 850px from top of container */
+  left: 68%;     /* Center horizontally by default */
   transform: translateX(-50%);
   display: flex;
-  gap: 40px;     /* Space between buttons */
+  gap: 60px;     /* Space between buttons */
+  
   z-index: 10;   /* Make sure it's above the background elements */
 }
 
 /* Common styles for all CRUD buttons */
 .crud-button {
   font-family: 'Inter', sans-serif;
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   font-weight: bold;
   padding: 05px 20px;  /* Adjust padding for size */
   border: none;
@@ -230,24 +231,25 @@
   background: #FFD501;   /* Gold color */
   color: #000;
   /* Optionally, add specific dimensions if needed */
-  width: 120px;
-  height: 35px;
+  width: 90px;
+  height: 30px;
 }
 
 /* Specific styles for the Edit button */
 .crud-edit {
   background: #FFD501;   /* Purple scheme */
   color: white;
-  width: 120px;
-  height: 35px;
+  width: 90px;
+  height: 30px;
 }
 
 /* Specific styles for the Delete button */
 .crud-delete {
   background: #FF0101;   /* Red for delete */
   color: white;
-  width: 120px;
-  height: 35px;
+  width: 90px;
+  height: 30px;
+  margin-left: 450px;  /* Add extra space between Edit and Delete */
 }
 
 /* Hover effects for all buttons */
