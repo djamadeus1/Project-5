@@ -8,6 +8,7 @@ import Home from './Home';
 import BusinessMode_2 from "./BusinessMode_2";
 import Profile from './Profile';
 import MediaList from './MediaList';
+import PhoneBook from './PhoneBook';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -20,9 +21,16 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Add business mode detection
+   // Detect if we are in a Business Mode page
+   useEffect(() => {
+    setIsBusinessMode(location.pathname.includes('/business-mode-2'));
+  }, [location.pathname]);
+
+  // Clear the business mode flag when navigating away from Business Mode pages
   useEffect(() => {
-    setIsBusinessMode(location.pathname.includes('/business'));
+    if (!location.pathname.startsWith('/business-mode-2')) {
+      localStorage.removeItem('businessMode');
+    }
   }, [location.pathname]);
 
   useEffect(() => {
@@ -140,20 +148,6 @@ function App() {
     const navigate = useNavigate();
   
     useEffect(() => {
-      const verifyBusinessAccess = async () => {
-        try {
-          const response = await fetch("http://localhost:5555/check_business_auth", {
-            credentials: "include"
-          });
-          if (!response.ok) {
-            navigate('/');
-          }
-        } catch (error) {
-          console.error("Business mode verification failed:", error);
-          navigate('/');
-        }
-      };
-  
       if (!isInBusinessMode) {
         navigate('/');
       }
@@ -183,10 +177,15 @@ function App() {
             <BusinessMode_2 user={user} />
           </BusinessProtectedRoute>
         } />
-        <Route path="/profile" element={
+        <Route path="/business-mode-2/profile" element={
           <BusinessProtectedRoute>
             <Profile user={user} setUser={setUser} />
           </BusinessProtectedRoute>
+        } />
+        <Route path="/business-mode-2/phonebook" element={
+        <BusinessProtectedRoute>
+          <PhoneBook />
+        </BusinessProtectedRoute>
         } />
         <Route path="/contacts" element={
           <BusinessProtectedRoute>

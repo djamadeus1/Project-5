@@ -17,8 +17,8 @@ function Header({ user, handleLogout }) {
           {isAuthenticated && !isHomePage && (
             <>
               <Link to="/">Home</Link>
-              <Link to="/profile">Profile</Link>
-              <Link to="/contacts">Contacts</Link>
+              <Link to="/business-mode-2/profile">Profile</Link>
+              <Link to="/business-mode-2/phonebook">Phone Book</Link>
               <Link to="/business-mode-2/production">Production</Link>
               <Link to="/business-mode-2/timers">Timers</Link>
             </>
