@@ -153,6 +153,7 @@
   background-color: #8007F9;  /* Purple scheme */
   border: 2px solid #000;     /* Black outline/stroke */
   box-sizing: border-box;
+  z-index: 1;
 }
 
 /* New Contacts Window (square, scrollable) */
@@ -170,6 +171,7 @@
   border-radius: 8px;
   padding: 10px;
   box-sizing: border-box;
+  z-index: 1;
 }
 
 /* Individual contact item inside the window */
@@ -256,4 +258,31 @@
 .crud-button:hover {
   transform: translateY(2px);
   filter: brightness(1.1);
+}
+
+/* Vertical Alphabet Tabs */
+.alphabet-tabs {
+  position: absolute;
+  top: 132px;              /* Adjust vertical position */
+  right: 29px;             /* Adjust horizontal position */
+  display: flex;
+  flex-direction: column;
+  gap: 5px;                /* Space between tabs */
+  z-index: 0;             /* Ensure the tabs are above other elements */
+}
+
+.alphabet-tab {
+  background-color: #8007F9; /* Purple background */
+  color: white;              /* White text */
+  font-family: 'Inter', sans-serif;
+  font-size: .791rem;
+  padding: 5.1px 10px;         /* Adjust padding as needed */
+  text-align: center;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.alphabet-tab:hover {
+  background-color: #FFD501; /* Darker purple on hover */
 }
