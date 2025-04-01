@@ -22,6 +22,9 @@ const PhoneBook = () => {
         Exit<br />Phone Book
       </div>
 
+      {/* "Contacts" header added here */}
+      <h1 className="contacts-header">Contacts</h1>
+
       {/* Wrapper that applies scaling to all contact cards */}
       <div className="phonebook-content-wrapper">
         <div className="phonebook-contacts-list">
