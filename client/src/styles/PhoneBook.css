@@ -3,6 +3,19 @@
   --scale-factor: 1.5; /* Change this to scale all child elements by 20% */
 }
 
+.contacts-header {
+  position: absolute;
+  top:30px;          /* Set your desired vertical position */
+  left: 65%;           /* Center horizontally */
+  transform: translateX(-50%);
+  text-align: center;
+  font-size: 3.5rem;
+  color: #ffd501;
+  font-family: 'Inter', sans-serif;
+  -webkit-text-stroke: 0px black; /* Adds a 1px black outline (for WebKit browsers) */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Drop shadow */
+}
+
 /* Container for the entire Phone Book page */
 .phonebook-container {
   width: 100%;
