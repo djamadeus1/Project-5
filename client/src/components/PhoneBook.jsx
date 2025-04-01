@@ -1,5 +1,5 @@
 // PhoneBook.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/PhoneBook.css';
 // import '../styles/Profile.css';
@@ -7,6 +7,7 @@ import '../styles/PhoneBook.css';
 const PhoneBook = () => {
   const [contacts, setContacts] = useState([]);
   const navigate = useNavigate();
+  const contactsWindowRef = useRef(null);
 
   useEffect(() => {
     fetch('/contacts', { credentials: 'include' })
@@ -14,6 +15,33 @@ const PhoneBook = () => {
       .then(data => setContacts(data))
       .catch(err => console.error("Error fetching contacts:", err));
   }, []);
+
+  // Scroll to the first contact whose name matches the given letter.
+  const scrollToLetter = (letter) => {
+    if (!contactsWindowRef.current) return;
+    // Get all contact items in the alphabetical list
+    const items = contactsWindowRef.current.querySelectorAll('.phonebook-contact-item');
+    for (const item of items) {
+      const nameElement = item.querySelector('.phonebook-contact-name');
+      if (nameElement) {
+        const name = nameElement.textContent.trim();
+        if (letter === '0-9') {
+          if (/^\d/.test(name)) {
+            contactsWindowRef.current.scrollTop = item.offsetTop;
+            break;
+          }
+        } else {
+          if (name.toUpperCase().startsWith(letter)) {
+            contactsWindowRef.current.scrollTop = item.offsetTop;
+            break;
+          }
+        }
+      }
+    }
+  };
+
+  // Alphabet array: A-Z and "0-9"
+  const alphabet = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ', '0-9'];
 
   return (
     <div className="phonebook-container">
@@ -28,8 +56,21 @@ const PhoneBook = () => {
       {/* "Contacts" header */}
       <h1 className="contacts-header">Contacts</h1>
 
-      {/* New Contacts Window */}
-      <div className="phonebook-contacts-window">
+      {/* Vertical Alphabet Tabs */}
+      <div className="alphabet-tabs">
+        {alphabet.map(letter => (
+          <div
+            key={letter}
+            className="alphabet-tab"
+            onClick={() => scrollToLetter(letter)}
+          >
+            {letter}
+          </div>
+        ))}
+      </div>
+
+      {/* New Contacts Window (Alphabetical List) */}
+      <div className="phonebook-contacts-window" ref={contactsWindowRef}>
         {contacts.length > 0 ? (
           contacts
             .sort((a, b) => a.name.localeCompare(b.name))
@@ -48,7 +89,7 @@ const PhoneBook = () => {
         )}
       </div>
 
-      {/* Other content below can remain */}
+      {/* Full Contact Details Section */}
       <div className="phonebook-content-wrapper">
         <div className="phonebook-contacts-list">
           {contacts.length > 0 ? (
