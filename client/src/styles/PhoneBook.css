@@ -6,7 +6,7 @@
 .contacts-header {
   position: absolute;
   top:30px;          /* Set your desired vertical position */
-  left: 65%;           /* Center horizontally */
+  left: 69%;           /* Center horizontally */
   transform: translateX(-50%);
   text-align: center;
   font-size: 3.5rem;
@@ -28,11 +28,11 @@
 .phonebook-purple-logo-circle {
   position: absolute;
   width: 150px;
-  height: 150px;
-  top: 75px;
+  height: 55px;
+  top: 70px;
   right: 80px;
   background-color: #8007F9;
-  border-radius: 50%;
+  border-radius: 4px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -53,6 +53,7 @@
 .phonebook-purple-logo-circle:hover {
   transform: scale(1.05);
   background-color: #6a06d3;
+  color: #FFD501;
 }
 
 /* Wrapper for scaling content */
@@ -140,4 +141,117 @@
   margin: 0;      /* Remove default paragraph margins */
   padding: 0;     /* Remove any extra padding */
   line-height: 1; /* Tighten the line height */
+}
+
+/* Static square styling */
+.phonebook-square {
+  position: absolute;
+  top: 140px;       /* Adjust vertical position as needed */
+  left: 650px;      /* Adjust horizontal position as needed */
+  width: 950px;     /* Set your desired width */
+  height: 785px;    /* Set your desired height */
+  background-color: #8007F9;  /* Purple scheme */
+  border: 2px solid #000;     /* Black outline/stroke */
+  box-sizing: border-box;
+}
+
+/* New Contacts Window (square, scrollable) */
+.phonebook-contacts-window {
+  position: absolute;
+  top: 155px;              /* Adjust vertical position as needed */
+  left: 67.7%;               /* Center horizontally */
+  transform: translateX(-50%);  /* Ensure perfect centering */
+  width: 930px;            /* Square width */
+  height: 725px;           /* Square height */
+  overflow-y: auto;        /* Makes it scrollable */
+  background-color: #ffffff;  /* or another background color */
+  border: 1px solid #000;     /* Black outline */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  border-radius: 8px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* Individual contact item inside the window */
+.phonebook-contact-item {
+  display: flex;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.phonebook-contact-item:last-child {
+  border-bottom: none;
+}
+
+/* Preview contact image */
+.phonebook-contact-preview {
+  width: 140px;        /* Adjust size as needed */
+  height: 140px;
+  object-fit: cover;
+  border-radius: 4px; /* Makes it circular */
+  margin-right: 10px;
+}
+
+/* Contact name styling */
+.phonebook-contact-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 2rem;
+  color: #333;
+}
+
+/* Container for CRUD buttons */
+.crud-buttons {
+  position: absolute;
+  /* Adjust these to position the container where you want it */
+  top: 880px;    /* Example: 850px from top of container */
+  left: 56%;     /* Center horizontally by default */
+  transform: translateX(-50%);
+  display: flex;
+  gap: 40px;     /* Space between buttons */
+  z-index: 10;   /* Make sure it's above the background elements */
+}
+
+/* Common styles for all CRUD buttons */
+.crud-button {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.3rem;
+  font-weight: bold;
+  padding: 05px 20px;  /* Adjust padding for size */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  box-shadow: 0px 4px 4px rgba(0,0,0,0.25);
+}
+
+/* Specific styles for the Add button */
+.crud-add {
+  background: #FFD501;   /* Gold color */
+  color: #000;
+  /* Optionally, add specific dimensions if needed */
+  width: 120px;
+  height: 35px;
+}
+
+/* Specific styles for the Edit button */
+.crud-edit {
+  background: #FFD501;   /* Purple scheme */
+  color: white;
+  width: 120px;
+  height: 35px;
+}
+
+/* Specific styles for the Delete button */
+.crud-delete {
+  background: #FF0101;   /* Red for delete */
+  color: white;
+  width: 120px;
+  height: 35px;
+}
+
+/* Hover effects for all buttons */
+.crud-button:hover {
+  transform: translateY(2px);
+  filter: brightness(1.1);
 }
