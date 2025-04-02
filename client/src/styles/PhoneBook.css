@@ -16,7 +16,7 @@
 .contacts-header {
   position: absolute;
   top:30px;          /* Set your desired vertical position */
-  left: 69%;           /* Center horizontally */
+  left: 68%;           /* Center horizontally */
   transform: translateX(-50%);
   text-align: center;
   font-size: 3.2rem;
@@ -169,9 +169,59 @@
   font-weight: 500;
 }
 
+/* Contact item layout updates */
+.phonebook-contact-item {
+  display: flex;
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+  gap: 20px;
+}
+
+.contact-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.contact-columns {
+  display: flex;
+  gap: 40px;
+  margin-top: 10px;
+}
+
+.contact-column-left,
+.contact-column-right {
+  flex: 1;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;  /* Change this value to adjust font size */
+  color: #333;
+}
+
+.contact-column-left p,
+.contact-column-right p {
+  margin: 5px 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.contact-bio {
+  margin-top: 0px;
+  padding-top: 1px;
+  border-top: 1px solid #eee;
+}
+
+.contact-bio p {
+  font-size: 1.5rem;
+  line-height: 1.2;
+  color: #444;
+}
+
+/* Update contact preview image size */
+.phonebook-contact-preview,
 .default-contact-pic-preview {
-  width: 140px;              /* Match preview image width */
-  height: 140px;             /* Match preview image height */
+  min-width: 150px;
+  height: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -228,22 +278,34 @@
 /* Individual contact item inside the window */
 .phonebook-contact-item {
   display: flex;
-  align-items: center;
-  padding: 5px 0;
+  align-items: flex-start;
+  padding: 15px;
   border-bottom: 1px solid #ddd;
+  gap: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.phonebook-contact-item:last-child {
-  border-bottom: none;
+.phonebook-contact-item:hover {
+  background-color: #272727;
+  transform: translateX(2px);
+}
+
+.phonebook-contact-item.selected {
+  background-color: #484747;  /* Gold color to match your theme */
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Preview contact image */
 .phonebook-contact-preview {
-  width: 140px;        /* Adjust size as needed */
+  width: 140px;
   height: 140px;
   object-fit: cover;
-  border-radius: 4px; /* Makes it circular */
+  border-radius: 4px;
   margin-right: 10px;
+  position: relative;    /* Add position relative */
+  top: 10px;            /* Adjust this value to move up (negative) or down (positive) */
 }
 
 /* Contact name styling */
@@ -281,7 +343,7 @@
 
 /* Specific styles for the Add button */
 .crud-add {
-  background: #FFD501;   /* Gold color */
+  background: #E6C001;   /* Gold color */
   color: #000;
   /* Optionally, add specific dimensions if needed */
   width: 90px;
@@ -290,7 +352,7 @@
 
 /* Specific styles for the Edit button */
 .crud-edit {
-  background: #FFD501;   /* Purple scheme */
+  background: #E6C001;   /* Purple scheme */
   color: white;
   width: 90px;
   height: 30px;
@@ -298,7 +360,7 @@
 
 /* Specific styles for the Delete button */
 .crud-delete {
-  background: #FF0101;   /* Red for delete */
+  background: #A20000;   /* Red for delete */
   color: rgb(255, 255, 255);
   width: 90px;
   height: 30px;
@@ -308,7 +370,7 @@
 /* Hover effects for all buttons */
 .crud-button:hover {
   transform: translateY(2px);
-  filter: brightness(1.1);
+  filter: brightness(1.4);
 }
 
 /* Vertical Alphabet Tabs */

@@ -80,7 +80,7 @@ const PhoneBook = () => {
             .map(contact => (
               <div
                 key={contact.id}
-                className="phonebook-contact-item"
+                className={`phonebook-contact-item ${selectedContact?.id === contact.id ? 'selected' : ''}`}
                 onClick={() => setSelectedContact(contact)}
               >
                 {contact.contact_pic ? (
@@ -94,7 +94,29 @@ const PhoneBook = () => {
                     <span>MUSIC - ONE</span>
                   </div>
                 )}
-                <span className="phonebook-contact-name">{contact.name}</span>
+                <div className="contact-details">
+                  <span className="phonebook-contact-name">{contact.name}</span>
+                  <div className="contact-columns">
+                    <div className="contact-column-left">
+                      <p><strong>Discipline:</strong> {contact.discipline || "---"}</p>
+                      <p><strong>Phone:</strong> {contact.phone || "---"}</p>
+                      <p><strong>Email:</strong> {contact.email || "---"}</p>
+                      <p><strong>Company:</strong> {contact.company || "---"}</p>
+                      <p><strong>Address:</strong> {contact.address || "---"}</p>
+                    </div>
+                    <div className="contact-column-right">
+                      <p><strong>Social #1:</strong> {contact.social1 || "---"}</p>
+                      <p><strong>Social #2:</strong> {contact.social2 || "---"}</p>
+                      <p><strong>Social #3:</strong> {contact.social3 || "---"}</p>
+                      <p><strong>Social #4:</strong> {contact.social4 || "---"}</p>
+                    </div>
+                  </div>
+                  {contact.bio && (
+                    <div className="contact-bio">
+                      <p><strong>Bio:</strong> {contact.bio}</p>
+                    </div>
+                  )}
+                </div>
               </div>
             ))
         ) : (
