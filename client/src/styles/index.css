@@ -206,6 +206,15 @@ button {
   
 }
 
+.nav-links a {
+  color: white;        /* Ensure all links are white */
+  text-decoration: none;
+}
+
+.nav-links a:hover {
+  color: #FFD501;      /* Gold color on hover */
+}
+
 /* Logout button */
 .logout-button {
   padding: 8px 16px;
