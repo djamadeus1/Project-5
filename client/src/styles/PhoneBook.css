@@ -370,7 +370,7 @@
 /* Hover effects for all buttons */
 .crud-button:hover {
   transform: translateY(2px);
-  filter: brightness(1.4);
+  filter: brightness(1.4∫);
 }
 
 /* Vertical Alphabet Tabs */
