@@ -2,7 +2,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/PhoneBook.css';
-// import '../styles/Profile.css';
+import '../styles/ContactModal.css';
+import ContactModal from './ContactModal';
 
 const PhoneBook = () => {
   const [contacts, setContacts] = useState([]);
@@ -10,6 +11,8 @@ const PhoneBook = () => {
   const navigate = useNavigate();
   const contactsWindowRef = useRef(null);
   const contactPicInputRef = useRef(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState('add'); // 'add' or 'edit'
 
   useEffect(() => {
     fetch('/contacts', { credentials: 'include' })
@@ -45,6 +48,67 @@ const PhoneBook = () => {
 
   // Alphabet array: A-Z and "0-9"
   const alphabet = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ', '0-9'];
+
+  // CRUD Operations
+  const handleAdd = () => {
+    setModalMode('add');
+    setSelectedContact(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = () => {
+    if (!selectedContact) return;
+    setModalMode('edit');
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (!selectedContact || !window.confirm('Are you sure you want to delete this contact?')) return;
+
+    try {
+      const response = await fetch(`/contacts/${selectedContact.id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        setContacts(contacts.filter(c => c.id !== selectedContact.id));
+        setSelectedContact(null);
+      }
+    } catch (error) {
+      console.error('Error deleting contact:', error);
+    }
+  };
+
+  const handleSave = async (formData) => {
+    const method = modalMode === 'add' ? 'POST' : 'PATCH';
+    const url = modalMode === 'add' ? '/contacts' : `/contacts/${selectedContact.id}`;
+
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        const updatedContact = await response.json();
+        if (modalMode === 'add') {
+          setContacts([...contacts, updatedContact]);
+        } else {
+          setContacts(contacts.map(c => 
+            c.id === updatedContact.id ? updatedContact : c
+          ));
+        }
+        setSelectedContact(updatedContact);
+      }
+    } catch (error) {
+      console.error('Error saving contact:', error);
+    }
+  };
 
   return (
     <div className="phonebook-container">
@@ -171,12 +235,21 @@ const PhoneBook = () => {
         </div>
       </div>
 
-      {/* CRUD Buttons */}
+      {/* Update CRUD Buttons */}
       <div className="crud-buttons">
-        <button className="crud-button crud-add">Add</button>
-        <button className="crud-button crud-edit">Edit</button>
-        <button className="crud-button crud-delete">Delete</button>
+        <button className="crud-button crud-add" onClick={handleAdd}>Add</button>
+        <button className="crud-button crud-edit" onClick={handleEdit}>Edit</button>
+        <button className="crud-button crud-delete" onClick={handleDelete}>Delete</button>
       </div>
+
+      {/* Add Modal Component */}
+      <ContactModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        contact={selectedContact}
+        onSave={handleSave}
+        mode={modalMode}
+      />
     </div>
   );
 };

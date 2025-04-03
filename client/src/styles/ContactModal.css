@@ -1,0 +1,220 @@
+.contact-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.contact-modal-content {
+  background: #ffffff;
+  border: 2px solid #8007F9;
+  border-radius: 10px;
+  max-height: 85vh;  /* Limit height to 85% of viewport height */
+  overflow-y: auto;  /* Make content scrollable if needed */
+  padding: 60px 50px;  /* Add more horizontal padding */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 700px;        /* Fixed width for better centering */
+  max-width: 800px;  /* Adjust maximum width */
+  font-family: 'Inter', sans-serif;
+}
+
+.name-field,
+.discipline-field {
+  width: 70%;
+  margin: 0 auto 30px;
+  position: relative;
+  left: 0;            /* Reset any left positioning */
+  transform: translateX(0); /* Reset any transform */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.name-field input,
+.discipline-field input {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.name-field label,
+.discipline-field label {
+  text-align: center;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.contact-form-main-section {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  gap: 50px;  /* Increase gap between columns */
+  margin: 0 auto;
+  width: 100%;         /* Take full width */
+  padding: 0;
+}
+/* redlin down the center of the popup */
+.contact-form-main-section::after {
+  content: '';
+  position: fixed;  /* Change to fixed position */
+  top: 50%;        /* Start from middle of screen */
+  left: 50%;
+  transform: translate(-50%, -50%);  /* Center both horizontally and vertically */
+  width: 2px;      /* Make line thinner */
+  height: 95vh;    /* Match modal height */
+  background-color: red;
+  z-index: 1;      /* Ensure line appears above content */
+}
+
+.contact-form-left {
+  flex: 1;
+  text-align: right;  /* Align right column content */
+  padding-right: 0px;  /* Add padding to push away from center */
+  margin-left: 0px; /* Moves input fields left and right */
+  width: 100%;        /* Make fields wider */
+}
+
+.contact-form-right {
+  flex: 1;
+  text-align: left;   /* Align left column content */
+  padding-left: 0px;   /* Add padding to push away from center */
+  margin-left: 0;
+  width: 100%;        /* Make fields wider */
+}
+
+.bio-field {
+  width: 70%;
+  margin: 30px auto;
+  text-align: center;
+}
+
+.bio-field textarea {
+  width: 100%;
+  min-height: 100px;
+}
+
+.contact-modal-content h2 {
+  color: #8007F9;
+  font-size: 3rem;
+  margin-top: 1px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.contact-form-columns {
+  border: 1px solid #000000;
+  border-radius: 10px;
+  padding: 25px;
+  margin: 20px 0;
+  box-shadow: 0px 4px 4px rgba(0,0,0,0.25);
+  display: flex;
+  gap: 30px;
+}
+
+.contact-form-column {
+  padding: 20px;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  box-shadow: inset 0px 4px 4px rgba(0,0,0,0.25);
+  flex: 1;
+  width: 100%;       /* Ensure columns take full width */
+}
+
+.contact-form-group {
+  margin-bottom: 25px;  /* More space between fields */
+  width: 100%;
+  padding: 0px;    /* Remove right padding */
+  text-align: left;      /* Ensure left alignment */
+}
+
+.contact-form-group label {
+  display: block;
+  text-align: center;   /* Center the field names */
+  margin-bottom: 8px;
+  width: 100%;
+  font-weight: bold;
+  color: #333;
+  padding-left: 5px;     /* Slight padding for labels */
+}
+
+.contact-modal-content input {
+  width: 100%;
+  max-width: 250px;   /* Limit input width */
+  text-align: center;    /* Center the input text */
+  padding: 7px 15px;     /* Equal padding on both sides */
+  border: 1px solid #8007F9;
+  border-radius: 4px;
+  font-family: 'Inter', sans-serif;
+  font-size: 1.3rem;
+  transition: all 0.3s ease;
+  padding-left: 15px;    /* Consistent left padding for inputs */
+}
+
+/* Specific styling for Name and Discipline inputs */
+.contact-modal-content input[name="name"],
+.contact-modal-content input[name="discipline"] {
+  font-size: 2rem;
+  margin-bottom:-20px;
+}
+
+.contact-modal-content input:focus {
+  border-color: #FFD501;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 213, 1, 0.2);
+}
+
+.contact-modal-buttons {
+  position: sticky;     /* Make buttons stick to bottom */
+  bottom: 0;
+  background: white;    /* Match modal background */
+  padding: 15px 0;      /* Add some padding */
+  margin-top: 15px;     /* Reduce top margin */
+  width: 100%;       /* Full width for button container */
+  display: flex;
+  justify-content: center;  /* Center the buttons */
+  gap: 30px;        /* Space between buttons */
+}
+
+.contact-modal-buttons button {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 4px;
+  font-family: 'Inter', sans-serif;
+  font-weight: bold;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 120px;     /* Set fixed width for buttons */
+}
+
+.crud-save {
+  background: #E6C001;
+  color: black;
+}
+
+.crud-cancel {
+  background: #8007F9;
+  color: white;
+}
+
+.contact-modal-buttons button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.crud-save:hover {
+  background: #FFD501;
+}
+
+.crud-cancel:hover {
+  background: #6a06d3;
+  color: #FFD501;
+}
