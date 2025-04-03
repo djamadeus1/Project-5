@@ -61,18 +61,6 @@
   width: 100%;         /* Take full width */
   padding: 0;
 }
-/* redlin down the center of the popup */
-.contact-form-main-section::after {
-  content: '';
-  position: fixed;  /* Change to fixed position */
-  top: 50%;        /* Start from middle of screen */
-  left: 50%;
-  transform: translate(-50%, -50%);  /* Center both horizontally and vertically */
-  width: 2px;      /* Make line thinner */
-  height: 95vh;    /* Match modal height */
-  background-color: red;
-  z-index: 1;      /* Ensure line appears above content */
-}
 
 .contact-form-left {
   flex: 1;
@@ -217,4 +205,28 @@
 .crud-cancel:hover {
   background: #6a06d3;
   color: #FFD501;
+}
+
+/* --- Extra Data Columns Alignment --- */
+.contact-columns {
+  display: flex;
+  justify-content: flex-start;  /* Ensure columns start at the left */
+  align-items: flex-start;
+  gap: 20px;  /* Adjust spacing between the columns as needed */
+  margin-top: 10px;
+}
+
+.contact-column-left,
+.contact-column-right {
+  flex: 1;
+  text-align: left; /* Force left alignment of text */
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem; /* Adjust as needed */
+  color: #333;
+}
+
+/* --- Wider Input Fields in PhoneBook --- */
+.phonebook-container input {
+  width: 300px !important;
+  max-width: 400px !important;
 }
