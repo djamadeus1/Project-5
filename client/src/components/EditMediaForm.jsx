@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import AutoResizeInput from './AutoResizeInput';
 import '../styles/shared.css';
 
 function EditMediaForm({ media, onClose, onUpdate }) {
@@ -128,8 +129,7 @@ function EditMediaForm({ media, onClose, onUpdate }) {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Title:</label>
-            <input
-              type="text"
+            <AutoResizeInput
               name="title"
               value={formData.title}
               onChange={handleChange}
@@ -171,8 +171,7 @@ function EditMediaForm({ media, onClose, onUpdate }) {
           <h3>Contact Information</h3>
           <div className="form-group">
             <label>Name:</label>
-            <input
-              type="text"
+            <AutoResizeInput
               name="name"
               value={formData.contact.name}
               onChange={handleChange}
@@ -182,7 +181,7 @@ function EditMediaForm({ media, onClose, onUpdate }) {
           
           <div className="form-group">
             <label>Email:</label>
-            <input
+            <AutoResizeInput
               type="email"
               name="email"
               value={formData.contact.email}
@@ -193,8 +192,7 @@ function EditMediaForm({ media, onClose, onUpdate }) {
           
           <div className="form-group">
             <label>Phone:</label>
-            <input
-              type="text"
+            <AutoResizeInput
               name="phone"
               value={formData.contact.phone}
               onChange={handleChange}
@@ -205,8 +203,7 @@ function EditMediaForm({ media, onClose, onUpdate }) {
           
           <div className="form-group">
             <label>Company:</label>
-            <input
-              type="text"
+            <AutoResizeInput
               name="company"
               value={formData.contact.company}
               onChange={handleChange}
@@ -215,8 +212,7 @@ function EditMediaForm({ media, onClose, onUpdate }) {
           
           <div className="form-group">
             <label>Discipline:</label>
-            <input
-              type="text"
+            <AutoResizeInput
               name="discipline"
               value={formData.contact.discipline}
               onChange={handleChange}
@@ -234,8 +230,7 @@ function EditMediaForm({ media, onClose, onUpdate }) {
 
           <div className="form-group">
             <label>Address:</label>
-            <input
-              type="text"
+            <AutoResizeInput
               name="address"
               value={formData.contact.address}
               onChange={handleChange}

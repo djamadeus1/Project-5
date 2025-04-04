@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import AutoResizeInput from './AutoResizeInput';
 
 const ContactModal = ({ isOpen, onClose, contact, onSave, mode }) => {
   const [formData, setFormData] = useState({
@@ -40,7 +41,7 @@ const ContactModal = ({ isOpen, onClose, contact, onSave, mode }) => {
         <form onSubmit={handleSubmit}>
           <div className="contact-form-group name-field">
             <label>Name:</label>
-            <input
+            <AutoResizeInput
               name="name"
               value={formData.name}
               onChange={handleChange}
@@ -51,7 +52,7 @@ const ContactModal = ({ isOpen, onClose, contact, onSave, mode }) => {
 
           <div className="contact-form-group discipline-field">
             <label>Discipline:</label>
-            <input
+            <AutoResizeInput
               name="discipline"
               value={formData.discipline}
               onChange={handleChange}
@@ -63,7 +64,7 @@ const ContactModal = ({ isOpen, onClose, contact, onSave, mode }) => {
             <div className="contact-form-left">
               <div className="contact-form-group">
                 <label>Phone:</label>
-                <input
+                <AutoResizeInput
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
@@ -73,7 +74,7 @@ const ContactModal = ({ isOpen, onClose, contact, onSave, mode }) => {
 
               <div className="contact-form-group">
                 <label>Email:</label>
-                <input
+                <AutoResizeInput
                   name="email"
                   type="email"
                   value={formData.email}
@@ -84,7 +85,7 @@ const ContactModal = ({ isOpen, onClose, contact, onSave, mode }) => {
 
               <div className="contact-form-group">
                 <label>Company:</label>
-                <input
+                <AutoResizeInput
                   name="company"
                   value={formData.company}
                   onChange={handleChange}
@@ -94,7 +95,7 @@ const ContactModal = ({ isOpen, onClose, contact, onSave, mode }) => {
 
               <div className="contact-form-group">
                 <label>Address:</label>
-                <input
+                <AutoResizeInput
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
@@ -106,7 +107,7 @@ const ContactModal = ({ isOpen, onClose, contact, onSave, mode }) => {
             <div className="contact-form-right">
               <div className="contact-form-group">
                 <label>Social #1:</label>
-                <input
+                <AutoResizeInput
                   name="social1"
                   value={formData.social1}
                   onChange={handleChange}
@@ -116,7 +117,7 @@ const ContactModal = ({ isOpen, onClose, contact, onSave, mode }) => {
 
               <div className="contact-form-group">
                 <label>Social #2:</label>
-                <input
+                <AutoResizeInput
                   name="social2"
                   value={formData.social2}
                   onChange={handleChange}
@@ -126,7 +127,7 @@ const ContactModal = ({ isOpen, onClose, contact, onSave, mode }) => {
 
               <div className="contact-form-group">
                 <label>Social #3:</label>
-                <input
+                <AutoResizeInput
                   name="social3"
                   value={formData.social3}
                   onChange={handleChange}
@@ -136,7 +137,7 @@ const ContactModal = ({ isOpen, onClose, contact, onSave, mode }) => {
 
               <div className="contact-form-group">
                 <label>Social #4:</label>
-                <input
+                <AutoResizeInput
                   name="social4"
                   value={formData.social4}
                   onChange={handleChange}
