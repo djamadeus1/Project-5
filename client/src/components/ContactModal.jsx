@@ -1,3 +1,4 @@
+// ContactModal.jsx
 import React, { useState, useEffect } from 'react';
 import AutoResizeInput from './AutoResizeInput';
 
@@ -28,8 +29,20 @@ const ContactModal = ({ isOpen, onClose, contact, onSave, mode }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(formData);
-    onClose();
+    // Get the user_id from the current session instead of localStorage
+    fetch('/check_session', {
+      credentials: 'include'
+    })
+    .then(response => response.json())
+    .then(userData => {
+      const payload = { ...formData, user_id: userData.id };
+      onSave(payload);
+      onClose();
+    })
+    .catch(error => {
+      console.error('Error getting user session:', error);
+      alert('Failed to get user information. Please try again.');
+    });
   };
 
   if (!isOpen) return null;

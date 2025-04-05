@@ -56,7 +56,7 @@ class Contact(db.Model, SerializerMixin):  # Add SerializerMixin here
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     name = db.Column(db.String, nullable=False)
     email = db.Column(db.String, nullable=False)
-    phone = db.Column(db.String, nullable=False)
+    phone = db.Column(db.String, nullable=True)
     company = db.Column(db.String, nullable=True)
     discipline = db.Column(db.String, nullable=True)
     contact_pic = db.Column(db.String, nullable=True)  
@@ -64,6 +64,10 @@ class Contact(db.Model, SerializerMixin):  # Add SerializerMixin here
     picture_icon = db.Column(db.String)
     logo = db.Column(db.String)
     address = db.Column(db.String)
+    social1 = db.Column(db.String, nullable=True)
+    social2 = db.Column(db.String, nullable=True)
+    social3 = db.Column(db.String, nullable=True)
+    social4 = db.Column(db.String, nullable=True)
 
     user = db.relationship('User', back_populates='contacts')
     media_associations = db.relationship('ContactMedia', back_populates='contact')
@@ -81,10 +85,14 @@ class Contact(db.Model, SerializerMixin):  # Add SerializerMixin here
             'user_id': self.user_id,
             'bio': self.bio,
             'picture_icon': self.picture_icon,
-            'contact_pic': self.contact_pic,  # Add this line
+            'contact_pic': self.contact_pic,
             'logo': self.logo,
-            'address': self.address
-    }
+            'address': self.address,
+            'social1': self.social1,
+            'social2': self.social2,
+            'social3': self.social3,
+            'social4': self.social4
+        }
 
 
 class MediaFile(db.Model, SerializerMixin):

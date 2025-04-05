@@ -81,10 +81,17 @@ const PhoneBook = () => {
   };
 
   const handleSave = async (formData) => {
-    const method = modalMode === 'add' ? 'POST' : 'PATCH';
-    const url = modalMode === 'add' ? '/contacts' : `/contacts/${selectedContact.id}`;
-
     try {
+      // Verify we have a user_id
+      if (!formData.user_id) {
+        throw new Error('User ID is required');
+      }
+
+      const method = modalMode === 'add' ? 'POST' : 'PATCH';
+      const url = modalMode === 'add' ? '/contacts' : `/contacts/${selectedContact.id}`;
+
+      console.log('Sending contact data:', formData); // Debug log
+
       const response = await fetch(url, {
         method,
         headers: {
@@ -94,19 +101,26 @@ const PhoneBook = () => {
         body: JSON.stringify(formData),
       });
 
-      if (response.ok) {
-        const updatedContact = await response.json();
-        if (modalMode === 'add') {
-          setContacts([...contacts, updatedContact]);
-        } else {
-          setContacts(contacts.map(c => 
-            c.id === updatedContact.id ? updatedContact : c
-          ));
-        }
-        setSelectedContact(updatedContact);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to save contact');
       }
+
+      const updatedContact = await response.json();
+      
+      if (modalMode === 'add') {
+        setContacts(prevContacts => [...prevContacts, updatedContact]);
+      } else {
+        setContacts(prevContacts => 
+          prevContacts.map(c => c.id === updatedContact.id ? updatedContact : c)
+        );
+      }
+      
+      setSelectedContact(updatedContact);
+      setIsModalOpen(false);
     } catch (error) {
       console.error('Error saving contact:', error);
+      alert(`Failed to save contact: ${error.message}`);
     }
   };
 
@@ -227,7 +241,17 @@ const PhoneBook = () => {
                   <p><strong>Phone:</strong> {selectedContact?.phone || "---"}</p>
                   <p><strong>Company:</strong> {selectedContact?.company || "---"}</p>
                   <p><strong>Discipline:</strong> {selectedContact?.discipline || "---"}</p>
-                  {selectedContact?.bio && <p><strong>Bio:</strong> {selectedContact.bio}</p>}
+                  { (selectedContact?.social1 || selectedContact?.social2 || selectedContact?.social3 || selectedContact?.social4) && (
+                    <>
+                      <br />
+                      {selectedContact.social1 && <p><strong>Social #1:</strong> {selectedContact.social1}</p>}
+                      {selectedContact.social2 && <p><strong>Social #2:</strong> {selectedContact.social2}</p>}
+                      {selectedContact.social3 && <p><strong>Social #3:</strong> {selectedContact.social3}</p>}
+                      {selectedContact.social4 && <p><strong>Social #4:</strong> {selectedContact.social4}</p>}
+                      <br />
+                    </>
+                  )}
+                  <p><strong>Bio:</strong> {selectedContact?.bio || "No Bio"}</p>
                 </div>
               </div>
             </div>
