@@ -162,7 +162,7 @@ class ContactsResource(Resource):
             # If duplicates exist and the user hasn't explicitly allowed duplicates, warn them.
             if existing and not data.get("allow_duplicate"):
                 return {
-                    "Warning!": "A contact with this name already exists. Do you want to create a duplicate?"
+                    "Warning!": "Warning! A contact with this name already exists. Do you want to create a duplicate?"
                 }, 409
 
             new_name = name
@@ -214,6 +214,10 @@ class ContactsResource(Resource):
         contact = db.session.get(Contact, id)
         if not contact:
             return {"error": "Contact not found"}, 404
+
+        # Check if contact has any media associations
+        if contact.media_associations:
+            return {"error": "Sorry, can't delete this Contact because it's currently associated with a track"}, 400
 
         db.session.delete(contact)
         db.session.commit()
@@ -620,9 +624,8 @@ def uploaded_file(filename):
 def create_contact():
     try:
         data = request.get_json()
-        print("Received contact data:", data)  # Debug log
+        print("Received contact data:", data)
 
-        # Get user_id from session if not provided in request
         if not data.get('user_id'):
             user_id = session.get('user_id')
             if not user_id:
@@ -633,9 +636,29 @@ def create_contact():
         if not data.get('name') or not data.get('email'):
             return {"error": "Name and email are required"}, 400
 
+        # Check for existing contacts with the same name
+        existing = Contact.query.filter_by(user_id=data['user_id'], name=data['name']).all()
+        
+        # If duplicates exist and the user hasn't explicitly allowed duplicates, warn them
+        if existing and not data.get("allow_duplicate"):
+            return {
+                "Warning": "A contact with this name already exists. Do you want to create a duplicate?"
+            }, 409
+
+        new_name = data['name']
+        # If the user has chosen to allow duplicates, adjust the name
+        if data.get("allow_duplicate"):
+            # Count existing contacts with this name
+            duplicates = Contact.query.filter(
+                Contact.user_id == data['user_id'],
+                Contact.name.like(f"{data['name']}%")
+            ).all()
+            # Append the count + 1 as a suffix
+            new_name = f"{data['name']} ({len(duplicates) + 1})"
+
         new_contact = Contact(
             user_id=data['user_id'],
-            name=data['name'],
+            name=new_name,
             email=data['email'],
             phone=data.get('phone'),
             company=data.get('company'),
@@ -654,12 +677,12 @@ def create_contact():
         db.session.add(new_contact)
         db.session.commit()
         
-        print("Created contact:", new_contact.to_dict())  # Debug log
+        print("Created contact:", new_contact.to_dict())
         return new_contact.to_dict(), 201
 
     except Exception as e:
         db.session.rollback()
-        print("Error creating contact:", str(e))  # Debug log
+        print("Error creating contact:", str(e))
         return {"error": str(e)}, 500
 
 @app.route('/')

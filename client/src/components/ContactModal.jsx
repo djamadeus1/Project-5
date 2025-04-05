@@ -18,31 +18,67 @@ const ContactModal = ({ isOpen, onClose, contact, onSave, mode }) => {
   });
 
   useEffect(() => {
-    if (contact) {
+    if (mode === 'add') {
+      // Reset form data when opening in add mode
+      setFormData({
+        name: '',
+        discipline: '',
+        phone: '',
+        email: '',
+        company: '',
+        address: '',
+        social1: '',
+        social2: '',
+        social3: '',
+        social4: '',
+        bio: ''
+      });
+    } else if (contact) {
+      // Only set contact data if in edit mode
       setFormData(contact);
     }
-  }, [contact]);
+  }, [contact, mode]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Get the user_id from the current session instead of localStorage
-    fetch('/check_session', {
-      credentials: 'include'
-    })
-    .then(response => response.json())
-    .then(userData => {
+    try {
+      // Get the user_id from the current session
+      const userResponse = await fetch('/check_session', {
+        credentials: 'include'
+      });
+      const userData = await userResponse.json();
+      
       const payload = { ...formData, user_id: userData.id };
-      onSave(payload);
-      onClose();
-    })
-    .catch(error => {
-      console.error('Error getting user session:', error);
-      alert('Failed to get user information. Please try again.');
-    });
+      
+      // Try to save the contact
+      const response = await onSave(payload);
+      
+      // If we get a warning about duplicate name
+      if (response.status === 409) {
+        const data = await response.json();
+        if (window.confirm(data['Warning!'])) {
+          // User chose to create duplicate
+          const duplicateResponse = await onSave({ ...payload, allow_duplicate: true });
+          if (duplicateResponse.ok) {
+            onClose();
+          }
+        }
+        // If user clicks Cancel, form stays open for editing
+        return;
+      }
+      
+      // If save was successful, close the modal
+      if (response.ok) {
+        onClose();
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to save contact. Please try again.');
+    }
   };
 
   if (!isOpen) return null;
