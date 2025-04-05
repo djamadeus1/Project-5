@@ -32,47 +32,75 @@ function EditMediaForm({ media, onClose, onUpdate }) {
     }
   };
 
+  const handleCreateContact = async (contactData) => {
+    try {
+      const response = await fetch('/contacts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(contactData)
+      });
+
+      // Handle duplicate contact name warning
+      if (response.status === 409) {
+        const data = await response.json();
+        if (window.confirm(data['Warning!'])) {
+          // User chose to create duplicate
+          const duplicateResponse = await fetch('/contacts', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ ...contactData, allow_duplicate: true })
+          });
+          
+          // Return the json response directly instead of checking ok
+          return await duplicateResponse.json();
+        }
+        return null;
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error creating contact:', error);
+      throw error; // Throw the error instead of returning null
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
     try {
-      // 1. Update or create the contact (same as before)
-      let contactResponse;
+      let updatedContact = null;
       const contactData = {
         ...formData.contact,
         user_id: media.user_id
       };
 
-      // Debugging log to confirm bio is present
-      console.log('CONTACT DATA TO SEND:', contactData);
-  
       if (formData.contact.id) {
-        contactResponse = await fetch(`/contacts/${formData.contact.id}`, {
+        const contactResponse = await fetch(`/contacts/${formData.contact.id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
           body: JSON.stringify(contactData)
         });
+        updatedContact = await contactResponse.json();
       } else {
-        contactResponse = await fetch('/contacts', {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(contactData)
-        });
+        updatedContact = await handleCreateContact(contactData);
+        if (!updatedContact) {
+          return; // User cancelled duplicate creation
+        }
       }
-  
-      if (!contactResponse.ok) {
-        throw new Error('Failed to update contact');
-      }
-      const updatedContact = await contactResponse.json();
-  
-      // 2. Update the media metadata (title, description, contacts)
+
+      // Continue with media update using the updatedContact
       const mediaPayload = {
         title: formData.title,
         description: formData.description,
         contacts: [{
-          contact_id: updatedContact?.id,
+          contact_id: updatedContact.id,
           role: "Creator"
         }]
       };

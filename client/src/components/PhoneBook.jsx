@@ -74,6 +74,9 @@ const PhoneBook = () => {
       if (response.ok) {
         setContacts(contacts.filter(c => c.id !== selectedContact.id));
         setSelectedContact(null);
+      } else {
+        const data = await response.json();
+        alert(data.error);
       }
     } catch (error) {
       console.error('Error deleting contact:', error);
@@ -82,15 +85,12 @@ const PhoneBook = () => {
 
   const handleSave = async (formData) => {
     try {
-      // Verify we have a user_id
       if (!formData.user_id) {
         throw new Error('User ID is required');
       }
 
       const method = modalMode === 'add' ? 'POST' : 'PATCH';
       const url = modalMode === 'add' ? '/contacts' : `/contacts/${selectedContact.id}`;
-
-      console.log('Sending contact data:', formData); // Debug log
 
       const response = await fetch(url, {
         method,
@@ -100,6 +100,11 @@ const PhoneBook = () => {
         credentials: 'include',
         body: JSON.stringify(formData),
       });
+
+      // If it's a duplicate name warning, return the response for ContactModal to handle
+      if (response.status === 409) {
+        return response;
+      }
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -117,10 +122,46 @@ const PhoneBook = () => {
       }
       
       setSelectedContact(updatedContact);
-      setIsModalOpen(false);
+      return response;
     } catch (error) {
       console.error('Error saving contact:', error);
       alert(`Failed to save contact: ${error.message}`);
+      return null;
+    }
+  };
+
+  const handleContactPicChange = async (e) => {
+    if (!selectedContact) {
+      alert("Please select a contact first");
+      return;
+    }
+
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('contact_pic', file);
+    formData.append('contact_id', selectedContact.id);
+
+    try {
+      const response = await fetch('/update_contact_pic', {
+        method: 'PATCH',
+        credentials: 'include',
+        body: formData
+      });
+
+      if (response.ok) {
+        const updatedContact = await response.json();
+        setContacts(prevContacts => 
+          prevContacts.map(c => 
+            c.id === updatedContact.id ? updatedContact : c
+          )
+        );
+        setSelectedContact(updatedContact);
+      }
+    } catch (error) {
+      console.error('Error updating contact picture:', error);
+      alert('Failed to update contact picture');
     }
   };
 
@@ -228,7 +269,7 @@ const PhoneBook = () => {
               <input 
                 type="file" 
                 ref={contactPicInputRef} 
-                onChange={() => {}}
+                onChange={handleContactPicChange}
                 style={{ display: 'none' }} 
                 accept="image/*" 
               />
