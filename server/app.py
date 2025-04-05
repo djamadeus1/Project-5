@@ -153,11 +153,32 @@ class Logout(Resource):
 class ContactsResource(Resource):
     def post(self):
         data = request.get_json()
-
         try:
+            user_id = data['user_id']
+            name = data['name']
+
+            # Check for existing contacts with the same name for this user
+            existing = Contact.query.filter_by(user_id=user_id, name=name).all()
+            # If duplicates exist and the user hasn't explicitly allowed duplicates, warn them.
+            if existing and not data.get("allow_duplicate"):
+                return {
+                    "Warning!": "A contact with this name already exists. Do you want to create a duplicate?"
+                }, 409
+
+            new_name = name
+            # If the user has chosen to allow duplicates, adjust the name.
+            if data.get("allow_duplicate"):
+                # Retrieve all contacts for this user whose names start with the given name.
+                duplicates = Contact.query.filter(
+                    Contact.user_id == user_id,
+                    Contact.name.like(f"{name}%")
+                ).all()
+                # Append the count + 1 as a suffix.
+                new_name = f"{name} ({len(duplicates) + 1})"
+
             new_contact = Contact(
-                user_id=data['user_id'],
-                name=data['name'],
+                user_id=user_id,
+                name=new_name,
                 email=data['email'],
                 phone=data.get('phone'),
                 company=data.get('company'),
@@ -166,7 +187,8 @@ class ContactsResource(Resource):
 
             db.session.add(new_contact)
             db.session.commit()
-            return new_contact.to_dict(), 201  # This ensures the frontend receives the full contact data
+            return new_contact.to_dict(), 201
+
         except KeyError as e:
             return {"error": f"Missing required field: {str(e)}"}, 400
         except Exception as e:
@@ -596,26 +618,49 @@ def uploaded_file(filename):
 
 @app.route('/contacts', methods=['POST'])
 def create_contact():
-    data = request.get_json()
     try:
+        data = request.get_json()
+        print("Received contact data:", data)  # Debug log
+
+        # Get user_id from session if not provided in request
+        if not data.get('user_id'):
+            user_id = session.get('user_id')
+            if not user_id:
+                return {"error": "No user ID found in session"}, 401
+            data['user_id'] = user_id
+
+        # Validate required fields
+        if not data.get('name') or not data.get('email'):
+            return {"error": "Name and email are required"}, 400
+
         new_contact = Contact(
-            name=data.get('name'),
-            email=data.get('email'),
+            user_id=data['user_id'],
+            name=data['name'],
+            email=data['email'],
             phone=data.get('phone'),
             company=data.get('company'),
             discipline=data.get('discipline'),
+            contact_pic=data.get('contact_pic'),
             bio=data.get('bio'),
             picture_icon=data.get('picture_icon'),
             logo=data.get('logo'),
             address=data.get('address'),
-            user_id=data.get('user_id')
+            social1=data.get('social1'),
+            social2=data.get('social2'),
+            social3=data.get('social3'),
+            social4=data.get('social4')
         )
+
         db.session.add(new_contact)
         db.session.commit()
+        
+        print("Created contact:", new_contact.to_dict())  # Debug log
         return new_contact.to_dict(), 201
+
     except Exception as e:
         db.session.rollback()
-        return {"error": str(e)}, 400
+        print("Error creating contact:", str(e))  # Debug log
+        return {"error": str(e)}, 500
 
 @app.route('/')
 def index():
